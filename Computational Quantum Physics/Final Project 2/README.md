@@ -1,1 +1,13 @@
-This 
+This directory contains all the material for the 2nd project
+
+# **Brief discription**
+
+This project is divided in two parts. The first part's goal was the use of two
+machine learning (ML) classification algorithms, for the separation between signal
+and background, in the detection of hypersymmetric Higgs bosons senario. We used 
+the **SVM** (Support Vector Machine) algorithm and the **RF** (Random Forest) algorithm.
+The second part aims to the classification of the same data, but now with the use of an
+artificial neural network (ANN). We used the **TensorFlow** neural network.
+
+# **Contents**
+1. The data to be analyzed in the ***HIGGS_8K.csv*** file
