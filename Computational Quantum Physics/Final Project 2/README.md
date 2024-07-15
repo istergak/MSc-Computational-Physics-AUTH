@@ -11,3 +11,6 @@ artificial neural network (ANN). We used the **TensorFlow** neural network.
 
 # **Contents**
 1. The data to be analyzed in the ***HIGGS_8K.csv*** file
+2. The codes for the 1st part of the project in the ***FinalProject2_Higgs_ML.ipynb*** notebook
+3. The codes for the 2nd of the project in the ***FinalProject2_Higgs_ANNs.ipynb*** notebook
+4. The report of the project in the ***FinalProject2_Higgs.pdf*** file
