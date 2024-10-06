@@ -12,4 +12,10 @@ to find and fix the errors in three C scripts that implement the OpenMP environm
 
 2. [table-add1-fixed.c](https://github.com/istergak/MSc-Computational-Physics-AUTH/blob/main/Computational%20Tools/Part%203%20-%20OpenMP/SET%20%231/table-add1-fixed.c): same as 1. but with the correcion included, for the code to print the expected result
   
-3.
+3. [table-implicit-notpar.c](https://github.com/istergak/MSc-Computational-Physics-AUTH/blob/main/Computational%20Tools/Part%203%20-%20OpenMP/SET%20%231/table-implicit-notpar.c): the code must change the elements of the table by adding the value of the previous element to the value of the current element, using a *for* loop. Since the value of the first element of the table is 0, executing the loop serially, i.e. with a single thread, would result in the sequential addition of 0 to all elements of the table. However, when the code runs with more threads and executes the *for* loop parallely the result is not the expected: not all the elements are 0 at the end of the loop, while theee are elements in the table with the same value.
+
+**Mistake**: There is a problem with the synchronization of the threads. Since all threads execute their respective simultaneously, the number 0 does not have time to be distributed to the subsequent elements of the table, rather has time to be distributed only to the elements of the table that are included within the iterative load of the first thread.
+
+**Correction**: To fix the syncroziation problem we can use a schedule for the parallel *for* loop
+
+4. [table-implicit-notpar-fix-guided.c](https://github.com/istergak/MSc-Computational-Physics-AUTH/blob/main/Computational%20Tools/Part%203%20-%20OpenMP/SET%20%231/table-implicit-notpar-fix-guided.c):
