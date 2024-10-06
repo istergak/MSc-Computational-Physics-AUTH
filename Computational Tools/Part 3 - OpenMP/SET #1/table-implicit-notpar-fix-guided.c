@@ -18,7 +18,8 @@ int i,
  int myid = omp_get_thread_num(); // get ID number of thread
  if(myid==0) nThreads = omp_get_num_threads(); // if the master thread is used get the 
 
- #pragma omp for schedule(guided) // added the guided schedule for the loop 
+// added the guided schedule for the loop
+ #pragma omp for schedule(guided) 
  for(i=1;i<N;i++) A[i] =A[i-1];
 }
 
