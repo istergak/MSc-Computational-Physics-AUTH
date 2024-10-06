@@ -8,7 +8,8 @@ to find and fix the errors in three C scripts that implement the OpenMP environm
 
 **Mistake**: The user forgot to declare that the *for* loop inside the parallel region is to be shared among the threads.
 
-**Correction**: Add the **#pragma omp for** just above the *for* loop inside the parallel region, so that the algorithm will share automatically the *for* loop's load to the threads
+**Correction**: Add the **#pragma omp for** command just above the *for* loop inside the parallel region, so that the algorithm will share automatically the *for* loop's load to the threads
 
-2. [table-add1-fixed.c]
-4.
+2. [table-add1-fixed.c](https://github.com/istergak/MSc-Computational-Physics-AUTH/blob/main/Computational%20Tools/Part%203%20-%20OpenMP/SET%20%231/table-add1-fixed.c): same as 1. but with the correcion included, for the code to print the expected result
+  
+3.
