@@ -9,5 +9,5 @@ position space ($S_r$) and momentum space ($S_k$). Finally, an analysis of the t
 entropy $S = S_r+S_k$ is made 
 
 # **Contents**
-1. The Jupyter Notebook ***FinalProject1_RHF.ipynb*** where we developed our code for the project
-2. The report of the project in the ***FinalProject1_RHF.pdf*** file
+1. The Jupyter Notebook [FinalProject1_RHF.ipynb](https://github.com/istergak/MSc-Computational-Physics-AUTH/blob/main/Computational%20Quantum%20Physics/Final%20Project%201/FinalProject1_RHF.ipynb) where we developed our code for the project
+2. The report of the project in the [FinalProject1_RHF.pdf](https://github.com/istergak/MSc-Computational-Physics-AUTH/blob/main/Computational%20Quantum%20Physics/Final%20Project%201/FinalProject1_RHF.pdf) file
