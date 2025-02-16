@@ -164,7 +164,7 @@ def EOS_polytrope(P,K_i,Γ_i,ρ_im1,P_im1,E_im1):
 
 # Defining the total polytropic behavior of EOS in high mass densities and high pressures (all presure segments are included)
 def EOS_polytrope_piecewise(P,ρ_bounds,Pi_vals,Ei_vals,Ki_vals,Γi_vals):
-    points = len(ρ_bounds)
+    points = len(Pi_vals)
     n = points-1 # number of pressure (or mass density) segments
 
     conditions = []
@@ -190,7 +190,7 @@ def EOS_slope_polytrope(P,K_i,Γ_i,ρ_im1,P_im1,E_im1):
 
 # Defining the slope of the total polytropic EOS in high mass densities and high pressures (all presure segments are included)
 def EOS_slope_polytrope_piecewise(P,ρ_bounds,Pi_vals,Ei_vals,Ki_vals,Γi_vals):
-    points = len(ρ_bounds)
+    points = len(Pi_vals)
     n = points -1 # number of pressure (or mass density) segments
 
     conditions = []
