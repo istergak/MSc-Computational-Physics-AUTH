@@ -568,7 +568,7 @@ class polyNSdata:
     def sample_MR(self,filename,Pc_threshold=0,M_threshold=0,points_dist=[3,3,3,3,3],noiseM_mv=0,noiseM_std=0,noiseR_mv=0,noiseR_std=0):
         """
         Scanning file containing the TOV equations' solution data for a polytropic Neutron Star EOS and sampling Mass and Radius values,
-        that do not violate causality. Artificial observation noise (following normal distribution) can be added to the values of the samples.
+        that do not violate causality. Artificial observational noise (following normal distribution) can be added to the values of the samples.
         1. filename: name of the file to be scanned
         2. Pc_threshold: Threshold of the maximum pressure in [MeV*fm^-3]. The EOSs with maximum pressure less than the threshold are not included
         in the sampling of Mass and Radius values. By default its value is set to 0.
@@ -589,6 +589,12 @@ class polyNSdata:
             raise ValueError("The value of the \"Pc_threshold\" argument must be a number. Try again.")
         elif Pc_threshold<0:
             raise ValueError("The value of the \"Pc_threshold\" argument can not be negative. Try again.")
+        
+        # Allowed values for the 'Μ_treshold' argument
+        if type(M_threshold)!=type(2) and type(M_threshold)!=type(2.5):
+            raise ValueError("The value of the \"M_threshold\" argument must be a number. Try again.")
+        elif M_threshold<0:
+            raise ValueError("The value of the \"M_threshold\" argument can not be negative. Try again.")
 
         # Allowed values for the 'noiseM_mv' argument
         if type(noiseM_mv)!=type(2) and type(noiseM_mv)!=type(2.5):
@@ -612,8 +618,8 @@ class polyNSdata:
         # Initializing storage lists for the Mass and Radius values sample
         mass_sample = []
         radius_sample = []
-        mass_sample_with_noise = np.NaN
-        radius_sample_with_noise = np.NaN
+        mass_sample_with_noise = [np.NaN]
+        radius_sample_with_noise = [np.NaN]
         
         # Scanning for the file
         if os.path.exists(filename):
@@ -631,7 +637,7 @@ class polyNSdata:
             # and there are Mass values more than M_threshold
             if Pc_caus[-1]>=Pc_threshold and max(M_caus)>=M_threshold:
 
-                # Filtering the M_caus data to contain Mass values over 0.2 of Solar Mass
+                # Filtering the M_caus data to contain Mass values over M_threshold Solar Mass
                 idx_filt = [j for j, mass_value in enumerate(M_caus) if mass_value>=M_threshold]
                 M_caus_filt = [M_caus[j] for j in idx_filt]
 
@@ -652,7 +658,7 @@ class polyNSdata:
                     # Checking if the M_seg_data list contains less elements than the random choices to be made
                     # This is crucial since we need any element of the list to be (randomly) selected only once
                     if len(M_seg_data)<points_dist[i]:
-                        raise ValueError(f"In the {i} Mass range segment there are {len(M_seg_data)} available Mass values and {points_dist[i]} different random choices requested to be made. Try again.")
+                        raise ValueError(f"In the Mass segment {i+1} there are {len(M_seg_data)} available Mass values and {points_dist[i]} different random choices requested to be made. Try again.")
 
                     # Radius values in R_caus_filt list that correspond to the Mass values of M_seg_data list
                     R_seg_data = [R_caus_filt[j] for j in idx_seg]
@@ -689,15 +695,15 @@ class polyNSdata:
     # Method that samples Slope (dE_dP) and Energy density on center data (that do not violate causality) from TOV solution data files of a polytropic NS EOS
     def sample_EOS(self,filename,Pc_points=[10,50,100,200,400,800],noiseSl_mv=0,noiseSl_std=0,noiseEc_mv=0,noiseEc_std=0):
         """
-        Scanning a file containing the TOV equations' solution data for a polytropic Neutron Star EOS and sampling Slope (dE_dP) and Energy Density values,
-        that do not violate causality. Artificial observation noise (following normal distribution) can be added to the values of the samples.
+        Scanning a file containing the TOV equations' solution data for a polytropic Neutron Star EOS and sampling Slope (dE_dP) and Energy Density at center values,
+        that do not violate causality. Artificial observational noise (following normal distribution) can be added to the values of the samples.
         1. filename: name of the file to be scanned
         2. Pc_points: values (points) of pressure in center of the polytropic Neutron Star, on which the algorithm will collect the values of Slope (dE_dP) and Energy Density.
         By default the following points are selected: 'Pc_points' = [10,50,100,200,400,800] MeV*fm^-3.
         3. noiseSl_mv: mean value of the normal distributed observational noise for the values of the Slope sample. By default its value is set to 0.
         4. noiseSl_std: standard deviation of the normal distributed observational noise for the values of the Slope sample. By default its value is set to 0.
-        5. noiseEc_mv: mean value of the normal distributed observational noise for the values of the Energy Density on center sample. By default its value is set to 0.
-        6. noiseEc_std: standard deviation of the normal distributed observational noise for the values of the Energy Density on center sample. By default its value is set to 0.
+        5. noiseEc_mv: mean value of the normal distributed observational noise for the values of the Energy Density at center sample. By default its value is set to 0.
+        6. noiseEc_std: standard deviation of the normal distributed observational noise for the values of the Energy Density at center sample. By default its value is set to 0.
         """ 
         
         # Allowed values for the 'noiseSl_mv' argument
@@ -722,8 +728,8 @@ class polyNSdata:
         # Initializing storage lists for the Slope (dE_dP) and Energy density on center values sample
         slope_sample = []
         enrg_dens_sample = []
-        slope_sample_with_noise = np.NaN
-        enrg_dens_sample_with_noise = np.NaN
+        slope_sample_with_noise = [np.NaN]
+        enrg_dens_sample_with_noise =[np.NaN]
 
         # Scanning for the file
         if os.path.exists(filename):
@@ -749,8 +755,146 @@ class polyNSdata:
                 slope_sample_with_noise = slope_sample + np.random.normal(loc=noiseSl_mv,scale=noiseSl_std,size=n)
                 enrg_dens_sample_with_noise = enrg_dens_sample + np.random.normal(loc=noiseEc_mv,scale=noiseEc_std,size=n)
 
-        return [slope_sample_with_noise,enrg_dens_sample_with_noise]            
+        return [slope_sample_with_noise,enrg_dens_sample_with_noise]
 
+    # Method that generates and records on .csv files data of polytropic Neutron Stars for regression purposes
+    def gen_reg_data(self,save_filename,samples_per_EOS=1,M_threshold=0,points_dist=[3,3,3,3,3],Pc_points=[10,50,100,200,400,800],noises_mv=[0,0,0,0],noises_std=[0,0,0,0]):
+        """
+        Getting data of polytropic Neutron Stars for regression purposes and recording them on .csv files
+        1. save_filename: the name of the final .csv file, in which the regression data are being recorded
+        2. samples_per_EOS: number of samples to be generated per polytropic EOS. Each sample is recorded as a row in the final .csv file and includes the
+        selected values of Slope (dE_dP), Energy Density at center, Mass and Radius. By default, 1 sample is generated per polytropic EOS.
+        3. M_threshold: Threshold of Mass values. In order for the algorithm to create Mass and Radius samples, the EOS must have resulted in causality valid 
+        Mass values greater than M_threshold
+        4. points_dist: list of random points to be selected. The algorithm divides the range of Mass data that do not violate causality into 
+        as many segments as the length of the list 'points_dist'. Then it selects randomly (and uniformly), as many points per segment,
+        as the respective value of the list's element, that corresponds to that segment. By default, the list [3,3,3,3,3] is given
+        as input for the 'points_dist' argument, i.e. the Mass range is divided into 5 segments and 3 points are randomly selected per segment.
+        5. Pc_points: values (points) of pressure in center of the polytropic Neutron Star, on which the algorithm will collect the values of Slope (dE_dP) and Energy Density.
+        By default the following points are selected: 'Pc_points' = [10,50,100,200,400,800] MeV*fm^-3.
+        6. noises_mv: list containing the mean values for the artificial observational noise that is added to the sample values of the following: 1st element-> Mass, 2nd element -> Radius, 3rd element -> Slope (dE_dP) and 4th element -> Energy Density at center. By default the mean values are set to 0.
+        7. noises_std: list containing the standard deviations for the artificial observational noise that is added to the sample values of the following: 1st element-> Mass, 2nd element -> Radius, 3rd element -> Slope (dE_dP) and 4th element -> Energy Density at center. By default the standard deviations are set to 0.
+        """ 
+
+        # Allowed lentgh for the noises_mv list
+        if len(noises_mv)!=4:
+            raise ValueError(f"The length of the \"noises_mv\" list must be 4, but a list with length {len(noises_mv)} has been given.")
+
+        # Allowed lentgh for the noises_std list
+        if len(noises_std)!=4:
+            raise ValueError(f"The length of the \"noises_std\" list must be 4, but a list with length {len(noises_std)} has been given.")
+
+        # Getting the mean values and the standard deviations of the observational noises
+        obs_noiseM_mv = noises_mv[0] # mean value for the noise of the Mass values
+        obs_noiseR_mv = noises_mv[1] # mean value for the noise of the Radius values
+        obs_noiseSl_mv = noises_mv[2] # mean value for the noise of the Slope (dE_dP) values
+        obs_noiseEc_mv = noises_mv[3] # mean value for the noise of the Energy Density at center values
+
+        obs_noiseM_std = noises_std[0] # standard deviation for the noise of the Mass values
+        obs_noiseR_std = noises_std[1] # standard deviation for the noise of the Radius values
+        obs_noiseSl_std = noises_std[2] # standard deviation for the noise of the Slope (dE_dP) values 
+        obs_noiseEc_std = noises_std[3] # standard deviation for the noise of the Energy Density at center values
+
+        # Getting the number of M-R points
+        num_mr_points = np.sum(points_dist)
+
+        # Getting the number of pressure points
+        num_pc_points = len(Pc_points)
+
+        # Creating the file in which the regression data will be recorder and forming its headers
+        headers_slope = f"" # headers for the Slope (dE_dP) values
+        headers_enrg = f"" # headers for the Energy Density at center values 
+        headers_mass = f"" # headers for the Mass values
+        headers_radius = f"" # headers for the Radius values
+
+        # Forming the headers for the Y data (response variables) of the regression, i.e. the Slope (dE_dP) and Energy Density at center values
+        for i in range(0,num_pc_points):
+            headers_slope = headers_slope + f"dE_dP({Pc_points[i]})," # the values of the pressure are icluded inside the paranthesis
+            headers_enrg = headers_enrg + f"E_c({Pc_points[i]})," # the values of the pressure are icluded inside the paranthesis
+
+        # Forming the headers for the X data (explanatory variables) of the regression, i.e. the Mass and Radius values
+        for i in range(0,num_mr_points):
+            headers_mass = headers_mass + f"M_{i+1},"
+            if i==np.sum(points_dist)-1:
+                headers_radius = headers_radius + f"R_{i+1}\n" # the last column of the headers needs \n and not a comma in the end
+            else:
+                headers_radius = headers_radius + f"R_{i+1},"   
+        
+        # Forming the total info of the headers and the name of the recording .csv file
+        headers_info = headers_slope + headers_enrg + headers_mass + headers_radius
+        with open(f"{save_filename}.csv","w") as file:
+            file.write(headers_info)
+
+        # Linear behavior signs
+        linear_behavior_signs = ["","L"]
+
+        # Main EOSs to be included
+        main_EOSs = ["HLPS-2","HLPS-3"]
+
+        # Scanning all the files for all main EOSs
+        for main_EOS in main_EOSs:
+            # Scanning both for linear and non-linear behavior of the polytropic EOSs at pressure's last segment
+            for linear_sign in linear_behavior_signs:
+                # Scanning all the combinations of the Γ parameter
+                for Γ_combo in self.Γ_total_combos_sorted:
+                    # Getting the name of the file to be scanned
+                    filename = f"{main_EOS}_{Γ_combo}{linear_sign}_sol.csv"
+
+                    # Getting the basic sample of the Slope (dE_dP) and Energy Density at center values
+                    slope_basic_sample,enrg_basic_sample = self.sample_EOS(filename,Pc_points,noiseSl_mv=0,noiseSl_std=0,noiseEc_mv=0,noiseEc_std=0)
+
+                    # Getting the basic sample of the Mass and Radius values
+                    mass_basic_sample,radius_basic_sample = self.sample_MR(filename,max(Pc_points)+50,M_threshold,points_dist,noiseM_mv=0,noiseM_std=0,noiseR_mv=0,noiseR_std=0)
+                    
+                    # print(slope_basic_sample)
+                    # print(enrg_basic_sample)
+                    # print(mass_basic_sample)
+                    # print(radius_basic_sample)
+
+                    # If any of the basic samples is NaN the algorithm skips the recording for this polytropic EOS and moves to the next polytrtopic EOS
+                    if slope_basic_sample[0]==np.NaN or enrg_basic_sample[0]==np.NaN or mass_basic_sample[0]==np.NaN or radius_basic_sample[0]==np.NaN:
+                        break
+                    else:
+                        j=1 # intiliazing a counter for the samples to be made per polytropic EOS
+                        while j<=samples_per_EOS:
+                            # Adding noise to the values of the main samples and recording the resuted sample as a row in the final .csv file
+                            slope_sample_with_noise = slope_basic_sample + np.random.normal(loc=obs_noiseSl_mv,scale=obs_noiseSl_std,size=num_pc_points)
+                            enrg_sample_with_noise = enrg_basic_sample + np.random.normal(loc=obs_noiseEc_mv,scale=obs_noiseEc_std,size=num_pc_points)
+                            mass_sample_with_noise = mass_basic_sample + np.random.normal(loc=obs_noiseM_mv,scale=obs_noiseM_std,size=num_mr_points)
+                            radius_sample_with_noise = radius_basic_sample + np.random.normal(loc=obs_noiseR_mv,scale=obs_noiseR_std,size=num_mr_points)
+
+                            row_slope_info = f"" # row info for the Slope (dE_dP) values
+                            row_enrg_info = f"" # row info for the Energy Density at center values 
+                            row_mass_info = f"" # row info for the Mass values
+                            row_radius_info = f"" # rwo info for the Radius values
+
+                            # Getting the row info for the Y data (response variables) of the regression, i.e. the Slope (dE_dP) and Energy Density at center values
+                            for k in range(0,num_pc_points):
+                                row_slope_info = row_slope_info + f"{slope_sample_with_noise[k]},"
+                                row_enrg_info = row_enrg_info + f"{enrg_sample_with_noise[k]},"
+
+                            # Getting the row info for the X data (explanatory variables) of the regression, i.e. the Mass and Radius values
+                            for k in range(0,num_mr_points):
+                                row_mass_info = row_mass_info + f"{mass_sample_with_noise[k]},"
+                                if k==num_mr_points-1:
+                                    row_radius_info = row_radius_info + f"{radius_sample_with_noise[k]}\n" # the last column of the row needs \n and not a comma in the end
+                                else:
+                                    row_radius_info = row_radius_info + f"{radius_sample_with_noise[k]}," 
+                            
+                            # Getting the total info of the row and recording it to the final .csv file
+                            row_info = row_slope_info + row_enrg_info + row_mass_info + row_radius_info
+                            with open(f"{save_filename}.csv","a+") as file:
+                                file.write(row_info)
+
+                            j = j + 1 # increasing the counter of the samples per polytropic EOS by 1              
+        
+        # Getting the final .csv file and removing all the NaN elements
+        reg_df = pd.read_csv(f"{save_filename}.csv")
+        reg_df_cleaned = reg_df.dropna()
+        reg_df_cleaned.to_csv(f"{save_filename}.csv",index=False)
+
+        # Printing completion message
+        print("The recording process of regression data has been completed !!!")
 
 # Defining a class for plotting and sampling data from CFL matter QS EOSs
 class cflQSdata:
@@ -1019,7 +1163,7 @@ class cflQSdata:
     def sample_MR(self,filename,M_threshold=0,points_dist=[3,3,3,3,3],noiseM_mv=0,noiseM_std=0,noiseR_mv=0,noiseR_std=0):
         """
         Scanning file containing the TOV equations' solution data for a CFL Quark Star EOS and sampling Mass and Radius values,
-        that do not violate causality. Artificial observation noise (following normal distribution) can be added to the values of the samples.
+        that do not violate causality. Artificial observational noise (following normal distribution) can be added to the values of the samples.
         1. filename: name of the file to be scanned
         2. M_threshold: Threshold of Mass values. In order for the algorithm to create Mass and Radius samples, the scanned file must contain causality valid Mass values greater than M_threshold
         3. points_dist: list of random points to be selected. The algorithm divides the range of Mass data that do not violate causality into 
@@ -1032,6 +1176,12 @@ class cflQSdata:
         6. noiseR_mv: mean value of the normal distributed observational noise for the values of the Radius sample. By default its value is set to 0.
         7. noiseR_std: standard deviation of the normal distributed observational noise for the values of the Radius sample. By default its value is set to 0.
         """ 
+        
+        # Allowed values for the 'Μ_treshold' argument
+        if type(M_threshold)!=type(2) and type(M_threshold)!=type(2.5):
+            raise ValueError("The value of the \"M_threshold\" argument must be a number. Try again.")
+        elif M_threshold<0:
+            raise ValueError("The value of the \"M_threshold\" argument can not be negative. Try again.")
 
         # Allowed values for the 'noiseM_mv' argument
         if type(noiseM_mv)!=type(2) and type(noiseM_mv)!=type(2.5):
@@ -1055,8 +1205,8 @@ class cflQSdata:
         # Initializing storage lists for the Mass and Radius values sample
         mass_sample = []
         radius_sample = []
-        mass_sample_with_noise = np.NaN
-        radius_sample_with_noise = np.NaN
+        mass_sample_with_noise = [np.NaN]
+        radius_sample_with_noise = [np.NaN]
 
         # Initializing storage lists for the Mass and Radius values sample
         mass_sample = []
@@ -1076,7 +1226,7 @@ class cflQSdata:
             # Sampling Mass and Radius values only if there are causality valid Mass values more than M_threshold
             if max(M_caus)>=M_threshold:
 
-                # Filtering the M_caus data to contain Mass values over 0.2 of Solar Mass
+                # Filtering the M_caus data to contain Mass values over M_threshold of Solar Mass
                 idx_filt = [j for j, mass_value in enumerate(M_caus) if mass_value>=M_threshold]
                 M_caus_filt = [M_caus[j] for j in idx_filt]
 
@@ -1097,7 +1247,7 @@ class cflQSdata:
                     # Checking if the M_seg_data list contains less elements than the random choices to be made
                     # This is crucial since we need any element of the list to be (randomly) selected only once
                     if len(M_seg_data)<points_dist[i]:
-                        raise ValueError(f"In the {i} Mass range segment there are {len(M_seg_data)} available Mass values and {points_dist[i]} different random choices requested to be made. Try again.")
+                        raise ValueError(f"In the Mass segment {i+1} there are {len(M_seg_data)} available Mass values and {points_dist[i]} different random choices requested to be made. Try again.")
 
                     # Radius values in R_caus_filt list that correspond to the Mass values of M_seg_data list
                     R_seg_data = [R_caus_filt[j] for j in idx_seg]
@@ -1134,15 +1284,15 @@ class cflQSdata:
     # Method that samples Slope (dE_dP) and Energy density on center data (that do not violate causality) from TOV solution data files of a CFL matter QS EOS
     def sample_EOS(self,filename,Pc_points=[10,50,100,200,400,800],noiseSl_mv=0,noiseSl_std=0,noiseEc_mv=0,noiseEc_std=0):
         """
-        Scanning a file containing the TOV equations' solution data for a CFL matter Quark Star EOS and sampling Slope (dE_dP) and Energy Density values,
-        that do not violate causality. Artificial observation noise (following normal distribution) can be added to the values of the samples.
+        Scanning a file containing the TOV equations' solution data for a CFL matter Quark Star EOS and sampling Slope (dE_dP) and Energy Density at center values,
+        that do not violate causality. Artificial observational noise (following normal distribution) can be added to the values of the samples.
         1. filename: name of the file to be scanned
         2. Pc_points: values (points) of pressure in center of the CFL matter Quark Star, on which the algorithm will collect the values of Slope (dE_dP) and Energy Density.
         By default the following points are selected: 'Pc_points' = [10,50,100,200,400,800] MeV*fm^-3.
         3. noiseSl_mv: mean value of the normal distributed observational noise for the values of the Slope sample. By default its value is set to 0.
         4. noiseSl_std: standard deviation of the normal distributed observational noise for the values of the Slope sample. By default its value is set to 0.
-        5. noiseEc_mv: mean value of the normal distributed observational noise for the values of the Energy Density on center sample. By default its value is set to 0.
-        6. noiseEc_std: standard deviation of the normal distributed observational noise for the values of the Energy Density on center sample. By default its value is set to 0.
+        5. noiseEc_mv: mean value of the normal distributed observational noise for the values of the Energy Density at center sample. By default its value is set to 0.
+        6. noiseEc_std: standard deviation of the normal distributed observational noise for the values of the Energy Density at center sample. By default its value is set to 0.
         """ 
         
         # Allowed values for the 'noiseSl_mv' argument
@@ -1167,8 +1317,8 @@ class cflQSdata:
         # Initializing storage lists for the Slope (dE_dP) and Energy density on center values sample
         slope_sample = []
         enrg_dens_sample = []
-        slope_sample_with_noise = np.NaN
-        enrg_dens_sample_with_noise = np.NaN
+        slope_sample_with_noise = [np.NaN]
+        enrg_dens_sample_with_noise = [np.NaN]
 
         # Scanning for the file
         if os.path.exists(filename):
@@ -1195,3 +1345,131 @@ class cflQSdata:
                 enrg_dens_sample_with_noise = enrg_dens_sample + np.random.normal(loc=noiseEc_mv,scale=noiseEc_std,size=n)
 
         return [slope_sample_with_noise,enrg_dens_sample_with_noise]
+    
+    # Method that generates and records on .csv files data of CFL matter Quark Stars for regression purposes
+    def gen_reg_data(self,save_filename,samples_per_EOS=1,M_threshold=0,points_dist=[3,3,3,3,3],Pc_points=[10,50,100,200,400,800],noises_mv=[0,0,0,0],noises_std=[0,0,0,0]):
+        """
+        Getting data of CFL matter Quark Stars for regression purposes and recording them on .csv files
+        1. save_filename: the name of the final .csv file, in which the regression data are being recorded
+        2. samples_per_EOS: number of samples to be generated per CFL EOS. Each sample is recorded as a row in the final .csv file and includes the
+        selected values of Slope (dE_dP), Energy Density at center, Mass and Radius. By default, 1 sample is generated per CFL EOS.
+        3. M_threshold: Threshold of Mass values. In order for the algorithm to create Mass and Radius samples, the EOS must have resulted in causality valid 
+        Mass values greater than M_threshold
+        4. points_dist: list of random points to be selected. The algorithm divides the range of Mass data that do not violate causality into 
+        as many segments as the length of the list 'points_dist'. Then it selects randomly (and uniformly), as many points per segment,
+        as the respective value of the list's element, that corresponds to that segment. By default, the list [3,3,3,3,3] is given
+        as input for the 'points_dist' argument, i.e. the Mass range is divided into 5 segments and 3 points are randomly selected per segment.
+        5. Pc_points: values (points) of pressure in center of the polytropic Neutron Star, on which the algorithm will collect the values of Slope (dE_dP) and Energy Density.
+        By default the following points are selected: 'Pc_points' = [10,50,100,200,400,800] MeV*fm^-3.
+        6. noises_mv: list containing the mean values for the artificial observational noise that is added to the sample values of the following: 1st element-> Mass, 2nd element -> Radius, 3rd element -> Slope (dE_dP) and 4th element -> Energy Density at center. By default the mean values are set to 0.
+        7. noises_std: list containing the standard deviations for the artificial observational noise that is added to the sample values of the following: 1st element-> Mass, 2nd element -> Radius, 3rd element -> Slope (dE_dP) and 4th element -> Energy Density at center. By default the standard deviations are set to 0.
+        """ 
+
+        # Allowed lentgh for the noises_mv list
+        if len(noises_mv)!=4:
+            raise ValueError(f"The length of the \"noises_mv\" list must be 4, but a list with length {len(noises_mv)} has been given.")
+
+        # Allowed lentgh for the noises_std list
+        if len(noises_std)!=4:
+            raise ValueError(f"The length of the \"noises_std\" list must be 4, but a list with length {len(noises_std)} has been given.")
+
+        # Getting the mean values and the standard deviations of the observational noises
+        obs_noiseM_mv = noises_mv[0] # mean value for the noise of the Mass values
+        obs_noiseR_mv = noises_mv[1] # mean value for the noise of the Radius values
+        obs_noiseSl_mv = noises_mv[2] # mean value for the noise of the Slope (dE_dP) values
+        obs_noiseEc_mv = noises_mv[3] # mean value for the noise of the Energy Density at center values
+
+        obs_noiseM_std = noises_std[0] # standard deviation for the noise of the Mass values
+        obs_noiseR_std = noises_std[1] # standard deviation for the noise of the Radius values
+        obs_noiseSl_std = noises_std[2] # standard deviation for the noise of the Slope (dE_dP) values 
+        obs_noiseEc_std = noises_std[3] # standard deviation for the noise of the Energy Density at center values
+
+        # Getting the number of M-R points
+        num_mr_points = np.sum(points_dist)
+
+        # Getting the number of pressure points
+        num_pc_points = len(Pc_points)
+
+        # Creating the file in which the regression data will be recorder and forming its headers
+        headers_slope = f"" # headers for the Slope (dE_dP) values
+        headers_enrg = f"" # headers for the Energy Density at center values 
+        headers_mass = f"" # headers for the Mass values
+        headers_radius = f"" # headers for the Radius values
+
+        # Forming the headers for the Y data (response variables) of the regression, i.e. the Slope (dE_dP) and Energy Density at center values
+        for i in range(0,num_pc_points):
+            headers_slope = headers_slope + f"dE_dP({Pc_points[i]})," # the values of the pressure are icluded inside the paranthesis
+            headers_enrg = headers_enrg + f"E_c({Pc_points[i]})," # the values of the pressure are icluded inside the paranthesis
+
+        # Forming the headers for the X data (explanatory variables) of the regression, i.e. the Mass and Radius values
+        for i in range(0,num_mr_points):
+            headers_mass = headers_mass + f"M_{i+1},"
+            if i==np.sum(points_dist)-1:
+                headers_radius = headers_radius + f"R_{i+1}\n" # the last column of the headers needs \n and not a comma in the end
+            else:
+                headers_radius = headers_radius + f"R_{i+1},"   
+        
+        # Forming the total info of the headers and the name of the recording .csv file
+        headers_info = headers_slope + headers_enrg + headers_mass + headers_radius
+        with open(f"{save_filename}.csv","w") as file:
+            file.write(headers_info)
+
+        for cfl_model_name in self.total_cfl_models_info[0]:
+            # Getting the name of the file to be scanned
+            filename = f"{cfl_model_name}_sol.csv"
+
+            # Getting the basic sample of the Slope (dE_dP) and Energy Density at center values
+            slope_basic_sample,enrg_basic_sample = self.sample_EOS(filename,Pc_points,noiseSl_mv=0,noiseSl_std=0,noiseEc_mv=0,noiseEc_std=0)
+
+            # Getting the basic sample of the Mass and Radius values
+            mass_basic_sample,radius_basic_sample = self.sample_MR(filename,M_threshold,points_dist,noiseM_mv=0,noiseM_std=0,noiseR_mv=0,noiseR_std=0)
+                    
+            # print(slope_basic_sample)
+            # print(enrg_basic_sample)
+            # print(mass_basic_sample)
+            # print(radius_basic_sample)
+
+            # If any of the basic samples is NaN the algorithm skips the recording for this polytropic EOS and moves to the next polytrtopic EOS
+            if slope_basic_sample[0]==np.NaN or enrg_basic_sample[0]==np.NaN or mass_basic_sample[0]==np.NaN or radius_basic_sample[0]==np.NaN:
+                    break
+            else:
+                j=1 # intiliazing a counter for the samples to be made per polytropic EOS
+                while j<=samples_per_EOS:
+                    # Adding noise to the values of the main samples and recording the resuted sample as a row in the final .csv file
+                    slope_sample_with_noise = slope_basic_sample + np.random.normal(loc=obs_noiseSl_mv,scale=obs_noiseSl_std,size=num_pc_points)
+                    enrg_sample_with_noise = enrg_basic_sample + np.random.normal(loc=obs_noiseEc_mv,scale=obs_noiseEc_std,size=num_pc_points)
+                    mass_sample_with_noise = mass_basic_sample + np.random.normal(loc=obs_noiseM_mv,scale=obs_noiseM_std,size=num_mr_points)
+                    radius_sample_with_noise = radius_basic_sample + np.random.normal(loc=obs_noiseR_mv,scale=obs_noiseR_std,size=num_mr_points)
+
+                    row_slope_info = f"" # row info for the Slope (dE_dP) values
+                    row_enrg_info = f"" # row info for the Energy Density at center values 
+                    row_mass_info = f"" # row info for the Mass values
+                    row_radius_info = f"" # rwo info for the Radius values
+
+                    # Getting the row info for the Y data (response variables) of the regression, i.e. the Slope (dE_dP) and Energy Density at center values
+                    for k in range(0,num_pc_points):
+                        row_slope_info = row_slope_info + f"{slope_sample_with_noise[k]},"
+                        row_enrg_info = row_enrg_info + f"{enrg_sample_with_noise[k]},"
+
+                    # Getting the row info for the X data (explanatory variables) of the regression, i.e. the Mass and Radius values
+                    for k in range(0,num_mr_points):
+                        row_mass_info = row_mass_info + f"{mass_sample_with_noise[k]},"
+                        if k==num_mr_points-1:
+                            row_radius_info = row_radius_info + f"{radius_sample_with_noise[k]}\n" # the last column of the row needs \n and not a comma in the end
+                        else:
+                            row_radius_info = row_radius_info + f"{radius_sample_with_noise[k]}," 
+                            
+                    # Getting the total info of the row and recording it to the final .csv file
+                    row_info = row_slope_info + row_enrg_info + row_mass_info + row_radius_info
+                    with open(f"{save_filename}.csv","a+") as file:
+                        file.write(row_info)
+
+                    j = j + 1 # increasing the counter of the samples per polytropic EOS by 1              
+        
+        # Getting the final .csv file and removing all the NaN elements
+        reg_df = pd.read_csv(f"{save_filename}.csv")
+        reg_df_cleaned = reg_df.dropna()
+        reg_df_cleaned.to_csv(f"{save_filename}.csv",index=False)
+
+        # Printing completion message
+        print("The recording process of regression data has been completed !!!")
