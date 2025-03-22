@@ -13,7 +13,7 @@
 
 # Description: 
 # -> Parallel solving of the TOV equations for polytropic constructed EoSs of a Neutron Star
-# -> Changing the behavior of the polytropic EOS to linear EOS when the causality limit
+# -> Changing the behavior of the polytropic EOS to linear EOS when the causality limit has
 # been reached 
 # -> Storaging the solutions in .csv files
 
