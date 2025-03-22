@@ -8,7 +8,7 @@
 # Implemented by: Ioannis Stergakis
 # AEM: 4439
 
-# Python Script 5
+# Python Script: Py5
 # Name: tov_solver_QS.py
 
 # Description: 
