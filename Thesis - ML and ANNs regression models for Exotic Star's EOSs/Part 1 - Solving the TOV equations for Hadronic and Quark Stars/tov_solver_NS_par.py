@@ -8,7 +8,7 @@
 # Implemented by: Ioannis Stergakis
 # AEM: 4439
 
-# Python Script 2b
+# Python Script: Py2b
 # Name: tov_solver_NS_par.py
 
 # Description: 
