@@ -8,7 +8,7 @@
 # Implemented by: Ioannis Stergakis
 # AEM: 4439
 
-# Python Script 4
+# Python Script: Py4
 # Name: eos_lib_QS.py
 
 # Description: 
