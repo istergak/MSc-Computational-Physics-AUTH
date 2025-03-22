@@ -8,7 +8,7 @@
 # Implemented by: Ioannis Stergakis
 # AEM: 4439
 
-# Python Script 1
+# Python Script: Py1
 # Name: eos_lib_NS.py
 
 # Description: 
