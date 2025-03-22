@@ -8,7 +8,7 @@
 # Implemented by: Ioannis Stergakis
 # AEM: 4439
 
-# Python Script 2c
+# Python Script: Py3a
 # Name: tov_solver_polyNS_par.py
 
 # Description: 
