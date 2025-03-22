@@ -8,8 +8,8 @@
 # Implemented by: Ioannis Stergakis
 # AEM: 4439
 
-# Python Script 2e
-# Name: tov_solver_QS_par.py
+# Python Script: Py6
+# Name: tov_solver_cflQS_par.py
 
 # Description: 
 # -> Parallel solving of the TOV equations for CFL EOS models of Quark Stars
