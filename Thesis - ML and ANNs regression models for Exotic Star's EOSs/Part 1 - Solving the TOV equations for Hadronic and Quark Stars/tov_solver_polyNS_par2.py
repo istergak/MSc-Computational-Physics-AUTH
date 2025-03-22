@@ -8,11 +8,13 @@
 # Implemented by: Ioannis Stergakis
 # AEM: 4439
 
-# Python Script 2c
-# Name: tov_solver_polyNS_par.py
+# Python Script: Py3b
+# Name: tov_solver_polyNS_par2.py
 
 # Description: 
 # -> Parallel solving of the TOV equations for polytropic constructed EoSs of a Neutron Star
+# -> Changing the behavior of the polytropic EOS to linear EOS when the causality limit
+# been reached 
 # -> Storaging the solutions in .csv files
 
 # Abbrevations:
