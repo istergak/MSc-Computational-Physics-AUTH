@@ -3,7 +3,7 @@
 # Master's Thesis
 
 # Thesis Title:  
-# Reconstruction of the EoSs and classification of Exotic Stars using ML and ANNs models
+# Reconstruction of the EoSs of Exotic Stars using ML and ANNs regression models 
 
 # Implemented by: Ioannis Stergakis
 # AEM: 4439
@@ -12,7 +12,7 @@
 # Name: eos_lib_NS.py
 
 # Description: 
-# -> Defining different equation of states (EoSs) for a Neutron Star
+# -> Defining different equations of states (EoSs) for a Neutron Star
 # -> Storaging these equations in lists
 
 # Abbrevations:
