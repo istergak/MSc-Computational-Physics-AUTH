@@ -3,12 +3,12 @@
 # Master's Thesis
 
 # Thesis Title:  
-# Reconstruction of the EoSs and classification of Exotic Stars using ML and ANNs models
+# Reconstruction of the EoSs of Exotic Stars using ML and ANNs regression models
 
 # Implemented by: Ioannis Stergakis
 # AEM: 4439
 
-# Python Script - PyScr2a
+# Python Script: Py7
 # Name: ExoticStarsDataHandling.py
 
 # Description: 
@@ -37,8 +37,6 @@ MeV_to_J = 1.60218e-13 # 1MeV value in Joules
 m_s = 95 # MeV, mass of Strange quark
 m_n = 939.565 # MeV, mass of Neutron
 hbarc = 197.327 # MeV*fm, hbar*c constant
-Beff_min = 57 # MeV*fm^-3, minimum value of the B_eff constant of the MIT bag model
-Delta_min = 50 # MeV, minimum value of the Δ constant of the MIT bag model
 
 # Function that reads .csv files containing solution data of the TOV equations 
 def file_read(filename,EOS_type="main"):
@@ -908,22 +906,32 @@ class cflQSdata:
     def __init__(self,Beff_max=250,Beff_step=5,Delta_max=250,Delta_step=10):
         """
         Initializing the polyNSdata class:
-        1. Appending the (given) maximum value of the Beff parameter to the self variable 'Beff_max'
-        2. Appending the (given) step value for scanning the Beff-axis area to the self variable 'Beff_step'
-        3. Appending the (given) maximum value of the Δ parameter to the self variable 'Delta_max'
-        4. Appending the (given) step value for scanning the Δ-axis area to the self variable 'Delta_step'
-        5. Getting the total valid CFL models and their respective Beff and Δ combinations using the 'valid_cfl_models'
+        1. Setting the minimum value of the Beff parameter to 60 [MeV*fm^-3] for this class. The actual minmum allowed value is [MeV*fm^-3] # according to the MIT bag model 
+        2. Setting the minimum value of the Δ parameter of the MIT bag model to 50 [MeV] for this class. 
+        3. Appending the (given) maximum value of the Beff parameter to the self variable 'Beff_max'
+        4. Appending the (given) step value for scanning the Beff-axis area to the self variable 'Beff_step'
+        5. Appending the (given) maximum value of the Δ parameter to the self variable 'Delta_max'
+        6. Appending the (given) step value for scanning the Δ-axis area to the self variable 'Delta_step'
+        7. Getting the total valid CFL models and their respective Beff and Δ combinations using the 'valid_cfl_models'
         of the 'cflQSdata' class. Appending the information of the models to the self variable 'total_cfl_models_info'
 
         """
+        
+        # Minimum value of the B_eff constant in this class, the actual minimum value is 57 [MeV*fm^-3]
+        # according to the MIT bag model
+        self.Beff_min = 60 # MeV*fm^-3
+
+        # Minimum value of the Δ constant of the MIT bag model for this class
+        self.Delta_min = 50 # MeV
+
         # Allowed values for the Beff_max argument
-        if Beff_max<=Beff_min:
-            raise ValueError(f"The value of \"Beff_max\" argument must be greater than {Beff_min:.1f} [MeV*fm^-3]. Try again.")
+        if Beff_max<=self.Beff_min:
+            raise ValueError(f"The value of \"Beff_max\" argument must be greater than {self.Beff_min:.1f} [MeV*fm^-3]. Try again.")
         
         # Allowed values for the Delta_max argument
-        if Delta_max<=Delta_min:
-            raise ValueError(f"The value of \"Delta_max\" argument must be greater than {Delta_min:.1f} [MeV]. Try again.")
-
+        if Delta_max<=self.Delta_min:
+            raise ValueError(f"The value of \"Delta_max\" argument must be greater than {self.Delta_min:.1f} [MeV]. Try again.")
+        
         self.Beff_max = Beff_max
         self.Beff_step = Beff_step
         self.Delta_max = Delta_max
@@ -952,8 +960,8 @@ class cflQSdata:
         valid_ms = []
 
         i = 1
-        for B_eff_val in range(60,self.Beff_max+self.Beff_step,self.Beff_step):
-            for Delta_val in range(Delta_min,self.Delta_max+self.Delta_step,self.Delta_step):
+        for B_eff_val in range(self.Beff_min,self.Beff_max+self.Beff_step,self.Beff_step):
+            for Delta_val in range(self.Delta_min,self.Delta_max+self.Delta_step,self.Delta_step):
                 if B_eff_val <self. B_eff_bound(Delta_val):
                     models_names.append(f"CFL-{i}")
                     valid_ms.append(m_s)
@@ -963,7 +971,7 @@ class cflQSdata:
 
         return [models_names,valid_Beff,valid_Delta,valid_ms]
     
-    # Method that dislays the valid generated cfl EOSs models info in a PrettyTable format
+    # Method that displays the valid generated CFL EOSs models info in a PrettyTable format
     def show_models_info(self):
         models_info = PrettyTable()
 
@@ -973,6 +981,50 @@ class cflQSdata:
         models_info.add_column("m_s [MeV]",self.total_cfl_models_info[3])
 
         print(models_info)
+
+    # Method that plots the valid CFL values of the Beff and Δ parameters as points in a Beff-Δ graph
+    def plot_valid_cfl_combos(self,point_size=10):
+        """
+        Plotting the valid CFL values of the Beff and Δ parameters as points in a Beff-Δ graph
+        1. point_size: the size of the points in the graph. By default the number 10 is set for the size of the points.
+        """
+        
+        # Allowed values for the 'point_size' argument
+        if type(point_size)!=type(2) and type(point_size)!=type(2.5):
+            raise ValueError("The value of the \"point_size\" argument must be a number. Try again.")
+        
+        # Initializing a figure to include the valid CFL points of Beff and Δ parameters
+        fig_valid_cfl, axis_valid_cfl = plt.subplots(1,1,figsize=(10,10))
+
+        # Getting and printing the amount of valid CFL models
+        total_cfl_models = len(self.total_cfl_models_info[0])
+        print(f"Total CFL valid models: {total_cfl_models}")
+
+        # Getting the valid values of Beff and Δ parameters
+        Beff_valid_vals = self.total_cfl_models_info[1]
+        Delta_valid_vals = self.total_cfl_models_info[2]
+
+        # Plotting the bound curve m_s = 95 [MeV]
+        Delta_valid_range = np.linspace(min(Delta_valid_vals)-10,max(Delta_valid_vals)+10,100)
+        axis_valid_cfl.plot(Delta_valid_range,self.B_eff_bound(Delta_valid_range),"--",lw=1.5,label=r"$m_s=95$ $[MeV]$")
+
+        # Plotting the bound curve Beff = 57 [MeV*fm^-3]
+        axis_valid_cfl.plot(Delta_valid_range,57*np.ones_like(Delta_valid_range),"--",lw=1.5,label=r"$B_{eff}=57$ $[MeV*fm^{-3}]$")
+
+        # Plotting the valid Beff and Δ points
+        axis_valid_cfl.plot(Delta_valid_vals,Beff_valid_vals,".",ms=point_size,color="green",label="Valid CFL combos")
+
+        # Coloring the area between the bound curves
+        axis_valid_cfl.fill_between(Delta_valid_range, self.B_eff_bound(Delta_valid_range),57*np.ones_like(Delta_valid_range),color="lightgrey",label="Stable CFL quark matter")
+
+        # Setting the axes bounds, labels and legend for clarity
+        axis_valid_cfl.set_xbound([min(Delta_valid_range),max(Delta_valid_range)])
+        axis_valid_cfl.set_xlabel(r"$\Delta$ $[MeV]$",fontsize=14)
+        axis_valid_cfl.set_ylabel(r"$B_{eff}$ $[MeV*fm^{-3}]$",fontsize=14)
+        axis_valid_cfl.legend()
+
+        return fig_valid_cfl,axis_valid_cfl
+
 
     # Method that plots a M-R 2D or 3D curve of a CFL matter QS EOS
     def plot_MR_curve(self,filename,axis_MR,clr_caus,clr_caus_3d,EOS_type="cfl",projection="2d",Pc_proj=0):
@@ -1144,7 +1196,7 @@ class cflQSdata:
             filename = f"{model_name}_sol.csv"
             if os.path.exists(filename):
                 EOS_curve_result = self.plot_EOS_curve(filename,axis_EOS,"darksalmon","cfl")
-                available_cfl_models = available_cfl_models
+                available_cfl_models = available_cfl_models + 1
 
         
 
