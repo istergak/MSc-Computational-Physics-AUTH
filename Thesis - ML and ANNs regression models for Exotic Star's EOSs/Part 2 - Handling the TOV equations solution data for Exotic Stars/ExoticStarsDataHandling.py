@@ -202,7 +202,7 @@ class polyNSdata:
 
         return Γ_selections_sort
     
-    # Method that plots a M-R 2D or 3D curve of a polytropic NS EOSs
+    # Method that plots a M-R 2D or 3D curve of a main or a polytropic NS EOS
     def plot_MR_curve(self,filename,axis_MR,clr_caus,EOS_type="main",Pc_threshold=0,projection="2d",Pc_proj=0):
         """
         Reading the EOS data from a given file and plot the respective M-R 2D or 3D curve of a polytropic Neutron Star's EOS, when the EOS overcomes the given threshold pressure
@@ -271,7 +271,7 @@ class polyNSdata:
 
         return EOS_overcome
 
-    # Method that plots an EOS 2D curve of a polytropic NS EOS
+    # Method that plots an EOS 2D curve of a main or a polytropic NS EOS
     def plot_EOS_curve(self,filename,axis_EOS,clr_caus,EOS_type="main",Pc_threshold=0):
         """
         Reading the EOS data from a given file and plot the respective EOS 2D curve of a polytropic Neutron Star's EOS, when the EOS overcomes the given threshold pressure
@@ -310,9 +310,9 @@ class polyNSdata:
         if Pc_data[2].iloc[-1]>=Pc_threshold:
             EOS_overcome = 1
             
-            # Plotting the M-R data that do not violate causality
+            # Plotting the Ec-Pc data that do not violate causality
             axis_EOS.plot(Pc_data[0],Ec_data[0],lw=line_width,color=clr_caus)
-            # Plotting the M-R data that do violate causality
+            # Plotting the Ec-Pc data that do violate causality
             axis_EOS.plot(Pc_data[1],Ec_data[1],lw=line_width,color="darkgrey")
             
 
@@ -501,7 +501,7 @@ class polyNSdata:
         EOSs_over_threshold = 0 # counter for the polytropic EOSs that overcome the Pc_threshold (non-linear behavior)
         EOSs_over_threshold_lin = 0 # counter for the polytropic EOSs that overcome the Pc_threshold (linear behavior)
 
-        # Scanning and plotting the TOV solution's M-R data for polytropic EOSs
+        # Scanning and plotting the TOV solution's Ec-Pc data for polytropic EOSs
         for Γ_combo in self.Γ_total_combos_sorted:
             # Checking if the "all" option is selected for the "first_segment value" argument
             if first_segment_value=="all" or Γ_combo[0]==first_segment_value:
@@ -528,7 +528,7 @@ class polyNSdata:
         print(f"Linear behavior -> {EOSs_over_threshold_lin}")
         print("-----------------------------------------------------------------------------------------------")
 
-        # Scanning and plotting TOV solution's M-R data for the main EOSs
+        # Scanning and plotting TOV solution's Ec-Pc data for the main EOS
         filename = f"{mainEOSname}_sol.csv"
         # Checking wether the file exists or not, and plottting the data if it exists
         if os.path.exists(filename):
@@ -1109,9 +1109,9 @@ class cflQSdata:
         else:
             line_width = 0.8
             
-        # Plotting the M-R data that do not violate causality
+        # Plotting the Ec-Pc data that do not violate causality
         axis_EOS.plot(Pc_data[0],Ec_data[0],lw=line_width,color=clr_caus)
-        # Plotting the M-R data that do violate causality
+        # Plotting the Ec-Pc data that do violate causality
         axis_EOS.plot(Pc_data[1],Ec_data[1],lw=line_width,color="darkgrey")
             
 
