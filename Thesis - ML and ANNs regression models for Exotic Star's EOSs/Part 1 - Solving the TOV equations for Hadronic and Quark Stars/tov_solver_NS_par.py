@@ -69,9 +69,9 @@ def tov_sol(p_0,r_step,EOS_name,EOS_func,EOS_func_sym):
     r_max: float = 1e-2
 
     # Useful storage lists
-    M_vals = np.array([]) # mass of NS values
-    R_vals = np.array([]) # radius of the NS values
-    P_vals = np.array([]) # pressure in the NS
+    P_final = None
+    M_vals = []
+    R_final = None
 
     # Crust-core pressure bound
     p_bound_crust = 0.184
@@ -79,7 +79,6 @@ def tov_sol(p_0,r_step,EOS_name,EOS_func,EOS_func_sym):
         p_bound_crust = 0.696    
         
     # Solving the TOV equations for the current pressure in center
-    k=1
     while P_0>10**-12:
         # Changing the core EoS to a crust EoS if the crust of the NS has been reached
         if 9.34375*10**-5 < P_0 < p_bound_crust:
@@ -112,32 +111,30 @@ def tov_sol(p_0,r_step,EOS_name,EOS_func,EOS_func_sym):
         r_max = r_min + r_step
         P_0 = initial_values[0]
 
-        # Appending values to the storage lists
-        M_vals = np.append(M_vals,solution.y[1][~np.isnan(solution.y[1])])
-        R_vals = np.append(R_vals,solution.t)
-        P_vals = np.append(P_vals,solution.y[0][~np.isnan(solution.y[0])])
+        # Appending values to the M_max, R_final, P_final variables
+        P_final = solution.y[0][-1]
+        if solution.y[1][-1]!=np.nan:
+            M_vals.append(solution.y[1][-1])
+        if solution.t[-1]!=np.nan:
+            R_final = solution.t[-1]
 
-        k = k+1
-    if P_vals[-1]<0:
-        idx = np.argwhere(P_vals<0)[0 ,0]
-        P_vals = np.delete (P_vals ,np.s_[idx::],0)
-        M_vals = np.delete (M_vals , np.s_[ idx::],0)
-        R_vals = np.delete (R_vals, np.s_[idx::],0)
+    # if P_vals[-1]<0:
+    #     idx = np.argwhere(P_vals<0)[0 ,0]
+    #     P_vals = np.delete (P_vals ,np.s_[idx::],0)
+    #     M_vals = np.delete (M_vals , np.s_[ idx::],0)
+    #     R_vals = np.delete (R_vals, np.s_[idx::],0)
 
-    # Storaging the solution's data in a list
-    sol_data = [min(P_vals),Pc,EOS_func(Pc),dE_dP,max(M_vals),R_vals[-1]]
     # Store the solution's data in the .csv file 
     filename = f'{EOS_name}_sol.csv'
     with open(filename,"a+") as file:
-        file.write(f"{min(P_vals)}, {Pc}, {E_c},{dE_dP},{max(M_vals)}, {R_vals[-1]}\n")
-    return sol_data
+        file.write(f"{P_final}, {Pc}, {E_c},{dE_dP},{max(M_vals)}, {R_final}\n")
 
 # Defining the worker function for the parallel solving 
 def tov_sol_worker(task_id,EOS_name,EOS_function,EOS_function_sym,progress_queue):
 
     # Pressure ranges
-    P_in_center_1: np.ndarray = np.arange(1.5,5,0.1) # lower pressure range
-    P_in_center_2: np.ndarray = np.arange(5,1001,1) # higher pressure range
+    P_in_center_1: np.ndarray = np.arange(1.8,5,0.1) # lower pressure range
+    P_in_center_2: np.ndarray = np.arange(5,3001,1) # higher pressure range
     P_in_center_total: np.ndarray = np.concatenate((P_in_center_1,P_in_center_2),axis=None)
 
     # Radius step in the scan of the NS
