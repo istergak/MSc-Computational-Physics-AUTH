@@ -134,7 +134,7 @@ def tov_sol_worker(task_id,EOS_name,EOS_function,EOS_function_sym,progress_queue
 
     # Pressure ranges
     P_in_center_1: np.ndarray = np.arange(1.8,5,0.1) # lower pressure range
-    P_in_center_2: np.ndarray = np.arange(5,3001,1) # higher pressure range
+    P_in_center_2: np.ndarray = np.arange(5,1201,1) # higher pressure range
     P_in_center_total: np.ndarray = np.concatenate((P_in_center_1,P_in_center_2),axis=None)
 
     # Radius step in the scan of the NS
