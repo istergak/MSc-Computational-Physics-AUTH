@@ -205,7 +205,7 @@ class polyNSdata:
     # Method that plots a M-R 2D or 3D curve of a main or a polytropic NS EOS
     def plot_MR_curve(self,filename,axis_MR,clr_caus,EOS_type="main",Pc_threshold=0,projection="2d",Pc_proj=0):
         """
-        Reading the EOS data from a given file and plot the respective M-R 2D or 3D curve of a polytropic Neutron Star's EOS, when the EOS overcomes the given threshold pressure
+        Reading the EOS data from a given file and plot the respective M-R 2D or 3D curve of a main or a polytropic Neutron Star's EOS, when the EOS overcomes the given threshold pressure
         1.filename: name of the file to be read. By default the scanning is performed in the folder that contains the 'ExoticStarsDataHandling'
         module script. To scan on another folder, the exact path of the file must be provided.
         2. axis_MR: the axis that will include the M-R 2D or 3D curve
@@ -274,7 +274,7 @@ class polyNSdata:
     # Method that plots an EOS 2D curve of a main or a polytropic NS EOS
     def plot_EOS_curve(self,filename,axis_EOS,clr_caus,EOS_type="main",Pc_threshold=0):
         """
-        Reading the EOS data from a given file and plot the respective EOS 2D curve of a polytropic Neutron Star's EOS, when the EOS overcomes the given threshold pressure
+        Reading the EOS data from a given file and plot the respective EOS 2D curve of a main or a polytropic Neutron Star's EOS, when the EOS overcomes the given threshold pressure
         1.filename: name of the file to be read. By default the scanning is performed in the folder that contains the 'ExoticStarsDataHandling'
         module script. To scan on another folder, the exact path of the file must be provided.
         2. axis_EOS: the axis that will include the 2D curve of the EOS
@@ -1187,7 +1187,7 @@ class cflQSdata:
         total_cfl_models = len(self.total_cfl_models_info[0]) # total valid generated cfl models
         available_cfl_models = 0 # counter of the available cfl models files that have been found during the scan
 
-        # Print the number of total cfl EOSs
+        # Print the number of total CFL EOSs
         print("-----------------------------------------------------------------------------------------------")
         print(f"Total CFL quark matter EOSs: {total_cfl_models}")
 
@@ -1200,7 +1200,7 @@ class cflQSdata:
 
         
 
-        # Print the number of available cfl EOSs
+        # Print the number of available CFL EOSs
         print(f"Available CFL quark matter EOSs: {available_cfl_models}")
         print("-----------------------------------------------------------------------------------------------")
         
