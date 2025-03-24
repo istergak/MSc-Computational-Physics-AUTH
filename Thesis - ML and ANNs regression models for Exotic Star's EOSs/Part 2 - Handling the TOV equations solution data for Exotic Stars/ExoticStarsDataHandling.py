@@ -8,7 +8,7 @@
 # Implemented by: Ioannis Stergakis
 # AEM: 4439
 
-# Python Script: Py7
+# Python Script: Py8
 # Name: ExoticStarsDataHandling.py
 
 # Description: 
