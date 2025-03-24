@@ -30,6 +30,7 @@ import os
 from prettytable import PrettyTable
 import eos_lib_NS
 import multiprocessing
+import time
 
 # Defining a function that returns the system of the TOV equations
 def tov_eq(r,y,EOS):
@@ -159,7 +160,9 @@ def tov_sol_worker(task_id,EOS_name,EOS_function,EOS_function_sym,progress_queue
 
 def print_progress(progress_queue, num_tasks):
     progress = {i: (0, 1, 2, 3) for i in range(num_tasks)}  # Dictionary to track (step, total_steps) for each task
-
+    
+    # Starting the cpu execution time measurement
+    start_time = time.time()
     while True:
         message = progress_queue.get()
         
@@ -174,8 +177,15 @@ def print_progress(progress_queue, num_tasks):
         sys.stdout.write(" | ".join([f"{progress[i][0]}:{progress[i][3]:.1f}" for i in range(num_tasks)]))
         sys.stdout.flush()
      
+    # Terminating the cpu execution time measurement
+    end_time = time.time()
+    cpu_time_total = (end_time - start_time) # total execution time in seconds
+    cpu_time_res = cpu_time_total%60 # remaining seconds if we express execution time in minutes
+    cpu_time_total_mins = (cpu_time_total - cpu_time_res)/60 # minutes of the total execution time
     print('\n-------------------------------------------------------------------------------')
-    print("\nAll tasks are completed !!!")
+    print("\nAll tasks have been completed......")
+    print("\nElapsed time: %.1f\'%.2f\""%(cpu_time_total_mins,cpu_time_res))
+    print('\n-------------------------------------------------------------------------------')
 
 def task_giver(EOS_names,EOS_functions,EOS_functions_sym,progress_queue):
     n = len(EOS_names)
