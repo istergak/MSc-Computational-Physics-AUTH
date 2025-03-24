@@ -3,12 +3,12 @@
 # Master's Thesis
 
 # Thesis Title:  
-# Reconstruction of the EoSs and classification of Exotic Stars using ML and ANNs models
+# Reconstruction of the EoSs of Exotic Stars using ML and ANNs regression models
 
 # Implemented by: Ioannis Stergakis
 # AEM: 4439
 
-# Python Script 3
+# Python Script: Py8
 # Name: plot_curves_NS.py
 
 # Description: 
