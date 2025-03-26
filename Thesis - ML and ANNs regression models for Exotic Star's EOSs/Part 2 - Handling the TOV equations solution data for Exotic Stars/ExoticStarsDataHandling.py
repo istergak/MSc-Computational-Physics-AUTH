@@ -316,7 +316,105 @@ class polyNSdata:
             axis_EOS.plot(Pc_data[1],Ec_data[1],lw=line_width,color="darkgrey")
             
 
-        return EOS_overcome         
+        return EOS_overcome
+
+    # Method that plots the Slope (dE_dP) vs Pressure 2D curve of a main or a polytropic NS EOS
+    def plot_slope_curve(self,filename,axis_slope,clr_caus,EOS_type="main",Pc_threshold=0):
+        """
+        Reading the EOS data from a given file and plot the respective Slope (dE_dP) vs Pressure 2D curve of a main or a polytropic Neutron Star's EOS, when the EOS overcomes the given threshold pressure
+        1.filename: name of the file to be read. By default the scanning is performed in the folder that contains the 'ExoticStarsDataHandling'
+        module script. To scan on another folder, the exact path of the file must be provided.
+        2. axis_slope: the axis that will include the Slope (dE_dP) vs Pressure 2D curve
+        3. clr_caus: the color of the points of the Slope (dE_dP) vs Pressure 2D curve that do not violate causality. The rest points (that violate causality) are plotted
+        with 'darkgrey' color.
+        4. EOS_type: the user can select wether the scanned file contains the TOV solution data for a main EOS or a polytropic Neutron Star EOS.
+        Allowed values: ["main","polytropic","cfl"]
+        5. Pc_threshold: Threshold of the maximum pressure in [MeV*fm^-3]. The EOSs with maximum pressure less than the threshold are not included
+        in the plots.
+        """
+        
+        # Allowed values for the 'Pc_treshold' argument
+        if type(Pc_threshold)!=type(2) and type(Pc_threshold)!=type(2.5):
+            raise ValueError("The value of the \"Pc_threshold\" argument must be a number. Try again.")
+        elif Pc_threshold<0:
+            raise ValueError("The value of the \"Pc_threshold\" argument can not be negative. Try again.")
+    
+
+        EOS_overcome = 0 # index that checks if the EOS overcomes the threshold pressure  
+        
+        # Scanning and reading the file
+        sol_data = file_read(filename,EOS_type)
+        Pc_data = sol_data[0] # getting the NS pressure on center data
+        Slope_data = sol_data[2] # getting the NS Slope (dE_dP) on center data
+
+        # Setting the line width of the curve depending on the type of EOS
+        if EOS_type == "main":
+            line_width = 2.5
+        else:
+            line_width = 0.8
+        
+        # Plotting only if EOS overcomes the threshold pressure
+        if Pc_data[2].iloc[-1]>=Pc_threshold:
+            EOS_overcome = 1
+            
+            # Plotting the c_s-Pc data that do not violate causality
+            axis_slope.plot(Pc_data[0],Slope_data[0],lw=line_width,color=clr_caus)
+            # Plotting the c_s-Pc data that do violate causality
+            axis_slope.plot(Pc_data[1],Slope_data[1],lw=line_width,color="darkgrey")
+            
+
+        return EOS_overcome                 
+
+    # Method that plots the Speed of sound vs Pressure 2D curve of a main or a polytropic NS EOS
+    def plot_cs_curve(self,filename,axis_cs,clr_caus,EOS_type="main",Pc_threshold=0):
+        """
+        Reading the EOS data from a given file and plot the respective Speed of sound vs Pressure 2D curve of a main or a polytropic Neutron Star's EOS, when the EOS overcomes the given threshold pressure
+        1.filename: name of the file to be read. By default the scanning is performed in the folder that contains the 'ExoticStarsDataHandling'
+        module script. To scan on another folder, the exact path of the file must be provided.
+        2. axis_cs: the axis that will include the Speed of sound vs Pressure 2D curve
+        3. clr_caus: the color of the points of the Speed of sound vs Pressure 2D curve that do not violate causality. The rest points (that violate causality) are plotted
+        with 'darkgrey' color.
+        4. EOS_type: the user can select wether the scanned file contains the TOV solution data for a main EOS or a polytropic Neutron Star EOS.
+        Allowed values: ["main","polytropic","cfl"]
+        5. Pc_threshold: Threshold of the maximum pressure in [MeV*fm^-3]. The EOSs with maximum pressure less than the threshold are not included
+        in the plots.
+        """
+        
+        # Allowed values for the 'Pc_treshold' argument
+        if type(Pc_threshold)!=type(2) and type(Pc_threshold)!=type(2.5):
+            raise ValueError("The value of the \"Pc_threshold\" argument must be a number. Try again.")
+        elif Pc_threshold<0:
+            raise ValueError("The value of the \"Pc_threshold\" argument can not be negative. Try again.")
+    
+
+        EOS_overcome = 0 # index that checks if the EOS overcomes the threshold pressure  
+        
+        # Scanning and reading the file
+        sol_data = file_read(filename,EOS_type)
+        Pc_data = sol_data[0] # getting the NS pressure on center data
+        Slope_data = sol_data[2] # getting the NS Slope (dE_dP) on center data
+
+        # Calculating the speed of sound (c_s) values from the slope data
+        cs_caus = np.sqrt(1/np.array(Slope_data[0])) # values that do not violate causality
+        cs_no_caus = np.sqrt(1/np.array(Slope_data[1])) # values that do violate causality
+
+        # Setting the line width of the curve depending on the type of EOS
+        if EOS_type == "main":
+            line_width = 2.5
+        else:
+            line_width = 0.8
+        
+        # Plotting only if EOS overcomes the threshold pressure
+        if Pc_data[2].iloc[-1]>=Pc_threshold:
+            EOS_overcome = 1
+            
+            # Plotting the c_s-Pc data that do not violate causality
+            axis_cs.plot(Pc_data[0],cs_caus,lw=line_width,color=clr_caus)
+            # Plotting the c_s-Pc data that do violate causality
+            axis_cs.plot(Pc_data[1],cs_no_caus,lw=line_width,color="darkgrey")
+            
+
+        return EOS_overcome             
 
 
     # Method that plots the M-R 2D or 3D curves of polytropic EOSs for a single main EOS (HLPS-2 or HLPS-3) - by default HLPS-2
@@ -892,7 +990,9 @@ class polyNSdata:
         reg_df_cleaned.to_csv(f"{save_filename}.csv",index=False)
 
         # Printing completion message
-        print("The recording process of regression data has been completed !!!")
+        print(f"The recording process of regression data on the \"{save_filename}.csv\" file has been completed !!!")
+
+
 
 # Defining a class for plotting and sampling data from CFL matter QS EOSs
 class cflQSdata:
@@ -1027,7 +1127,7 @@ class cflQSdata:
 
 
     # Method that plots a M-R 2D or 3D curve of a CFL matter QS EOS
-    def plot_MR_curve(self,filename,axis_MR,clr_caus,clr_caus_3d,EOS_type="cfl",projection="2d",Pc_proj=0):
+    def plot_MR_curve(self,filename,axis_MR,clr_caus,clr_caus_3d,projection="2d",Pc_proj=0):
         """
         Reading the EOS data from a given file and plot the respective M-R 2D or 3D curve of a CFL matter Quark Star's EOS
         1.filename: name of the file to be read. By default the scanning is performed in the folder that contains the 'ExoticStarsDataHandling'
@@ -1037,11 +1137,9 @@ class cflQSdata:
         with 'darkgrey' color.
         4. clr_caus_3d: the color of the points of the M-R 3D curve that do not violate causality. The rest points (that violate causality) are plotted
         with 'darkgrey' color.
-        5. EOS_type: the user can select wether the scanned file contains the TOV solution data for a main EOS or a polytropic Neutron Star EOS.
-        Allowed values: ["main","polytropic","cfl"]
-        6. projection: projection of the axis that plots the M-R curves. Values: ["2d","3d"]. By default: 2d projection and plot of the Mass and Radius data of the Neutron
+        5. projection: projection of the axis that plots the M-R curves. Values: ["2d","3d"]. By default: 2d projection and plot of the Mass and Radius data of the Neutron
         Star. When the 3d option is selected: including additionally the pressure in center data of the Neutron Star in a 3rd axis.
-        7. Pc_proj: the pressure of a plane parallel to the M-R plane, on which the 2d-projections of the 3d M-R curves will be displayed, when the "3d" option is selected
+        6. Pc_proj: the pressure of a plane parallel to the M-R plane, on which the 2d-projections of the 3d M-R curves will be displayed, when the "3d" option is selected
         for the 'projection' argument. By default the value 0 is appended to the argument 'Pc_proj'.   
         """
         
@@ -1056,36 +1154,30 @@ class cflQSdata:
             raise ValueError("The value of the \"Pc_proj\" argument must be a number. Try again.")      
         
         # Scanning and reading the file
-        sol_data = file_read(filename,EOS_type)
+        sol_data = file_read(filename,"cfl")
         Pc_data = sol_data[0] # getting the NS pressure on center data
         M_data = sol_data[3] # getting the NS Mass data
         R_data = sol_data[4] # getting the NS Radius data
 
-        # Setting the line width of the curve depending on the type of EOS
-        if EOS_type == "main":
-            line_width = 2.5
-        else:
-            line_width = 0.8    
-
         if projection=="2d": # 2D-plotting
             # Plotting the M-R data that do not violate causality
-            axis_MR.plot(R_data[0],M_data[0],lw=line_width,color=clr_caus)
+            axis_MR.plot(R_data[0],M_data[0],lw=0.8,color=clr_caus)
             # Plotting the M-R data that do violate causality
-            axis_MR.plot(R_data[1],M_data[1],lw=line_width,color="darkgrey")
+            axis_MR.plot(R_data[1],M_data[1],lw=0.8,color="darkgrey")
         elif projection=="3d": # 3D-plotting
             # Plotting the M-R data that do not violate causality
-            axis_MR.plot(R_data[0],Pc_data[0],M_data[0],lw=line_width,color=clr_caus_3d)
+            axis_MR.plot(R_data[0],Pc_data[0],M_data[0],lw=0.8,color=clr_caus_3d)
             # Plotting the projection on the M-R plane of the M-R data that do not violate causality
-            axis_MR.plot(R_data[0],Pc_proj*np.ones_like(Pc_data[0]),M_data[0],"--",lw=line_width,color=clr_caus)
+            axis_MR.plot(R_data[0],Pc_proj*np.ones_like(Pc_data[0]),M_data[0],"--",lw=0.8,color=clr_caus)
             # Plotting the M-R data that do violate causality
-            axis_MR.plot(R_data[1],Pc_data[1],M_data[1],lw=line_width,color="darkgrey")
+            axis_MR.plot(R_data[1],Pc_data[1],M_data[1],lw=0.8,color="darkgrey")
             # Plotting the projection on the M-R plane of the M-R data that do violate causality
-            axis_MR.plot(R_data[1],Pc_proj*np.ones_like(Pc_data[1]),M_data[1],"--",lw=line_width,color="darkgrey")
+            axis_MR.plot(R_data[1],Pc_proj*np.ones_like(Pc_data[1]),M_data[1],"--",lw=0.8,color="darkgrey")
 
         return 1
 
     # Method that plots an EOS 2D curve of CFL matter QS EOS
-    def plot_EOS_curve(self,filename,axis_EOS,clr_caus,EOS_type="cfl"):
+    def plot_EOS_curve(self,filename,axis_EOS,clr_caus):
         """
         Reading the EOS data from a given file and plot the respective EOS 2D curve of a CFL matter Quark Star's EOS
         1.filename: name of the file to be read. By default the scanning is performed in the folder that contains the 'ExoticStarsDataHandling'
@@ -1093,29 +1185,74 @@ class cflQSdata:
         2. axis_EOS: the axis that will include the 2D curve of the EOS
         3. clr_caus: the color of the points of the EOS 2D curve that do not violate causality. The rest points (that violate causality) are plotted
         with 'darkgrey' color.
-        4. EOS_type: the user can select wether the scanned file contains the TOV solution data for a main EOS or a polytropic Neutron Star EOS.
-        Allowed values: ["main","polytropic","cfl"]
         """
     
         
         # Scanning and reading the file
-        sol_data = file_read(filename,EOS_type)
+        sol_data = file_read(filename,"cfl")
         Pc_data = sol_data[0] # getting the NS pressure on center data
         Ec_data = sol_data[1] # getting the NS energy density on center data
-
-        # Setting the line width of the curve depending on the type of EOS
-        if EOS_type == "main":
-            line_width = 2.5
-        else:
-            line_width = 0.8
             
         # Plotting the Ec-Pc data that do not violate causality
-        axis_EOS.plot(Pc_data[0],Ec_data[0],lw=line_width,color=clr_caus)
+        axis_EOS.plot(Pc_data[0],Ec_data[0],lw=0.8,color=clr_caus)
         # Plotting the Ec-Pc data that do violate causality
-        axis_EOS.plot(Pc_data[1],Ec_data[1],lw=line_width,color="darkgrey")
+        axis_EOS.plot(Pc_data[1],Ec_data[1],lw=0.8,color="darkgrey")
             
 
-        return 1       
+        return 1
+
+    # Method that plots the Slope (dE_dP) vs Pressure 2D curve of a CFL matter QS EOS
+    def plot_slope_curve(self,filename,axis_slope,clr_caus):
+        """
+        Reading the EOS data from a given file and plot the respective Slope (dE_dP) vs Pressure 2D curve of a CFL matter Quark Star's EOS
+        1.filename: name of the file to be read. By default the scanning is performed in the folder that contains the 'ExoticStarsDataHandling'
+        module script. To scan on another folder, the exact path of the file must be provided.
+        2. axis_slope: the axis that will include the Slope (dE_dP) vs Pressure 2D curve
+        3. clr_caus: the color of the points of the Slope (dE_dP) vs Pressure 2D curve that do not violate causality. The rest points (that violate causality) are plotted
+        with 'darkgrey' color.
+        """
+    
+        
+        # Scanning and reading the file
+        sol_data = file_read(filename,"cfl")
+        Pc_data = sol_data[0] # getting the NS pressure on center data
+        Slope_data = sol_data[2] # getting the NS Slope (dE_dP) on center data
+
+        # Plotting the c_s-Pc data that do not violate causality
+        axis_slope.plot(Pc_data[0],Slope_data[0],lw=0.8,color=clr_caus)
+        # Plotting the c_s-Pc data that do violate causality
+        axis_slope.plot(Pc_data[1],Slope_data[1],lw=0.8,color="darkgrey")
+            
+
+        return 1                 
+
+    # Method that plots the Speed of sound vs Pressure 2D curve of a CFL matter QS EOS
+    def plot_cs_curve(self,filename,axis_cs,clr_caus):
+        """
+        Reading the EOS data from a given file and plot the respective Speed of sound vs Pressure 2D curve of a CFL matter Quark Star's EOS
+        1.filename: name of the file to be read. By default the scanning is performed in the folder that contains the 'ExoticStarsDataHandling'
+        module script. To scan on another folder, the exact path of the file must be provided.
+        2. axis_cs: the axis that will include the Speed of sound vs Pressure 2D curve
+        3. clr_caus: the color of the points of the Speed of sound vs Pressure 2D curve that do not violate causality. The rest points (that violate causality) are plotted
+        with 'darkgrey' color.
+        """
+        
+        # Scanning and reading the file
+        sol_data = file_read(filename,"cfl")
+        Pc_data = sol_data[0] # getting the NS pressure on center data
+        Slope_data = sol_data[2] # getting the NS Slope (dE_dP) on center data
+
+        # Calculating the speed of sound (c_s) values from the slope data
+        cs_caus = np.sqrt(1/np.array(Slope_data[0])) # values that do not violate causality
+        cs_no_caus = np.sqrt(1/np.array(Slope_data[1])) # values that do violate causality
+            
+        # Plotting the c_s-Pc data that do not violate causality
+        axis_cs.plot(Pc_data[0],cs_caus,lw=0.8,color=clr_caus)
+        # Plotting the c_s-Pc data that do violate causality
+        axis_cs.plot(Pc_data[1],cs_no_caus,lw=0.8,color="darkgrey")
+            
+
+        return 1            
 
     # Method that plots the M-R 2D or 3D curves of CFL quark matter EOSs
     def plot_MR(self,axis_MR,projection="2d",Pc_proj=0):
@@ -1147,7 +1284,7 @@ class cflQSdata:
             model_name = self.total_cfl_models_info[0][i]
             filename = f"{model_name}_sol.csv"
             if os.path.exists(filename):
-                MR_curve_result = self.plot_MR_curve(filename,axis_MR,"darksalmon","darkorange","cfl",projection,Pc_proj)
+                MR_curve_result = self.plot_MR_curve(filename,axis_MR,"darksalmon","darkorange",projection,Pc_proj)
                 available_cfl_models = available_cfl_models + MR_curve_result
         
 
@@ -1195,8 +1332,8 @@ class cflQSdata:
             model_name = self.total_cfl_models_info[0][i]
             filename = f"{model_name}_sol.csv"
             if os.path.exists(filename):
-                EOS_curve_result = self.plot_EOS_curve(filename,axis_EOS,"darksalmon","cfl")
-                available_cfl_models = available_cfl_models + 1
+                EOS_curve_result = self.plot_EOS_curve(filename,axis_EOS,"darksalmon")
+                available_cfl_models = available_cfl_models + EOS_curve_result
 
         
 
@@ -1524,4 +1661,4 @@ class cflQSdata:
         reg_df_cleaned.to_csv(f"{save_filename}.csv",index=False)
 
         # Printing completion message
-        print("The recording process of regression data has been completed !!!")
+        print(f"The recording process of regression data on the \"{save_filename}.csv\" file has been completed !!!")
