@@ -896,6 +896,10 @@ class polyNSdata:
         headers_info = headers_slope + headers_enrg + headers_mass + headers_radius
         with open(f"{save_filename}.csv","w") as file:
             file.write(headers_info)
+        
+        # Creating a copy .csv file where the values in the columns of the X data are shuffled rowwise to avoid correlation between them 
+        with open(f"{save_filename}_rwshuffled.csv","w") as file:
+            file.write(headers_info)
 
         # Linear behavior signs
         linear_behavior_signs = ["","L"]
@@ -928,35 +932,57 @@ class polyNSdata:
                         break
                     else:
                         j=1 # intiliazing a counter for the samples to be made per polytropic EOS
+                        idx_mr = list(np.arange(0,num_mr_points)) # defining a list with the column indices of the mass/radius values in the basic mass/radius samples
                         while j<=samples_per_EOS:
                             # Adding noise to the values of the main samples and recording the resuted sample as a row in the final .csv file
                             slope_sample_with_noise = slope_basic_sample + np.random.normal(loc=obs_noiseSl_mv,scale=obs_noiseSl_std,size=num_pc_points)
                             enrg_sample_with_noise = enrg_basic_sample + np.random.normal(loc=obs_noiseEc_mv,scale=obs_noiseEc_std,size=num_pc_points)
                             mass_sample_with_noise = mass_basic_sample + np.random.normal(loc=obs_noiseM_mv,scale=obs_noiseM_std,size=num_mr_points)
                             radius_sample_with_noise = radius_basic_sample + np.random.normal(loc=obs_noiseR_mv,scale=obs_noiseR_std,size=num_mr_points)
-
+                            
+                            # Initializing the row info for the basic .csv file
                             row_slope_info = f"" # row info for the Slope (dE_dP) values
                             row_enrg_info = f"" # row info for the Energy Density at center values 
                             row_mass_info = f"" # row info for the Mass values
                             row_radius_info = f"" # rwo info for the Radius values
 
+                            # Initializing the row info for the shuffled .csv file
+                            shuffled_row_slope_info = f"" # row info for the Slope (dE_dP) values
+                            shuffled_row_enrg_info = f"" # row info for the Energy Density at center values 
+                            shuffled_row_mass_info = f"" # row info for the Mass values
+                            shuffled_row_radius_info = f"" # rwo info for the Radius values
+
                             # Getting the row info for the Y data (response variables) of the regression, i.e. the Slope (dE_dP) and Energy Density at center values
                             for k in range(0,num_pc_points):
                                 row_slope_info = row_slope_info + f"{slope_sample_with_noise[k]},"
                                 row_enrg_info = row_enrg_info + f"{enrg_sample_with_noise[k]},"
-
+                                shuffled_row_slope_info = shuffled_row_slope_info + f"{slope_sample_with_noise[k]},"
+                                shuffled_row_enrg_info = shuffled_row_enrg_info + f"{enrg_sample_with_noise[k]},"
+                            
                             # Getting the row info for the X data (explanatory variables) of the regression, i.e. the Mass and Radius values
-                            for k in range(0,num_mr_points):
-                                row_mass_info = row_mass_info + f"{mass_sample_with_noise[k]},"
-                                if k==num_mr_points-1:
-                                    row_radius_info = row_radius_info + f"{radius_sample_with_noise[k]}\n" # the last column of the row needs \n and not a comma in the end
+                            np.random.shuffle(idx_mr) # shuffling randomly the column indices of the mass/radius values to reduce/avoid linear correlations between the columns 
+                            mr_points_count = 1
+                            for k in idx_mr:
+                                row_mass_info = row_mass_info + f"{mass_sample_with_noise[mr_points_count-1]},"
+                                shuffled_row_mass_info = shuffled_row_mass_info + f"{mass_sample_with_noise[k]},"
+                                if mr_points_count==num_mr_points:
+                                    # the last column of the row needs \n and not a comma in the end
+                                    row_radius_info = row_radius_info + f"{radius_sample_with_noise[mr_points_count-1]}\n"
+                                    shuffled_row_radius_info = shuffled_row_radius_info + f"{radius_sample_with_noise[k]}\n" 
                                 else:
-                                    row_radius_info = row_radius_info + f"{radius_sample_with_noise[k]}," 
+                                    row_radius_info = row_radius_info + f"{radius_sample_with_noise[mr_points_count-1]},"
+                                    shuffled_row_radius_info = shuffled_row_radius_info + f"{radius_sample_with_noise[k]},"
+                                mr_points_count +=1         
                             
                             # Getting the total info of the row and recording it to the final .csv file
                             row_info = row_slope_info + row_enrg_info + row_mass_info + row_radius_info
                             with open(f"{save_filename}.csv","a+") as file:
                                 file.write(row_info)
+
+                            # Getting the total info of the row and recording it to the final shuffled .csv file
+                            shuffled_row_info = shuffled_row_slope_info + shuffled_row_enrg_info + shuffled_row_mass_info + shuffled_row_radius_info
+                            with open(f"{save_filename}_rwshuffled.csv","a+") as file:
+                                file.write(shuffled_row_info)    
 
                             j = j + 1 # increasing the counter of the samples per polytropic EOS by 1              
         
@@ -966,7 +992,15 @@ class polyNSdata:
         reg_df_cleaned.to_csv(f"{save_filename}.csv",index=False)
 
         # Printing completion message
-        print(f"The recording process of regression data on the \"{save_filename}.csv\" file has been completed !!!")
+        print(f">The recording process of regression data on the \"{save_filename}.csv\" file has been completed !!!")
+
+        # Getting the final shuffled .csv file and removing all the NaN elements
+        reg_df = pd.read_csv(f"{save_filename}_rwshuffled.csv")
+        reg_df_cleaned = reg_df.dropna()
+        reg_df_cleaned.to_csv(f"{save_filename}_rwshuffled.csv",index=False)
+
+        # Printing completion message
+        print(f">>The recording process of rowwise shuffled regression data on the \"{save_filename}_rwshuffled.csv\" file has also been completed !!!\n\n")
 
 
 
@@ -1551,6 +1585,10 @@ class cflQSdata:
         with open(f"{save_filename}.csv","w") as file:
             file.write(headers_info)
 
+        # Creating a copy .csv file where the values in the columns of the X data are shuffled rowwise to avoid correlation between them 
+        with open(f"{save_filename}_rwshuffled.csv","w") as file:
+            file.write(headers_info)    
+
         for cfl_model_name in self.total_cfl_models_info[0]:
             # Getting the name of the file to be scanned
             filename = f"{cfl_model_name}_sol.csv"
@@ -1571,6 +1609,7 @@ class cflQSdata:
                     break
             else:
                 j=1 # intiliazing a counter for the samples to be made per polytropic EOS
+                idx_mr = list(np.arange(0,num_mr_points)) # defining a list with the column indices of the mass/radius values in the basic mass/radius samples
                 while j<=samples_per_EOS:
                     # Adding noise to the values of the main samples and recording the resuted sample as a row in the final .csv file
                     slope_sample_with_noise = slope_basic_sample + np.random.normal(loc=obs_noiseSl_mv,scale=obs_noiseSl_std,size=num_pc_points)
@@ -1578,28 +1617,50 @@ class cflQSdata:
                     mass_sample_with_noise = mass_basic_sample + np.random.normal(loc=obs_noiseM_mv,scale=obs_noiseM_std,size=num_mr_points)
                     radius_sample_with_noise = radius_basic_sample + np.random.normal(loc=obs_noiseR_mv,scale=obs_noiseR_std,size=num_mr_points)
 
+                    # Initializing the row info for the basic .csv file
                     row_slope_info = f"" # row info for the Slope (dE_dP) values
                     row_enrg_info = f"" # row info for the Energy Density at center values 
                     row_mass_info = f"" # row info for the Mass values
                     row_radius_info = f"" # rwo info for the Radius values
 
+                    # Initializing the row info for the shuffled .csv file
+                    shuffled_row_slope_info = f"" # row info for the Slope (dE_dP) values
+                    shuffled_row_enrg_info = f"" # row info for the Energy Density at center values 
+                    shuffled_row_mass_info = f"" # row info for the Mass values
+                    shuffled_row_radius_info = f"" # rwo info for the Radius values
+
                     # Getting the row info for the Y data (response variables) of the regression, i.e. the Slope (dE_dP) and Energy Density at center values
                     for k in range(0,num_pc_points):
                         row_slope_info = row_slope_info + f"{slope_sample_with_noise[k]},"
                         row_enrg_info = row_enrg_info + f"{enrg_sample_with_noise[k]},"
-
+                        shuffled_row_slope_info = shuffled_row_slope_info + f"{slope_sample_with_noise[k]},"
+                        shuffled_row_enrg_info = shuffled_row_enrg_info + f"{enrg_sample_with_noise[k]},"
+                    
+                    
                     # Getting the row info for the X data (explanatory variables) of the regression, i.e. the Mass and Radius values
-                    for k in range(0,num_mr_points):
-                        row_mass_info = row_mass_info + f"{mass_sample_with_noise[k]},"
-                        if k==num_mr_points-1:
-                            row_radius_info = row_radius_info + f"{radius_sample_with_noise[k]}\n" # the last column of the row needs \n and not a comma in the end
+                    np.random.shuffle(idx_mr) # shuffling randomly the column indices of the mass/radius values to reduce/avoid linear correlations between the columns 
+                    mr_points_count = 1
+                    for k in idx_mr:
+                        row_mass_info = row_mass_info + f"{mass_sample_with_noise[mr_points_count-1]},"
+                        shuffled_row_mass_info = shuffled_row_mass_info + f"{mass_sample_with_noise[k]},"
+                        if mr_points_count==num_mr_points:
+                            # the last column of the row needs \n and not a comma in the end
+                            row_radius_info = row_radius_info + f"{radius_sample_with_noise[mr_points_count-1]}\n"
+                            shuffled_row_radius_info = shuffled_row_radius_info + f"{radius_sample_with_noise[k]}\n" 
                         else:
-                            row_radius_info = row_radius_info + f"{radius_sample_with_noise[k]}," 
+                            row_radius_info = row_radius_info + f"{radius_sample_with_noise[mr_points_count-1]},"
+                            shuffled_row_radius_info = shuffled_row_radius_info + f"{radius_sample_with_noise[k]},"
+                        mr_points_count +=1        
                             
                     # Getting the total info of the row and recording it to the final .csv file
                     row_info = row_slope_info + row_enrg_info + row_mass_info + row_radius_info
                     with open(f"{save_filename}.csv","a+") as file:
                         file.write(row_info)
+
+                    # Getting the total info of the row and recording it to the final shuffled .csv file
+                    shuffled_row_info = shuffled_row_slope_info + shuffled_row_enrg_info + shuffled_row_mass_info + shuffled_row_radius_info
+                    with open(f"{save_filename}_rwshuffled.csv","a+") as file:
+                        file.write(shuffled_row_info)    
 
                     j = j + 1 # increasing the counter of the samples per polytropic EOS by 1              
         
@@ -1609,4 +1670,12 @@ class cflQSdata:
         reg_df_cleaned.to_csv(f"{save_filename}.csv",index=False)
 
         # Printing completion message
-        print(f"The recording process of regression data on the \"{save_filename}.csv\" file has been completed !!!")
+        print(f">The recording process of regression data on the \"{save_filename}.csv\" file has been completed !!!")
+
+        # Getting the final shuffled .csv file and removing all the NaN elements
+        reg_df = pd.read_csv(f"{save_filename}_rwshuffled.csv")
+        reg_df_cleaned = reg_df.dropna()
+        reg_df_cleaned.to_csv(f"{save_filename}_rwshuffled.csv",index=False)
+
+        # Printing completion message
+        print(f">>The recording process of rowwise shuffled regression data on the \"{save_filename}_rwshuffled.csv\" file has also been completed !!!\n\n")
