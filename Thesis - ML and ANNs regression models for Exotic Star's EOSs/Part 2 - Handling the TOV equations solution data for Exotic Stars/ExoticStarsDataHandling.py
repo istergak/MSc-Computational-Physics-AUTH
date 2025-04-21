@@ -8,7 +8,7 @@
 # Implemented by: Ioannis Stergakis
 # AEM: 4439
 
-# Python Script: Py8
+# Python Script: Py8a
 # Name: ExoticStarsDataHandling.py
 
 # Description: 
@@ -61,26 +61,26 @@ def file_read(filename,EOS_type="main"):
         polyNS_data = pd.read_csv(filename)
         Pc_data_raw = polyNS_data.iloc[:,1]
         Ec_data_raw = polyNS_data.iloc[:,2]
-        slope_data_raw = polyNS_data.iloc[:,3]
+        dE_dP_data_raw = polyNS_data.iloc[:,3]
         M_data_raw = polyNS_data.iloc[:,4]
         R_data_raw = polyNS_data.iloc[:,5]
                 
-        # position of slope values that do not violate causality
-        idx_caus = [i for i, value in enumerate(slope_data_raw) if value>=1]
-        # position of slope values that do violate causality 
-        idx_no_caus = [i for i, value in enumerate(slope_data_raw) if value<1]
+        # position of slope dE_dP values that do not violate causality
+        idx_caus = [i for i, value in enumerate(dE_dP_data_raw) if value>=1]
+        # position of slope dE_dP values that do violate causality 
+        idx_no_caus = [i for i, value in enumerate(dE_dP_data_raw) if value<1]
                 
         # Obtaining the data that do not violate causality
         Pc_caus = [Pc_data_raw[i] for i in idx_caus]
         Ec_caus = [Ec_data_raw[i] for i in idx_caus]
-        slope_caus = [slope_data_raw[i] for i in idx_caus]
+        dE_dP_caus = [dE_dP_data_raw[i] for i in idx_caus]
         M_caus = [M_data_raw[i] for i in idx_caus]
         R_caus = [R_data_raw[i] for i in idx_caus]
                 
         # Obtaining the data that do violate causality
         Pc_no_caus = [Pc_data_raw[i] for i in idx_no_caus]
         Ec_no_caus = [Ec_data_raw[i] for i in idx_no_caus]
-        slope_no_caus = [slope_data_raw[i] for i in idx_no_caus]
+        dE_dP_no_caus = [dE_dP_data_raw[i] for i in idx_no_caus]
         M_no_caus = [M_data_raw[i] for i in idx_no_caus]
         R_no_caus = [R_data_raw[i] for i in idx_no_caus]
 
@@ -92,31 +92,31 @@ def file_read(filename,EOS_type="main"):
         polyNS_data = pd.read_csv(filename)
         Pc_data_raw = polyNS_data.iloc[:,1]
         Ec_data_raw = polyNS_data.iloc[:,2]
-        slope_data_raw = polyNS_data.iloc[:,4]
+        dE_dP_data_raw = polyNS_data.iloc[:,4]
         M_data_raw = polyNS_data.iloc[:,5]
         R_data_raw = polyNS_data.iloc[:,6]
                 
-        # position of slope values that do not violate causality
-        idx_caus = [i for i, value in enumerate(slope_data_raw) if value>=1]
-        # position of slope values that do violate causality 
-        idx_no_caus = [i for i, value in enumerate(slope_data_raw) if value<1]
+        # position of slope dE_dP values that do not violate causality
+        idx_caus = [i for i, value in enumerate(dE_dP_data_raw) if value>=1]
+        # position of slope dE_dP values that do violate causality 
+        idx_no_caus = [i for i, value in enumerate(dE_dP_data_raw) if value<1]
                 
         # Obtaining the data that do not violate causality
         Pc_caus = [Pc_data_raw[i] for i in idx_caus]
         Ec_caus = [Ec_data_raw[i] for i in idx_caus]
-        slope_caus = [slope_data_raw[i] for i in idx_caus]
+        dE_dP_caus = [dE_dP_data_raw[i] for i in idx_caus]
         M_caus = [M_data_raw[i] for i in idx_caus]
         R_caus = [R_data_raw[i] for i in idx_caus]
                 
         # Obtaining the data that do violate causality
         Pc_no_caus = [Pc_data_raw[i] for i in idx_no_caus]
         Ec_no_caus = [Ec_data_raw[i] for i in idx_no_caus]
-        slope_no_caus = [slope_data_raw[i] for i in idx_no_caus]
+        dE_dP_no_caus = [dE_dP_data_raw[i] for i in idx_no_caus]
         M_no_caus = [M_data_raw[i] for i in idx_no_caus]
         R_no_caus = [R_data_raw[i] for i in idx_no_caus]
         
     # Nested list containg the seperated data of the scanned file
-    file_data = [[Pc_caus,Pc_no_caus,Pc_data_raw],[Ec_caus,Ec_no_caus,Ec_data_raw],[slope_caus,slope_no_caus,slope_data_raw],[M_caus,M_no_caus,M_data_raw],[R_caus,R_no_caus,R_data_raw]]
+    file_data = [[Pc_caus,Pc_no_caus,Pc_data_raw],[Ec_caus,Ec_no_caus,Ec_data_raw],[dE_dP_caus,dE_dP_no_caus,dE_dP_data_raw],[M_caus,M_no_caus,M_data_raw],[R_caus,R_no_caus,R_data_raw]]
 
     return file_data
 
@@ -143,14 +143,16 @@ class polyNSdata:
     """
 
     # Constructor of the class
-    def __init__(self,Γ_choices_codec=["A","B","C","D"],num_segments=4):
+    def __init__(self,Γ_choices_codec=["A","B","C","D"],Γ_choices=[1,2,3,4],num_segments=4):
         """
         Initializing the polyNSdata class:
         1. Appending the (given) list of available coded choices of the Γ parameter to the self variable 'Γ_choices_codec'
-        2. Appending the (given) number of mass density ρ segments to the self variable 'num_segments'
-        3. Getting and appending the total Γ combinations using the 'Γ_total_combos' method of the 'polyNSdata' class
+        2. Appending the (given) list of available choices of the Γ parameter to the self variable 'Γ_choices'
+        3. Appending the (given) number of mass density ρ segments to the self variable 'num_segments'
+        4. Getting and appending the total Γ combinations using the 'Γ_total_combos' method of the 'polyNSdata' class
         """
         self.Γ_choices_codec = Γ_choices_codec
+        self.Γ_choices = Γ_choices
         self.num_segments = num_segments
         self.Γ_total_combos_sorted = self.Γ_total_combos()
 
@@ -202,6 +204,22 @@ class polyNSdata:
 
         return Γ_selections_sort
     
+    # Method that decodes the coded value of Γ and returns its numerical value
+    def Γ_decode(self,Γ_codec):
+        """
+        Method that decodes the coded value of Γ and returns its numerical value
+        1. Γ_codec = coded value of Γ 
+        """
+        m = len(self.Γ_choices_codec)
+        Γ_result = "Codec letter not found"
+        for j in range(0,m):
+            askii_codec = chr(65+j)
+            if Γ_codec==askii_codec:
+                Γ_result = self.Γ_choices[j]
+                break
+
+        return Γ_result
+    
     # Method that plots a M-R 2D or 3D curve of a main or a polytropic NS EOS
     def plot_MR_curve(self,filename,axis_MR,clr_caus,EOS_type="main",Pc_threshold=0,projection="2d",Pc_proj=0):
         """
@@ -212,7 +230,7 @@ class polyNSdata:
         3. clr_caus: the color of the points of the M-R 2D or 3D curve that do not violate causality. The rest points (that violate causality) are plotted
         with 'darkgrey' color.
         4. EOS_type: the user can select wether the scanned file contains the TOV solution data for a main EOS or a polytropic Neutron Star EOS.
-        Allowed values: ["main","polytropic","cfl"]
+        Allowed values: ["main","polytropic"]
         5. Pc_threshold: Threshold of the maximum pressure in [MeV*fm^-3]. The EOSs with maximum pressure less than the threshold are not included
         in the plots.
         6. projection: projection of the axis that plots the M-R curves. Values: ["2d","3d"]. By default: 2d projection and plot of the Mass and Radius data of the Neutron
@@ -221,11 +239,17 @@ class polyNSdata:
         for the 'projection' argument. By default the value 0 is appended to the argument 'Pc_proj'.   
         """
         
+        # Allowed values for the 'projection' argument
+        EOS_type_allowedvalues = ["main","polytropic"]
+        if EOS_type not in EOS_type_allowedvalues:
+            raise ValueError(f"Invalid value \"{EOS_type}\" for the \"EOS_type\" argument. Allowed values are: {EOS_type}")
+
         # Allowed values for the 'Pc_treshold' argument
         if type(Pc_threshold)!=type(2) and type(Pc_threshold)!=type(2.5):
             raise ValueError("The value of the \"Pc_threshold\" argument must be a number. Try again.")
         elif Pc_threshold<0:
             raise ValueError("The value of the \"Pc_threshold\" argument can not be negative. Try again.")
+        
 
         # Allowed values for the 'projection' argument
         projection_allowedvalues = ["2d","3d"]
@@ -281,11 +305,16 @@ class polyNSdata:
         3. clr_caus: the color of the points of the EOS 2D curve that do not violate causality. The rest points (that violate causality) are plotted
         with 'darkgrey' color.
         4. EOS_type: the user can select wether the scanned file contains the TOV solution data for a main EOS or a polytropic Neutron Star EOS.
-        Allowed values: ["main","polytropic","cfl"]
+        Allowed values: ["main","polytropic"]
         5. Pc_threshold: Threshold of the maximum pressure in [MeV*fm^-3]. The EOSs with maximum pressure less than the threshold are not included
         in the plots.
         """
         
+        # Allowed values for the 'projection' argument
+        EOS_type_allowedvalues = ["main","polytropic"]
+        if EOS_type not in EOS_type_allowedvalues:
+            raise ValueError(f"Invalid value \"{EOS_type}\" for the \"EOS_type\" argument. Allowed values are: {EOS_type}")
+
         # Allowed values for the 'Pc_treshold' argument
         if type(Pc_threshold)!=type(2) and type(Pc_threshold)!=type(2.5):
             raise ValueError("The value of the \"Pc_threshold\" argument must be a number. Try again.")
@@ -319,7 +348,7 @@ class polyNSdata:
         return EOS_overcome
 
     # Method that plots the Slope (dE_dP) vs Pressure 2D curve of a main or a polytropic NS EOS
-    def plot_slope_curve(self,filename,axis_slope,clr_caus,EOS_type="main",Pc_threshold=0):
+    def plot_dEdP_curve(self,filename,axis_slope,clr_caus,EOS_type="main",Pc_threshold=0):
         """
         Reading the EOS data from a given file and plot the respective Slope (dE_dP) vs Pressure 2D curve of a main or a polytropic Neutron Star's EOS, when the EOS overcomes the given threshold pressure
         1.filename: name of the file to be read. By default the scanning is performed in the folder that contains the 'ExoticStarsDataHandling'
@@ -328,11 +357,16 @@ class polyNSdata:
         3. clr_caus: the color of the points of the Slope (dE_dP) vs Pressure 2D curve that do not violate causality. The rest points (that violate causality) are plotted
         with 'darkgrey' color.
         4. EOS_type: the user can select wether the scanned file contains the TOV solution data for a main EOS or a polytropic Neutron Star EOS.
-        Allowed values: ["main","polytropic","cfl"]
+        Allowed values: ["main","polytropic"]
         5. Pc_threshold: Threshold of the maximum pressure in [MeV*fm^-3]. The EOSs with maximum pressure less than the threshold are not included
         in the plots.
         """
         
+        # Allowed values for the 'projection' argument
+        EOS_type_allowedvalues = ["main","polytropic"]
+        if EOS_type not in EOS_type_allowedvalues:
+            raise ValueError(f"Invalid value \"{EOS_type}\" for the \"EOS_type\" argument. Allowed values are: {EOS_type}")
+
         # Allowed values for the 'Pc_treshold' argument
         if type(Pc_threshold)!=type(2) and type(Pc_threshold)!=type(2.5):
             raise ValueError("The value of the \"Pc_threshold\" argument must be a number. Try again.")
@@ -345,7 +379,7 @@ class polyNSdata:
         # Scanning and reading the file
         sol_data = file_read(filename,EOS_type)
         Pc_data = sol_data[0] # getting the NS pressure on center data
-        Slope_data = sol_data[2] # getting the NS Slope (dE_dP) on center data
+        dEdP_data = sol_data[2] # getting the NS Slope (dE_dP) on center data
 
         # Setting the line width of the curve depending on the type of EOS
         if EOS_type == "main":
@@ -358,9 +392,9 @@ class polyNSdata:
             EOS_overcome = 1
             
             # Plotting the c_s-Pc data that do not violate causality
-            axis_slope.plot(Pc_data[0],Slope_data[0],lw=line_width,color=clr_caus)
+            axis_slope.plot(Pc_data[0],dEdP_data[0],lw=line_width,color=clr_caus)
             # Plotting the c_s-Pc data that do violate causality
-            axis_slope.plot(Pc_data[1],Slope_data[1],lw=line_width,color="darkgrey")
+            axis_slope.plot(Pc_data[1],dEdP_data[1],lw=line_width,color="darkgrey")
             
 
         return EOS_overcome                 
@@ -375,11 +409,16 @@ class polyNSdata:
         3. clr_caus: the color of the points of the Speed of sound vs Pressure 2D curve that do not violate causality. The rest points (that violate causality) are plotted
         with 'darkgrey' color.
         4. EOS_type: the user can select wether the scanned file contains the TOV solution data for a main EOS or a polytropic Neutron Star EOS.
-        Allowed values: ["main","polytropic","cfl"]
+        Allowed values: ["main","polytropic"]
         5. Pc_threshold: Threshold of the maximum pressure in [MeV*fm^-3]. The EOSs with maximum pressure less than the threshold are not included
         in the plots.
         """
         
+        # Allowed values for the 'projection' argument
+        EOS_type_allowedvalues = ["main","polytropic"]
+        if EOS_type not in EOS_type_allowedvalues:
+            raise ValueError(f"Invalid value \"{EOS_type}\" for the \"EOS_type\" argument. Allowed values are: {EOS_type}")
+
         # Allowed values for the 'Pc_treshold' argument
         if type(Pc_threshold)!=type(2) and type(Pc_threshold)!=type(2.5):
             raise ValueError("The value of the \"Pc_threshold\" argument must be a number. Try again.")
@@ -392,11 +431,11 @@ class polyNSdata:
         # Scanning and reading the file
         sol_data = file_read(filename,EOS_type)
         Pc_data = sol_data[0] # getting the NS pressure on center data
-        Slope_data = sol_data[2] # getting the NS Slope (dE_dP) on center data
+        dEdP_data = sol_data[2] # getting the NS Slope (dE_dP) on center data
 
         # Calculating the speed of sound (c_s) values from the slope data
-        cs_caus = np.sqrt(1/np.array(Slope_data[0])) # values that do not violate causality
-        cs_no_caus = np.sqrt(1/np.array(Slope_data[1])) # values that do violate causality
+        cs_caus = np.sqrt(1/np.array(dEdP_data[0])) # values that do not violate causality
+        cs_no_caus = np.sqrt(1/np.array(dEdP_data[1])) # values that do violate causality
 
         # Setting the line width of the curve depending on the type of EOS
         if EOS_type == "main":
@@ -765,16 +804,16 @@ class polyNSdata:
         return [mass_sample_with_noise,radius_sample_with_noise]
     
 
-    # Method that samples Slope (dE_dP) and Energy density on center data (that do not violate causality) from TOV solution data files of a polytropic NS EOS
+    # Method that samples Slope (dE_dP), Energy density on center data (that do not violate causality) and center pressure at maximum mass, from TOV solution data files of a polytropic NS EOS
     def sample_EOS(self,filename,Pc_points=[10,25,50,75,100,200,400,800],noiseSl_mv=0,noiseSl_std=0,noiseEc_mv=0,noiseEc_std=0):
         """
-        Scanning a file containing the TOV equations' solution data for a polytropic Neutron Star EOS and sampling Slope (dE_dP) and Energy Density at center values,
+        Scanning a file containing the TOV equations' solution data for a polytropic Neutron Star EOS and sampling Slope (dE_dP), Energy Density at center values and center pressure at maximum mass
         that do not violate causality. Artificial observational noise (following normal distribution) can be added to the values of the samples.
         1. filename: name of the file to be scanned
         2. Pc_points: values (points) of pressure in center of the polytropic Neutron Star, on which the algorithm will collect the values of Slope (dE_dP) and Energy Density.
         By default the following points are selected: 'Pc_points' = [10,25,50,75,100,200,400,800] MeV*fm^-3.
-        3. noiseSl_mv: mean value of the normal distributed observational noise for the values of the Slope sample. By default its value is set to 0.
-        4. noiseSl_std: standard deviation of the normal distributed observational noise for the values of the Slope sample. By default its value is set to 0.
+        3. noiseSl_mv: mean value of the normal distributed observational noise for the values of the Slope (dE_dP) sample. By default its value is set to 0.
+        4. noiseSl_std: standard deviation of the normal distributed observational noise for the values of the Slope (dE_dP) sample. By default its value is set to 0.
         5. noiseEc_mv: mean value of the normal distributed observational noise for the values of the Energy Density at center sample. By default its value is set to 0.
         6. noiseEc_std: standard deviation of the normal distributed observational noise for the values of the Energy Density at center sample. By default its value is set to 0.
         """ 
@@ -798,45 +837,54 @@ class polyNSdata:
         # Getting the number of pressure points
         n = len(Pc_points)
 
-        # Initializing storage lists for the Slope (dE_dP) and Energy density on center values sample
-        slope_sample = []
+        # Initializing storage lists for the Slope (dE_dP), Energy density on center and center pressure at maximum mass values samples
+        dEdP_sample = []
         enrg_dens_sample = []
-        slope_sample_with_noise = [np.NaN]
+        dEdP_sample_with_noise = [np.NaN]
         enrg_dens_sample_with_noise =[np.NaN]
+        Pc_max_mass = np.NaN
 
         # Scanning for the file
         if os.path.exists(filename):
             sol_data = file_read(filename,"polytropic")
             Pc_data = sol_data[0] # getting the NS pressure on center data
             Ec_data = sol_data[1] # getting the NS Energy Density on center data
-            Slope_data = sol_data[2] # getting the NS Slope data
+            dEdP_data = sol_data[2] # getting the NS Slope dE_dP data
+            M_data = sol_data[3] # getting the NS mass data
 
             # Getting the data that do not violate causality
             Pc_caus = Pc_data[0]
             Ec_caus = Ec_data[0]
-            Slope_caus = Slope_data[0]
+            dEdP_caus = dEdP_data[0]
+            M_caus = M_data[0]
 
             # Sampling Slope (dE_dP) and Energy density on center values only if the causality part of the EOS overcomes 
             # the value of the maximum pressure point plus 50
             if Pc_caus[-1]>=max(Pc_points)+50:
-                for i in range(0,n):
-                    idx_press_val = Pc_caus.index(Pc_points[i])
-                    slope_sample.append(Slope_caus[idx_press_val])
+                for Pc in Pc_points:
+                    idx_press_val = Pc_caus.index(Pc)
+                    dEdP_sample.append(dEdP_caus[idx_press_val])
                     enrg_dens_sample.append(Ec_caus[idx_press_val])
+                
+                # Getting the center pressure at maximum mass
+                idx_max_mass = np.argmax(M_caus)
+                Pc_max_mass = Pc_caus[idx_max_mass]
+
+                #print(max(M_caus),Pc_max_mass)
 
                 # Adding noise to the Mass and Radius samples
-                slope_sample_with_noise = slope_sample + np.random.normal(loc=noiseSl_mv,scale=noiseSl_std,size=n)
+                dEdP_sample_with_noise = dEdP_sample + np.random.normal(loc=noiseSl_mv,scale=noiseSl_std,size=n)
                 enrg_dens_sample_with_noise = enrg_dens_sample + np.random.normal(loc=noiseEc_mv,scale=noiseEc_std,size=n)
 
-        return [slope_sample_with_noise,enrg_dens_sample_with_noise]
+        return [dEdP_sample_with_noise,enrg_dens_sample_with_noise,Pc_max_mass]
 
     # Method that generates and records on .csv files data of polytropic Neutron Stars for regression purposes
     def gen_reg_data(self,save_filename,samples_per_EOS=1,M_threshold=0,points_MR=16,Pc_points=[10,25,50,75,100,200,400,800],noises_mv=[0,0,0,0],noises_std=[0,0,0,0]):
         """
-        Getting data of polytropic Neutron Stars for regression purposes and recording them on .csv files
+        Sampling data of polytropic Neutron Stars for regression purposes and recording them on .csv files
         1. save_filename: the name of the final .csv file, in which the regression data are being recorded
         2. samples_per_EOS: number of samples to be generated per polytropic EOS. Each sample is recorded as a row in the final .csv file and includes the
-        selected values of Slope (dE_dP), Energy Density at center, Mass and Radius. By default, 1 sample is generated per polytropic EOS.
+        selected values of Speed of Sound c_s^2 = dP_dE, Energy Density at center, Mass and Radius. By default, 1 sample is generated per polytropic EOS.
         3. M_threshold: Threshold of Mass values. In order for the algorithm to create Mass and Radius samples, the EOS must have resulted in causality valid 
         Mass values greater than M_threshold
         4. points_MR: number of equally spaced points (with respect to Mass-axis) to be selected and sampled. The algorithm divides the range of Mass data that do not violate causality into 
@@ -844,8 +892,8 @@ class polyNSdata:
         By default, 16 points are selected to be sampled.
         5. Pc_points: values (points) of pressure in center of the polytropic Neutron Star, on which the algorithm will collect the values of Slope (dE_dP) and Energy Density.
         By default the following points are selected: 'Pc_points' = [10,25,50,75,100,200,400,800] MeV*fm^-3.
-        6. noises_mv: list containing the mean values for the artificial observational noise that is added to the sample values of the following: 1st element-> Mass, 2nd element -> Radius, 3rd element -> Slope (dE_dP) and 4th element -> Energy Density at center. By default the mean values are set to 0.
-        7. noises_std: list containing the standard deviations for the artificial observational noise that is added to the sample values of the following: 1st element-> Mass, 2nd element -> Radius, 3rd element -> Slope (dE_dP) and 4th element -> Energy Density at center. By default the standard deviations are set to 0.
+        6. noises_mv: list containing the mean values for the artificial observational noise that is added to the sample values of the following: 1st element-> Mass, 2nd element -> Radius, 3rd element -> Slope (dP_dE) and 4th element -> Energy Density at center. By default the mean values are set to 0.
+        7. noises_std: list containing the standard deviations for the artificial observational noise that is added to the sample values of the following: 1st element-> Mass, 2nd element -> Radius, 3rd element -> Slope (dP_dE) and 4th element -> Energy Density at center. By default the standard deviations are set to 0.
         """ 
 
         # Allowed lentgh for the noises_mv list
@@ -859,12 +907,12 @@ class polyNSdata:
         # Getting the mean values and the standard deviations of the observational noises
         obs_noiseM_mv = noises_mv[0] # mean value for the noise of the Mass values
         obs_noiseR_mv = noises_mv[1] # mean value for the noise of the Radius values
-        obs_noiseSl_mv = noises_mv[2] # mean value for the noise of the Slope (dE_dP) values
+        obs_noiseSl_mv = noises_mv[2] # mean value for the noise of the Slope (dP_dE) values
         obs_noiseEc_mv = noises_mv[3] # mean value for the noise of the Energy Density at center values
 
         obs_noiseM_std = noises_std[0] # standard deviation for the noise of the Mass values
         obs_noiseR_std = noises_std[1] # standard deviation for the noise of the Radius values
-        obs_noiseSl_std = noises_std[2] # standard deviation for the noise of the Slope (dE_dP) values 
+        obs_noiseSl_std = noises_std[2] # standard deviation for the noise of the Slope (dP_dE) values 
         obs_noiseEc_std = noises_std[3] # standard deviation for the noise of the Energy Density at center values
 
         # Getting the number of M-R points
@@ -874,26 +922,36 @@ class polyNSdata:
         num_pc_points = len(Pc_points)
 
         # Creating the file in which the regression data will be recorder and forming its headers
-        headers_slope = f"" # headers for the Slope (dE_dP) values
-        headers_enrg = f"" # headers for the Energy Density at center values 
+        headers_dPdE = f"" # headers for the Slope (dP_dE) values
+        headers_enrg = f"" # headers for the Energy Density at center values
+        headers_Pc_max_mass = "Pc(M_max)," # headers for the center pressure at maximum mass
+        headers_Γ = f"" # headers for the values of the polytropic parameter Γ in the pressure segments
         headers_mass = f"" # headers for the Mass values
         headers_radius = f"" # headers for the Radius values
+        
 
-        # Forming the headers for the Y data (response variables) of the regression, i.e. the Slope (dE_dP) and Energy Density at center values
+        # Forming the headers for the Y data (response variables) of the regression, i.e. the Slope (dP_dE) and Energy Density at center values
         for i in range(0,num_pc_points):
-            headers_slope = headers_slope + f"dE_dP({Pc_points[i]})," # the values of the pressure are icluded inside the paranthesis
-            headers_enrg = headers_enrg + f"E_c({Pc_points[i]})," # the values of the pressure are icluded inside the paranthesis
+            headers_dPdE = headers_dPdE + f"dP_dE({Pc_points[i]})," # the values of the pressure are icluded inside the paranthesis
+            headers_enrg = headers_enrg + f"E_c({Pc_points[i]})," # the values of the pressure are icluded inside the paranthesis 
+
+        # Forming the headers of the values of the polytropic parameter Γ in the pressure segments
+        for i in range(0,self.num_segments):
+            headers_Γ = headers_Γ + f"Gamma_{i+1},"          
 
         # Forming the headers for the X data (explanatory variables) of the regression, i.e. the Mass and Radius values
         for i in range(0,num_mr_points):
             headers_mass = headers_mass + f"M_{i+1},"
-            if i==points_MR-1:
-                headers_radius = headers_radius + f"R_{i+1}\n" # the last column of the headers needs \n and not a comma in the end
+            # the last column of the headers needs \n and not a comma in the end
+            if i==num_mr_points-1:
+                headers_radius = headers_radius + f"R_{i+1}\n"
             else:
                 headers_radius = headers_radius + f"R_{i+1},"   
+
+               
         
         # Forming the total info of the headers and the name of the recording .csv file
-        headers_info = headers_slope + headers_enrg + headers_mass + headers_radius
+        headers_info = headers_dPdE + headers_enrg + headers_Pc_max_mass + headers_Γ + headers_mass + headers_radius
         with open(f"{save_filename}.csv","w") as file:
             file.write(headers_info)
         
@@ -917,7 +975,7 @@ class polyNSdata:
                     filename = f"{main_EOS}_{Γ_combo}{linear_sign}_sol.csv"
 
                     # Getting the basic sample of the Slope (dE_dP) and Energy Density at center values
-                    slope_basic_sample,enrg_basic_sample = self.sample_EOS(filename,Pc_points,noiseSl_mv=0,noiseSl_std=0,noiseEc_mv=0,noiseEc_std=0)
+                    dEdP_basic_sample,enrg_basic_sample,Pc_max_mass = self.sample_EOS(filename,Pc_points,noiseSl_mv=0,noiseSl_std=0,noiseEc_mv=0,noiseEc_std=0)
 
                     # Getting the basic sample of the Mass and Radius values
                     mass_basic_sample,radius_basic_sample = self.sample_MR(filename,max(Pc_points)+50,M_threshold,points_MR,noiseM_mv=0,noiseM_std=0,noiseR_mv=0,noiseR_std=0)
@@ -928,59 +986,71 @@ class polyNSdata:
                     # print(radius_basic_sample)
 
                     # If any of the basic samples is NaN the algorithm skips the recording for this polytropic EOS and moves to the next polytrtopic EOS
-                    if slope_basic_sample[0]==np.NaN or enrg_basic_sample[0]==np.NaN or mass_basic_sample[0]==np.NaN or radius_basic_sample[0]==np.NaN:
+                    if dEdP_basic_sample[0]==np.NaN or enrg_basic_sample[0]==np.NaN or mass_basic_sample[0]==np.NaN or radius_basic_sample[0]==np.NaN:
                         break
                     else:
                         j=1 # intiliazing a counter for the samples to be made per polytropic EOS
-                        idx_mr = list(np.arange(0,num_mr_points)) # defining a list with the column indices of the mass/radius values in the basic mass/radius samples
                         while j<=samples_per_EOS:
                             # Adding noise to the values of the main samples and recording the resuted sample as a row in the final .csv file
-                            slope_sample_with_noise = slope_basic_sample + np.random.normal(loc=obs_noiseSl_mv,scale=obs_noiseSl_std,size=num_pc_points)
+                            dPdE_sample_with_noise = 1/np.array(dEdP_basic_sample) + np.random.normal(loc=obs_noiseSl_mv,scale=obs_noiseSl_std,size=num_pc_points)
                             enrg_sample_with_noise = enrg_basic_sample + np.random.normal(loc=obs_noiseEc_mv,scale=obs_noiseEc_std,size=num_pc_points)
-                            mass_sample_with_noise = mass_basic_sample + np.random.normal(loc=obs_noiseM_mv,scale=obs_noiseM_std,size=num_mr_points)
+                            mass_sample_with_noise = np.abs(mass_basic_sample + np.random.normal(loc=obs_noiseM_mv,scale=obs_noiseM_std,size=num_mr_points)) # getting the absolute value to ensure positive values for the Mass
                             radius_sample_with_noise = radius_basic_sample + np.random.normal(loc=obs_noiseR_mv,scale=obs_noiseR_std,size=num_mr_points)
                             
                             # Initializing the row info for the basic .csv file
-                            row_slope_info = f"" # row info for the Slope (dE_dP) values
-                            row_enrg_info = f"" # row info for the Energy Density at center values 
+                            row_dPdE_info = f"" # row info for the Slope (dP_dE) values
+                            row_enrg_info = f"" # row info for the Energy Density at center values
+                            row_Pc_max_mass_info = f"{Pc_max_mass}," # row info for the center pressure at maximum mass
+                            row_Γ_info = f"" # row info for the values of the polytropic parameter Γ in the pressure segments 
                             row_mass_info = f"" # row info for the Mass values
-                            row_radius_info = f"" # rwo info for the Radius values
+                            row_radius_info = f"" # row info for the Radius values
+                            
 
                             # Initializing the row info for the shuffled .csv file
-                            shuffled_row_slope_info = f"" # row info for the Slope (dE_dP) values
-                            shuffled_row_enrg_info = f"" # row info for the Energy Density at center values 
+                            shuffled_row_dPdE_info = f"" # row info for the Slope (dP_dE) values
+                            shuffled_row_enrg_info = f"" # row info for the Energy Density at center values
+                            shuffled_row_Pc_max_mass_info = f"{Pc_max_mass}," # row info for the center pressure at maximum mass
+                            shuffled_row_Γ_info = f"" # row info for the values of the polytropic parameter Γ in the pressure segments 
                             shuffled_row_mass_info = f"" # row info for the Mass values
-                            shuffled_row_radius_info = f"" # rwo info for the Radius values
+                            shuffled_row_radius_info = f"" # row info for the Radius values
+                            
 
-                            # Getting the row info for the Y data (response variables) of the regression, i.e. the Slope (dE_dP) and Energy Density at center values
+                            # Getting the row info for the Y data (response variables) of the regression, i.e. the Slope (dP_dE) and Energy Density at center values
                             for k in range(0,num_pc_points):
-                                row_slope_info = row_slope_info + f"{slope_sample_with_noise[k]},"
+                                row_dPdE_info = row_dPdE_info + f"{dPdE_sample_with_noise[k]},"
                                 row_enrg_info = row_enrg_info + f"{enrg_sample_with_noise[k]},"
-                                shuffled_row_slope_info = shuffled_row_slope_info + f"{slope_sample_with_noise[k]},"
+                                shuffled_row_dPdE_info = shuffled_row_dPdE_info + f"{dPdE_sample_with_noise[k]},"
                                 shuffled_row_enrg_info = shuffled_row_enrg_info + f"{enrg_sample_with_noise[k]},"
+
+                            # Getting the row info for the Γ parameter data
+                            for k in range(0,self.num_segments):
+                                row_Γ_info = row_Γ_info + f"{self.Γ_decode(Γ_combo[k])},"
+                                shuffled_row_Γ_info = shuffled_row_Γ_info + f"{self.Γ_decode(Γ_combo[k])},"    
                             
                             # Getting the row info for the X data (explanatory variables) of the regression, i.e. the Mass and Radius values
+                            idx_mr = list(np.arange(0,num_mr_points)) # defining a list with the column indices of the mass/radius values in the basic mass/radius samples
                             np.random.shuffle(idx_mr) # shuffling randomly the column indices of the mass/radius values to reduce/avoid linear correlations between the columns 
                             mr_points_count = 1
                             for k in idx_mr:
                                 row_mass_info = row_mass_info + f"{mass_sample_with_noise[mr_points_count-1]},"
                                 shuffled_row_mass_info = shuffled_row_mass_info + f"{mass_sample_with_noise[k]},"
+                                # the last column of the row needs \n and not a comma in the end
                                 if mr_points_count==num_mr_points:
-                                    # the last column of the row needs \n and not a comma in the end
                                     row_radius_info = row_radius_info + f"{radius_sample_with_noise[mr_points_count-1]}\n"
-                                    shuffled_row_radius_info = shuffled_row_radius_info + f"{radius_sample_with_noise[k]}\n" 
+                                    shuffled_row_radius_info = shuffled_row_radius_info + f"{radius_sample_with_noise[k]}\n"
                                 else:
                                     row_radius_info = row_radius_info + f"{radius_sample_with_noise[mr_points_count-1]},"
-                                    shuffled_row_radius_info = shuffled_row_radius_info + f"{radius_sample_with_noise[k]},"
-                                mr_points_count +=1         
-                            
+                                    shuffled_row_radius_info = shuffled_row_radius_info + f"{radius_sample_with_noise[k]},"    
+                                mr_points_count +=1
+
+                                            
                             # Getting the total info of the row and recording it to the final .csv file
-                            row_info = row_slope_info + row_enrg_info + row_mass_info + row_radius_info
+                            row_info = row_dPdE_info + row_enrg_info + row_Pc_max_mass_info + row_Γ_info + row_mass_info + row_radius_info
                             with open(f"{save_filename}.csv","a+") as file:
                                 file.write(row_info)
 
                             # Getting the total info of the row and recording it to the final shuffled .csv file
-                            shuffled_row_info = shuffled_row_slope_info + shuffled_row_enrg_info + shuffled_row_mass_info + shuffled_row_radius_info
+                            shuffled_row_info = shuffled_row_dPdE_info + shuffled_row_enrg_info + shuffled_row_Pc_max_mass_info + shuffled_row_Γ_info + shuffled_row_mass_info + shuffled_row_radius_info
                             with open(f"{save_filename}_rwshuffled.csv","a+") as file:
                                 file.write(shuffled_row_info)    
 
@@ -1212,7 +1282,7 @@ class cflQSdata:
         return 1
 
     # Method that plots the Slope (dE_dP) vs Pressure 2D curve of a CFL matter QS EOS
-    def plot_slope_curve(self,filename,axis_slope,clr_caus):
+    def plot_dEdP_curve(self,filename,axis_slope,clr_caus):
         """
         Reading the EOS data from a given file and plot the respective Slope (dE_dP) vs Pressure 2D curve of a CFL matter Quark Star's EOS
         1.filename: name of the file to be read. By default the scanning is performed in the folder that contains the 'ExoticStarsDataHandling'
@@ -1226,12 +1296,12 @@ class cflQSdata:
         # Scanning and reading the file
         sol_data = file_read(filename,"cfl")
         Pc_data = sol_data[0] # getting the NS pressure on center data
-        Slope_data = sol_data[2] # getting the NS Slope (dE_dP) on center data
+        dEdP_data = sol_data[2] # getting the NS Slope (dE_dP) on center data
 
         # Plotting the c_s-Pc data that do not violate causality
-        axis_slope.plot(Pc_data[0],Slope_data[0],lw=0.8,color=clr_caus)
+        axis_slope.plot(Pc_data[0],dEdP_data[0],lw=0.8,color=clr_caus)
         # Plotting the c_s-Pc data that do violate causality
-        axis_slope.plot(Pc_data[1],Slope_data[1],lw=0.8,color="darkgrey")
+        axis_slope.plot(Pc_data[1],dEdP_data[1],lw=0.8,color="darkgrey")
             
 
         return 1                 
@@ -1250,11 +1320,11 @@ class cflQSdata:
         # Scanning and reading the file
         sol_data = file_read(filename,"cfl")
         Pc_data = sol_data[0] # getting the NS pressure on center data
-        Slope_data = sol_data[2] # getting the NS Slope (dE_dP) on center data
+        dEdP_data = sol_data[2] # getting the NS Slope (dE_dP) on center data
 
         # Calculating the speed of sound (c_s) values from the slope data
-        cs_caus = np.sqrt(1/np.array(Slope_data[0])) # values that do not violate causality
-        cs_no_caus = np.sqrt(1/np.array(Slope_data[1])) # values that do violate causality
+        cs_caus = np.sqrt(1/np.array(dEdP_data[0])) # values that do not violate causality
+        cs_no_caus = np.sqrt(1/np.array(dEdP_data[1])) # values that do violate causality
             
         # Plotting the c_s-Pc data that do not violate causality
         axis_cs.plot(Pc_data[0],cs_caus,lw=0.8,color=clr_caus)
@@ -1453,16 +1523,16 @@ class cflQSdata:
         return [mass_sample_with_noise,radius_sample_with_noise]
     
 
-    # Method that samples Slope (dE_dP) and Energy density on center data (that do not violate causality) from TOV solution data files of a CFL matter QS EOS
-    def sample_EOS(self,filename,Pc_points=[10,25,50,75,100,200,400,800],noiseSl_mv=0,noiseSl_std=0,noiseEc_mv=0,noiseEc_std=0):
+    # Method that samples Slope (dE_dP) data, Energy density on center data (that do not violate causality) and center pressure at maximum mass from TOV solution data files of a CFL matter QS EOS
+    def sample_EOS(self,filename,Pc_points=[10,100,300,600,800,1000,1200,1400],noiseSl_mv=0,noiseSl_std=0,noiseEc_mv=0,noiseEc_std=0):
         """
-        Scanning a file containing the TOV equations' solution data for a CFL matter Quark Star EOS and sampling Slope (dE_dP) and Energy Density at center values,
+        Scanning a file containing the TOV equations' solution data for a CFL matter Quark Star EOS and sampling Slope (dE_dP), Energy Density at center values and center pressure at maximum mass
         that do not violate causality. Artificial observational noise (following normal distribution) can be added to the values of the samples.
         1. filename: name of the file to be scanned
         2. Pc_points: values (points) of pressure in center of the CFL matter Quark Star, on which the algorithm will collect the values of Slope (dE_dP) and Energy Density.
-        By default the following points are selected: 'Pc_points' = [10,25,50,75,100,200,400,800] MeV*fm^-3.
-        3. noiseSl_mv: mean value of the normal distributed observational noise for the values of the Slope sample. By default its value is set to 0.
-        4. noiseSl_std: standard deviation of the normal distributed observational noise for the values of the Slope sample. By default its value is set to 0.
+        By default the following points are selected: 'Pc_points' = [10,100,300,600,800,1000,1200,1400] MeV*fm^-3.
+        3. noiseSl_mv: mean value of the normal distributed observational noise for the values of the Slope (dE_dP) sample. By default its value is set to 0.
+        4. noiseSl_std: standard deviation of the normal distributed observational noise for the values of the Slope (dE_dP) sample. By default its value is set to 0.
         5. noiseEc_mv: mean value of the normal distributed observational noise for the values of the Energy Density at center sample. By default its value is set to 0.
         6. noiseEc_std: standard deviation of the normal distributed observational noise for the values of the Energy Density at center sample. By default its value is set to 0.
         """ 
@@ -1486,52 +1556,62 @@ class cflQSdata:
         # Getting the number of pressure points
         n = len(Pc_points)
 
-        # Initializing storage lists for the Slope (dE_dP) and Energy density on center values sample
-        slope_sample = []
+        # Initializing storage lists for the Slope (dE_dP), Energy density on center and center pressure at maximum mass values samples
+        dEdP_sample = []
         enrg_dens_sample = []
-        slope_sample_with_noise = [np.NaN]
+        dEdP_sample_with_noise = [np.NaN]
         enrg_dens_sample_with_noise = [np.NaN]
+        Pc_max_mass = np.NaN
 
         # Scanning for the file
         if os.path.exists(filename):
             sol_data = file_read(filename,"cfl")
             Pc_data = sol_data[0] # getting the NS pressure on center data
             Ec_data = sol_data[1] # getting the NS Energy Density on center data
-            Slope_data = sol_data[2] # getting the NS Slope data
+            dEdP_data = sol_data[2] # getting the NS Slope (dE_dP) data
+            M_data = sol_data[3] # getting the NS Mass data
+
 
             # Getting the data that do not violate causality
             Pc_caus = Pc_data[0]
             Ec_caus = Ec_data[0]
-            Slope_caus = Slope_data[0]
+            dEdP_caus = dEdP_data[0]
+            M_caus = M_data[0]
 
             # Sampling Slope (dE_dP) and Energy density on center values only if the causality part of the EOS overcomes 
             # the value of the maximum pressure point plus 50
             if Pc_caus[-1]>=max(Pc_points)+50:
                 for i in range(0,n):
                     idx_press_val = Pc_caus.index(Pc_points[i])
-                    slope_sample.append(Slope_caus[idx_press_val])
+                    dEdP_sample.append(dEdP_caus[idx_press_val])
                     enrg_dens_sample.append(Ec_caus[idx_press_val])
+                 
+                # Getting the center pressure at maximum mass
+                idx_max_mass = np.argmax(M_caus)
+                Pc_max_mass = Pc_caus[idx_max_mass]
+
+                #print(max(M_caus),Pc_max_mass)
 
                 # Adding noise to the Mass and Radius samples
-                slope_sample_with_noise = slope_sample + np.random.normal(loc=noiseSl_mv,scale=noiseSl_std,size=n)
+                dEdP_sample_with_noise = dEdP_sample + np.random.normal(loc=noiseSl_mv,scale=noiseSl_std,size=n)
                 enrg_dens_sample_with_noise = enrg_dens_sample + np.random.normal(loc=noiseEc_mv,scale=noiseEc_std,size=n)
 
-        return [slope_sample_with_noise,enrg_dens_sample_with_noise]
+        return [dEdP_sample_with_noise,enrg_dens_sample_with_noise,Pc_max_mass]
     
     # Method that generates and records on .csv files data of CFL matter Quark Stars for regression purposes
-    def gen_reg_data(self,save_filename,samples_per_EOS=1,M_threshold=0,points_MR=16,Pc_points=[10,25,50,75,100,200,400,800],noises_mv=[0,0,0,0],noises_std=[0,0,0,0]):
+    def gen_reg_data(self,save_filename,samples_per_EOS=1,M_threshold=0,points_MR=16,Pc_points=[10,100,300,600,800,1000,1200,1400],noises_mv=[0,0,0,0],noises_std=[0,0,0,0]):
         """
         Getting data of CFL matter Quark Stars for regression purposes and recording them on .csv files
         1. save_filename: the name of the final .csv file, in which the regression data are being recorded
         2. samples_per_EOS: number of samples to be generated per CFL EOS. Each sample is recorded as a row in the final .csv file and includes the
-        selected values of Slope (dE_dP), Energy Density at center, Mass and Radius. By default, 1 sample is generated per CFL EOS.
+        selected values of Speed of Sound c_s^2 = dP_dE, Energy Density at center, Mass and Radius. By default, 1 sample is generated per CFL EOS.
         3. M_threshold: Threshold of Mass values. In order for the algorithm to create Mass and Radius samples, the EOS must have resulted in causality valid 
         Mass values greater than M_threshold
         4. points_MR: number of equally spaced points (with respect to Mass-axis) to be selected and sampled. The algorithm divides the range of Mass data that do not violate causality into 
         points_MR-1 segments with equal length. Then it selects the closest values of the Mass and the Radius to the boundary points of these segments, and stores these values for the Mass and the Radius samples, respectively.
         By default, 16 points are selected to be sampled.
         5. Pc_points: values (points) of pressure in center of the polytropic Neutron Star, on which the algorithm will collect the values of Slope (dE_dP) and Energy Density.
-        By default the following points are selected: 'Pc_points' = [10,25,50,75,100,200,400,800] MeV*fm^-3.
+        By default the following points are selected: 'Pc_points' = [10,100,300,600,800,1000,1200,1400] MeV*fm^-3.
         6. noises_mv: list containing the mean values for the artificial observational noise that is added to the sample values of the following: 1st element-> Mass, 2nd element -> Radius, 3rd element -> Slope (dE_dP) and 4th element -> Energy Density at center. By default the mean values are set to 0.
         7. noises_std: list containing the standard deviations for the artificial observational noise that is added to the sample values of the following: 1st element-> Mass, 2nd element -> Radius, 3rd element -> Slope (dE_dP) and 4th element -> Energy Density at center. By default the standard deviations are set to 0.
         """ 
@@ -1562,14 +1642,15 @@ class cflQSdata:
         num_pc_points = len(Pc_points)
 
         # Creating the file in which the regression data will be recorder and forming its headers
-        headers_slope = f"" # headers for the Slope (dE_dP) values
-        headers_enrg = f"" # headers for the Energy Density at center values 
+        headers_slope = f"" # headers for the Slope (dP_dE) values
+        headers_enrg = f"" # headers for the Energy Density at center values
+        headers_Pc_max_mass = "Pc(M_max)," # headers for the center pressure at maximum mass 
         headers_mass = f"" # headers for the Mass values
         headers_radius = f"" # headers for the Radius values
 
-        # Forming the headers for the Y data (response variables) of the regression, i.e. the Slope (dE_dP) and Energy Density at center values
+        # Forming the headers for the Y data (response variables) of the regression, i.e. the Slope (dP_dE) and Energy Density at center values
         for i in range(0,num_pc_points):
-            headers_slope = headers_slope + f"dE_dP({Pc_points[i]})," # the values of the pressure are icluded inside the paranthesis
+            headers_slope = headers_slope + f"dP_dE({Pc_points[i]})," # the values of the pressure are icluded inside the paranthesis
             headers_enrg = headers_enrg + f"E_c({Pc_points[i]})," # the values of the pressure are icluded inside the paranthesis
 
         # Forming the headers for the X data (explanatory variables) of the regression, i.e. the Mass and Radius values
@@ -1581,7 +1662,7 @@ class cflQSdata:
                 headers_radius = headers_radius + f"R_{i+1},"   
         
         # Forming the total info of the headers and the name of the recording .csv file
-        headers_info = headers_slope + headers_enrg + headers_mass + headers_radius
+        headers_info = headers_slope + headers_enrg + headers_Pc_max_mass + headers_mass + headers_radius
         with open(f"{save_filename}.csv","w") as file:
             file.write(headers_info)
 
@@ -1594,7 +1675,7 @@ class cflQSdata:
             filename = f"{cfl_model_name}_sol.csv"
 
             # Getting the basic sample of the Slope (dE_dP) and Energy Density at center values
-            slope_basic_sample,enrg_basic_sample = self.sample_EOS(filename,Pc_points,noiseSl_mv=0,noiseSl_std=0,noiseEc_mv=0,noiseEc_std=0)
+            dEdP_basic_sample,enrg_basic_sample,Pc_max_mass = self.sample_EOS(filename,Pc_points,noiseSl_mv=0,noiseSl_std=0,noiseEc_mv=0,noiseEc_std=0)
 
             # Getting the basic sample of the Mass and Radius values
             mass_basic_sample,radius_basic_sample = self.sample_MR(filename,M_threshold,points_MR,noiseM_mv=0,noiseM_std=0,noiseR_mv=0,noiseR_std=0)
@@ -1605,35 +1686,37 @@ class cflQSdata:
             # print(radius_basic_sample)
 
             # If any of the basic samples is NaN the algorithm skips the recording for this polytropic EOS and moves to the next polytrtopic EOS
-            if slope_basic_sample[0]==np.NaN or enrg_basic_sample[0]==np.NaN or mass_basic_sample[0]==np.NaN or radius_basic_sample[0]==np.NaN:
+            if dEdP_basic_sample[0]==np.NaN or enrg_basic_sample[0]==np.NaN or mass_basic_sample[0]==np.NaN or radius_basic_sample[0]==np.NaN:
                     break
             else:
                 j=1 # intiliazing a counter for the samples to be made per polytropic EOS
                 idx_mr = list(np.arange(0,num_mr_points)) # defining a list with the column indices of the mass/radius values in the basic mass/radius samples
                 while j<=samples_per_EOS:
                     # Adding noise to the values of the main samples and recording the resuted sample as a row in the final .csv file
-                    slope_sample_with_noise = slope_basic_sample + np.random.normal(loc=obs_noiseSl_mv,scale=obs_noiseSl_std,size=num_pc_points)
+                    dPdE_sample_with_noise = 1/np.array(dEdP_basic_sample) + np.random.normal(loc=obs_noiseSl_mv,scale=obs_noiseSl_std,size=num_pc_points)
                     enrg_sample_with_noise = enrg_basic_sample + np.random.normal(loc=obs_noiseEc_mv,scale=obs_noiseEc_std,size=num_pc_points)
-                    mass_sample_with_noise = mass_basic_sample + np.random.normal(loc=obs_noiseM_mv,scale=obs_noiseM_std,size=num_mr_points)
+                    mass_sample_with_noise = np.abs(mass_basic_sample + np.random.normal(loc=obs_noiseM_mv,scale=obs_noiseM_std,size=num_mr_points)) # getting the absolute value to ensure positive values for the Mass
                     radius_sample_with_noise = radius_basic_sample + np.random.normal(loc=obs_noiseR_mv,scale=obs_noiseR_std,size=num_mr_points)
 
                     # Initializing the row info for the basic .csv file
                     row_slope_info = f"" # row info for the Slope (dE_dP) values
-                    row_enrg_info = f"" # row info for the Energy Density at center values 
+                    row_enrg_info = f"" # row info for the Energy Density at center values
+                    row_Pc_max_mass_info = f"{Pc_max_mass}," # row info for the center pressure at maximum mass
                     row_mass_info = f"" # row info for the Mass values
                     row_radius_info = f"" # rwo info for the Radius values
 
                     # Initializing the row info for the shuffled .csv file
                     shuffled_row_slope_info = f"" # row info for the Slope (dE_dP) values
-                    shuffled_row_enrg_info = f"" # row info for the Energy Density at center values 
+                    shuffled_row_enrg_info = f"" # row info for the Energy Density at center values
+                    shuffled_row_Pc_max_mass_info = f"{Pc_max_mass}," # row info for the center pressure at maximum mass 
                     shuffled_row_mass_info = f"" # row info for the Mass values
                     shuffled_row_radius_info = f"" # rwo info for the Radius values
 
                     # Getting the row info for the Y data (response variables) of the regression, i.e. the Slope (dE_dP) and Energy Density at center values
                     for k in range(0,num_pc_points):
-                        row_slope_info = row_slope_info + f"{slope_sample_with_noise[k]},"
+                        row_slope_info = row_slope_info + f"{dPdE_sample_with_noise[k]},"
                         row_enrg_info = row_enrg_info + f"{enrg_sample_with_noise[k]},"
-                        shuffled_row_slope_info = shuffled_row_slope_info + f"{slope_sample_with_noise[k]},"
+                        shuffled_row_slope_info = shuffled_row_slope_info + f"{dPdE_sample_with_noise[k]},"
                         shuffled_row_enrg_info = shuffled_row_enrg_info + f"{enrg_sample_with_noise[k]},"
                     
                     
@@ -1653,12 +1736,12 @@ class cflQSdata:
                         mr_points_count +=1        
                             
                     # Getting the total info of the row and recording it to the final .csv file
-                    row_info = row_slope_info + row_enrg_info + row_mass_info + row_radius_info
+                    row_info = row_slope_info + row_enrg_info + row_Pc_max_mass_info + row_mass_info + row_radius_info
                     with open(f"{save_filename}.csv","a+") as file:
                         file.write(row_info)
 
                     # Getting the total info of the row and recording it to the final shuffled .csv file
-                    shuffled_row_info = shuffled_row_slope_info + shuffled_row_enrg_info + shuffled_row_mass_info + shuffled_row_radius_info
+                    shuffled_row_info = shuffled_row_slope_info + shuffled_row_enrg_info + shuffled_row_Pc_max_mass_info + shuffled_row_mass_info + shuffled_row_radius_info
                     with open(f"{save_filename}_rwshuffled.csv","a+") as file:
                         file.write(shuffled_row_info)    
 
