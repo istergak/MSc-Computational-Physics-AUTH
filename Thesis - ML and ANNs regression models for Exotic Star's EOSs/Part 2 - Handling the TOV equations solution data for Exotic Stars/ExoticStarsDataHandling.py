@@ -48,6 +48,8 @@ def file_read(filename,EOS_type="main"):
     2. EOS_type: the user can select wether the scanned file contains the TOV solution data for a main EOS or a polytropic Neutron Star EOS.
     Allowed values: ["main","polytropic","cfl"]
     """
+
+    # Allowed values for the 'EOS_type' argument
     EOS_type_allowedvalues = ["main","polytropic","cfl"]
     if EOS_type not in EOS_type_allowedvalues:
         raise ValueError(f"Invalid value \"{EOS_type}\" for the \"EOS_type\" argument. Allowed values are: {EOS_type_allowedvalues}")
@@ -134,6 +136,341 @@ def check_same_value(data_list):
             break
     return check_idx
 
+# Defining a class for plotting and sampling data from main NS EOSs
+class mainNSdata:
+    """
+    Handling data from the solution of TOV equations for main Neutron Stars' EOSs:
+    1. Plotting M-R curves (2D and 3D) and EOSs curves
+    2. Sampling data for regression purposes
+    """
+
+    # Constructor of the class
+    def __init__(self):
+        """
+        Initializing the class
+        """
+
+        # Appending the list with the names of the 21 main EOSs at a self variable of the class
+        self.main_EOSs_names = ["APR-1","BGP","BL-1","BL-2","DH","HHJ-1","HHJ-2","HLPS-2","HLPS-3","MDI-1","MDI-2","MDI-3","MDI-4","NLD","PS","SCVBB","Ska","SkI4","W","WFF-1","WFF-2"]
+
+
+    # Method that plots the M-R 2D or 3D curve of a main NS EOS
+    def plot_MR_curve(self,main_EOS_name,axis_MR,clr_caus,EOS_type="main",projection="2d",Pc_proj=0):
+        """
+        Reading the EOS data from a given file and plot the respective M-R 2D or 3D curve of a main Neutron Star's EOS
+        1. main_EOS_name: the name of the main Neutron Star EOS 
+        2. axis_MR: the axis that will include the M-R 2D or 3D curve
+        3. clr_caus: the color of the points of the M-R 2D or 3D curve that do not violate causality. The rest points (that violate causality) are plotted
+        with 'darkgrey' color.
+        4. EOS_type: the user can select wether the scanned file contains the TOV solution data for a main EOS or a polytropic Neutron Star EOS.
+        Allowed values: ["main"]
+        5. projection: projection of the axis that plots the M-R curves. Values: ["2d","3d"]. By default: 2d projection and plot of the Mass and Radius data of the Neutron
+        Star. When the 3d option is selected: including additionally the pressure in center data of the Neutron Star in a 3rd axis.
+        6. Pc_proj: the pressure of a plane parallel to the M-R plane, on which the 2d-projections of the 3d M-R curves will be displayed, when the "3d" option is selected
+        for the 'projection' argument. By default the value 0 is appended to the argument 'Pc_proj'.   
+        """
+        
+        # Allowed values for the 'main_EOS_name' argument
+        if main_EOS_name not in self.main_EOSs_names:
+            raise ValueError(f"Invalid value \"{main_EOS_name}\" for the \"main_EOS_name\" argument. Allowed values are: {self.main_EOSs_names}")
+
+        # Allowed values for the 'projection' argument
+        EOS_type_allowedvalues = ["main"]
+        if EOS_type not in EOS_type_allowedvalues:
+            raise ValueError(f"Invalid value \"{EOS_type}\" for the \"EOS_type\" argument. Allowed values are: {EOS_type}")
+        
+
+        # Allowed values for the 'projection' argument
+        projection_allowedvalues = ["2d","3d"]
+        if projection not in projection_allowedvalues:
+            raise ValueError(f"Invalid value \"{projection}\" for the \"projection\" argument. Allowed values are: {projection_allowedvalues}")
+        
+        # Allowed values for the 'Pc_proj' argument
+        if type(Pc_proj)!=type(2) and type(Pc_proj)!=type(2.5):
+            raise ValueError("The value of the \"Pc_proj\" argument must be a number. Try again.")    
+
+        # Creating the name of the file to be scanned
+        filename=f"{main_EOS_name}_sol.csv"  
+        
+        # Scanning and reading the file
+        sol_data = file_read(filename,EOS_type)
+        Pc_data = sol_data[0] # getting the NS pressure on center data
+        M_data = sol_data[3] # getting the NS Mass data
+        R_data = sol_data[4] # getting the NS Radius data
+
+        # Setting the line width of the curve
+        line_width = 1.5   
+        
+        # Plotting the EOS in 2d or 3d space
+        if projection=="2d": # 2D-plotting
+            # Plotting the M-R data that do not violate causality
+            axis_MR.plot(R_data[0],M_data[0],lw=line_width,color=clr_caus,label=f"{main_EOS_name}")
+            # Plotting the M-R data that do violate causality
+            axis_MR.plot(R_data[1],M_data[1],"--",lw=0.75*line_width,color="darkgrey")
+        elif projection=="3d": # 3D-plotting
+            # Plotting the M-R data that do not violate causality
+            axis_MR.plot(R_data[0],Pc_data[0],M_data[0],lw=line_width,color=clr_caus)
+            # Plotting the projection on the M-R plane of the M-R data that do not violate causality
+            axis_MR.plot(R_data[0],Pc_proj*np.ones_like(Pc_data[0]),M_data[0],"--",lw=line_width,color=clr_caus,label=f"{main_EOS_name}")
+            # Plotting the M-R data that do violate causality
+            axis_MR.plot(R_data[1],Pc_data[1],M_data[1],lw=0.75*line_width,color="darkgrey")
+            # Plotting the projection on the M-R plane of the M-R data that do violate causality
+            axis_MR.plot(R_data[1],Pc_proj*np.ones_like(Pc_data[1]),M_data[1],"--",lw=0.75*line_width,color="darkgrey")
+
+    # Method that plots the Ec-Pc 2D curve of a main NS EOS
+    def plot_EOS_curve(self,main_EOS_name,axis_EOS,clr_caus,EOS_type="main"):
+        """
+        Reading the EOS data from a given file and plot the respective Ec-Pc 2D curve of a main Neutron Star's EOS
+        1. main_EOS_name: the name of the main Neutron Star EOS 
+        module script. To scan on another folder, the exact path of the file must be provided.
+        2. axis_EOS: the axis that will include the 2D curve of the EOS
+        3. clr_caus: the color of the points of the EOS 2D curve that do not violate causality. The rest points (that violate causality) are plotted
+        with 'darkgrey' color.
+        4. EOS_type: the user can select wether the scanned file contains the TOV solution data for a main EOS or a polytropic Neutron Star EOS.
+        Allowed values: ["main"]
+        """
+
+        # Allowed values for the 'main_EOS_name' argument
+        if main_EOS_name not in self.main_EOSs_names:
+            raise ValueError(f"Invalid value \"{main_EOS_name}\" for the \"main_EOS_name\" argument. Allowed values are: {self.main_EOSs_names}")
+        
+        # Allowed values for the 'projection' argument
+        EOS_type_allowedvalues = ["main"]
+        if EOS_type not in EOS_type_allowedvalues:
+            raise ValueError(f"Invalid value \"{EOS_type}\" for the \"EOS_type\" argument. Allowed values are: {EOS_type}")
+    
+        
+        # Creating the name of the file to be scanned
+        filename=f"{main_EOS_name}_sol.csv"
+      
+        
+        # Scanning and reading the file
+        sol_data = file_read(filename,EOS_type)
+        Pc_data = sol_data[0] # getting the NS pressure on center data
+        Ec_data = sol_data[1] # getting the NS energy density on center data
+
+        # Setting the line width of the curve depending on the type of EOS
+        line_width = 1.5
+        
+        # Plotting the EOS 
+            
+        # Plotting the Ec-Pc data that do not violate causality
+        axis_EOS.plot(Pc_data[0],Ec_data[0],lw=line_width,color=clr_caus,label=f"{main_EOS_name}")
+        # Plotting the Ec-Pc data that do violate causality
+        axis_EOS.plot(Pc_data[1],Ec_data[1],"--",lw=0.75*line_width,color="darkgrey")
+
+
+    # Method the plots the M-R curves of selected main Neutron Star EOSs
+    def plot_select_MR(self,main_EOS_list,colors_list,axis_MR,projection="2d",Pc_proj=0):
+        """
+        Plotting the M-R curves of selected main Neutron Star EOSs
+        1. main_EOS_list: list with the names of the main Neutron Star EOS, the respective M-R curves of which are going to be plotted
+        2. colors_list: list with the colors for the M-R curves
+        3. axis_MR: the axis that will include the M-R 2D or 3D curves
+        4. projection: projection of the axis that plots the M-R curves. Values: ["2d","3d"]. By default: 2d projection and plot of the Mass and Radius data of the Neutron
+        Star. When the 3d option is selected: including additionally the pressure in center data of the Neutron Star in a 3rd axis.
+        5. Pc_proj: the pressure of a plane parallel to the M-R plane, on which the 2d-projections of the 3d M-R curves will be displayed, when the "3d" option is selected
+        for the 'projection' argument. By default the value 0 is appended to the argument 'Pc_proj'. 
+        """ 
+        
+        # Iterative process scanning for plotting the respective M-R curves of the given main EOSs
+        for i in range(0,len(main_EOS_list)):
+            self.plot_MR_curve(main_EOS_list[i],axis_MR,colors_list[i],EOS_type="main",projection=projection,Pc_proj=Pc_proj)
+
+    # Method the plots the Ec-Pc curves of selected main Neutron Star EOSs
+    def plot_select_EOS(self,main_EOS_list,colors_list,axis_EOS):
+        """
+        Plotting the Ec-Pc curves of selected main Neutron Star EOSs
+        1. main_EOS_list: list with the names of the main Neutron Star EOS, the respective Ec-Pc curves of which are going to be plotted
+        2. colors_list: list with the colors for the M-R curves
+        3. axis_EOS: the axis that will include the M-R 2D or 3D curves
+        """ 
+        
+        # Iterative process for plotting the respective Ec-Pc curves of the given main EOSs 
+        for i in range(0,len(main_EOS_list)):
+            self.plot_EOS_curve(main_EOS_list[i],axis_EOS,colors_list[i],EOS_type="main")
+
+    # Method that samples Mass and Radius data (that do not violate causality) from TOV solution data files of main NS EOS
+    def sample_MR(self,filename,Pc_threshold=0,M_threshold=0,points_MR=16,noiseM_mv=0,noiseM_std=0,noiseR_mv=0,noiseR_std=0):
+        """
+        Scanning file containing the TOV equations' solution data for a main Neutron Star EOS and sampling Mass and Radius values,
+        that do not violate causality. Artificial observational noise (following normal distribution) can be added to the values of the samples.
+        1. filename: name of the file to be scanned
+        2. Pc_threshold: Threshold of the maximum pressure in [MeV*fm^-3]. The EOSs with maximum pressure less than the threshold are not included
+        in the sampling of Mass and Radius values. By default its value is set to 0.
+        3. M_threshold: Threshold of Mass values. In order for the algorithm to create Mass and Radius samples, the scanned file must contain causality valid Mass values greater than M_threshold
+        4. points_MR: number of equally spaced points (with respect to Mass-axis) to be selected and sampled. The algorithm divides the range of Mass data that do not violate causality into 
+        points_MR-1 segments with equal length. Then it selects the closest values of the Mass and the Radius to the boundary points of these segments, and stores these values for the Mass and the Radius samples, respectively.
+        By default, 16 points are selected to be sampled.
+        5. noiseM_mv: mean value of the normal distributed observational noise for the values of the Mass sample. By default its value is set to 0.
+        6. noiseM_std: standard deviation of the normal distributed observational noise for the values of the Mass sample. By default its value is set to 0.
+        7. noiseR_mv: mean value of the normal distributed observational noise for the values of the Radius sample. By default its value is set to 0.
+        8. noiseR_std: standard deviation of the normal distributed observational noise for the values of the Radius sample. By default its value is set to 0.
+        """ 
+        
+        # Allowed values for the 'Pc_treshold' argument
+        if type(Pc_threshold)!=type(2) and type(Pc_threshold)!=type(2.5):
+            raise ValueError("The value of the \"Pc_threshold\" argument must be a number. Try again.")
+        elif Pc_threshold<0:
+            raise ValueError("The value of the \"Pc_threshold\" argument can not be negative. Try again.")
+        
+        # Allowed values for the 'Μ_treshold' argument
+        if type(M_threshold)!=type(2) and type(M_threshold)!=type(2.5):
+            raise ValueError("The value of the \"M_threshold\" argument must be a number. Try again.")
+        elif M_threshold<0:
+            raise ValueError("The value of the \"M_threshold\" argument can not be negative. Try again.")
+        
+        # Allowed values for the 'points_MR' argument
+        if type(points_MR)!=type(2):
+            raise ValueError("The value of the \"points_MR\" argument must be an integer. Try again.")
+        elif points_MR<=0:
+            raise ValueError("The value of the \"points_MR\" argument must be positive. Try again.")
+
+        # Allowed values for the 'noiseM_mv' argument
+        if type(noiseM_mv)!=type(2) and type(noiseM_mv)!=type(2.5):
+            raise ValueError("The value of the \"noiseM_mv\" argument must be a number. Try again.")
+
+        # Allowed values for the 'noiseM_std' argument
+        if type(noiseM_std)!=type(2) and type(noiseM_std)!=type(2.5):
+            raise ValueError("The value of the \"noiseM_std\" argument must be a number. Try again.")
+
+        # Allowed values for the 'noiseR_mv' argument
+        if type(noiseR_mv)!=type(2) and type(noiseR_mv)!=type(2.5):
+            raise ValueError("The value of the \"noiseR_mv\" argument must be a number. Try again.")
+
+        # Allowed values for the 'noiseR_std' argument
+        if type(noiseR_std)!=type(2) and type(noiseR_std)!=type(2.5):
+            raise ValueError("The value of the \"noiseR_std\" argument must be a number. Try again.")            
+
+        mass_segments = points_MR-1 # number of Mass range segments
+        obs = points_MR # number of observations in the samples
+
+        # Initializing storage lists for the Mass and Radius values sample
+        mass_sample = []
+        radius_sample = []
+        mass_sample_with_noise = [np.NaN]
+        radius_sample_with_noise = [np.NaN]
+        
+        # Scanning for the file
+        if os.path.exists(filename):
+            sol_data = file_read(filename,"main")
+            Pc_data = sol_data[0] # getting the NS pressure on center data
+            M_data = sol_data[3] # getting the NS Mass data
+            R_data = sol_data[4] # getting the NS Radius data
+            
+            # Obtaining the pressure, mass and radius values that do not violate causality
+            Pc_caus = Pc_data[0] # getting the NS pressure on center data that do not violate causality
+            M_caus = M_data[0]
+            R_caus = R_data[0]
+
+            # Sampling Mass and Radius values only if the causality part of the EOS overcomes the threshold pressure
+            # and there are Mass values more than M_threshold
+            if Pc_caus[-1]>=Pc_threshold and max(M_caus)>=M_threshold:
+
+                # Filtering the M_caus data to contain Mass values over M_threshold Solar Mass
+                idx_filt = [j for j, mass_value in enumerate(M_caus) if mass_value>=M_threshold]
+                M_caus_filt = [M_caus[j] for j in idx_filt]
+
+                # Getting the respective Radius values from the R_caus data list
+                R_caus_filt = [R_caus[j] for j in idx_filt]
+                
+                # Getting the Mass bounds of the Mass range segments
+                M_bounds = np.linspace(min(M_caus_filt),max(M_caus_filt),mass_segments+1)
+                
+                # Sampling Mass and Radius values at each segment
+                for M_bound in M_bounds:
+                    M_diff_abs = abs(M_caus_filt-M_bound*np.ones_like(M_caus_filt))
+                    idx_min_diff = np.argmin(M_diff_abs)
+                    mass = M_caus_filt[idx_min_diff]
+                    radius = R_caus_filt[idx_min_diff]
+
+                    # Appening to the storage lists
+                    mass_sample.append(mass)
+                    radius_sample.append(radius)
+
+                # Adding noise to the Mass and Radius samples
+                mass_sample_with_noise = mass_sample + np.random.normal(loc=noiseM_mv,scale=noiseM_std,size=obs)
+                radius_sample_with_noise = radius_sample + np.random.normal(loc=noiseR_mv,scale=noiseR_std,size=obs)
+
+        return [mass_sample_with_noise,radius_sample_with_noise]                
+    
+
+    # Method that samples Slope (dE_dP), Energy density on center data (that do not violate causality) and center pressure at maximum mass, from TOV solution data files of a main NS EOS
+    def sample_EOS(self,filename,Pc_points=[10,25,50,75,100,200,300,400,500,600,700,800],noiseSl_mv=0,noiseSl_std=0,noiseEc_mv=0,noiseEc_std=0):
+        """
+        Scanning a file containing the TOV equations' solution data for a main Neutron Star EOS and sampling Slope (dE_dP), Energy Density at center values and center pressure at maximum mass
+        that do not violate causality. Artificial observational noise (following normal distribution) can be added to the values of the samples.
+        1. filename: name of the file to be scanned
+        2. Pc_points: values (points) of pressure in center of the polytropic Neutron Star, on which the algorithm will collect the values of Slope (dE_dP) and Energy Density.
+        By default the following points are selected: 'Pc_points' = [10,25,50,75,100,200,300,400,500,600,700,800] MeV*fm^-3.
+        3. noiseSl_mv: mean value of the normal distributed observational noise for the values of the Slope (dE_dP) sample. By default its value is set to 0.
+        4. noiseSl_std: standard deviation of the normal distributed observational noise for the values of the Slope (dE_dP) sample. By default its value is set to 0.
+        5. noiseEc_mv: mean value of the normal distributed observational noise for the values of the Energy Density at center sample. By default its value is set to 0.
+        6. noiseEc_std: standard deviation of the normal distributed observational noise for the values of the Energy Density at center sample. By default its value is set to 0.
+        """ 
+        
+        # Allowed values for the 'noiseSl_mv' argument
+        if type(noiseSl_mv)!=type(2) and type(noiseSl_mv)!=type(2.5):
+            raise ValueError("The value of the \"noiseSl_mv\" argument must be a number. Try again.")
+
+        # Allowed values for the 'noiseSl_std' argument
+        if type(noiseSl_std)!=type(2) and type(noiseSl_std)!=type(2.5):
+            raise ValueError("The value of the \"noiseSl_std\" argument must be a number. Try again.")
+
+        # Allowed values for the 'noiseEc_mv' argument
+        if type(noiseEc_mv)!=type(2) and type(noiseEc_mv)!=type(2.5):
+            raise ValueError("The value of the \"noiseEc_mv\" argument must be a number. Try again.")
+
+        # Allowed values for the 'noiseEc_std' argument
+        if type(noiseEc_std)!=type(2) and type(noiseEc_std)!=type(2.5):
+            raise ValueError("The value of the \"noiseR_std\" argument must be a number. Try again.")
+        
+        # Getting the number of pressure points
+        n = len(Pc_points)
+
+        # Initializing storage lists for the Slope (dE_dP), Energy density on center and center pressure at maximum mass values samples
+        dEdP_sample = []
+        enrg_dens_sample = []
+        dEdP_sample_with_noise = [np.NaN]
+        enrg_dens_sample_with_noise =[np.NaN]
+        Pc_max_mass = np.NaN
+
+        # Scanning for the file
+        if os.path.exists(filename):
+            sol_data = file_read(filename,"main")
+            Pc_data = sol_data[0] # getting the NS pressure on center data
+            Ec_data = sol_data[1] # getting the NS Energy Density on center data
+            dEdP_data = sol_data[2] # getting the NS Slope dE_dP data
+            M_data = sol_data[3] # getting the NS mass data
+
+            # Getting the data that do not violate causality
+            Pc_caus = Pc_data[0]
+            Ec_caus = Ec_data[0]
+            dEdP_caus = dEdP_data[0]
+            M_caus = M_data[0]
+
+            # Sampling Slope (dE_dP) and Energy density on center values only if the causality part of the EOS overcomes 
+            # the value of the maximum pressure point plus 50
+            if Pc_caus[-1]>=max(Pc_points)+50:
+                for Pc in Pc_points:
+                    idx_press_val = Pc_caus.index(Pc)
+                    dEdP_sample.append(dEdP_caus[idx_press_val])
+                    enrg_dens_sample.append(Ec_caus[idx_press_val])
+                
+                # Getting the center pressure at maximum mass
+                idx_max_mass = np.argmax(M_caus)
+                Pc_max_mass = Pc_caus[idx_max_mass]
+
+                #print(max(M_caus),Pc_max_mass)
+
+                # Adding noise to the Mass and Radius samples
+                dEdP_sample_with_noise = dEdP_sample + np.random.normal(loc=noiseSl_mv,scale=noiseSl_std,size=n)
+                enrg_dens_sample_with_noise = enrg_dens_sample + np.random.normal(loc=noiseEc_mv,scale=noiseEc_std,size=n)
+
+        return [dEdP_sample_with_noise,enrg_dens_sample_with_noise,Pc_max_mass]
+
+
+
 # Defining a class for plotting and sampling data from polytropic NS EOSs
 class polyNSdata:
     """ 
@@ -145,7 +482,7 @@ class polyNSdata:
     # Constructor of the class
     def __init__(self,Γ_choices_codec=["A","B","C","D"],Γ_choices=[1,2,3,4],num_segments=4):
         """
-        Initializing the polyNSdata class:
+        Initializing the `polyNSdata` class:
         1. Appending the (given) list of available coded choices of the Γ parameter to the self variable 'Γ_choices_codec'
         2. Appending the (given) list of available choices of the Γ parameter to the self variable 'Γ_choices'
         3. Appending the (given) number of mass density ρ segments to the self variable 'num_segments'
@@ -295,10 +632,10 @@ class polyNSdata:
 
         return EOS_overcome
 
-    # Method that plots an EOS 2D curve of a main or a polytropic NS EOS
+    # Method that plots the Ec-Pc 2D curve of a main or a polytropic NS EOS
     def plot_EOS_curve(self,filename,axis_EOS,clr_caus,EOS_type="main",Pc_threshold=0):
         """
-        Reading the EOS data from a given file and plot the respective EOS 2D curve of a main or a polytropic Neutron Star's EOS, when the EOS overcomes the given threshold pressure
+        Reading the EOS data from a given file and plot the respective Ec-Pc 2D curve of a main or a polytropic Neutron Star's EOS, when the EOS overcomes the given threshold pressure
         1.filename: name of the file to be read. By default the scanning is performed in the folder that contains the 'ExoticStarsDataHandling'
         module script. To scan on another folder, the exact path of the file must be provided.
         2. axis_EOS: the axis that will include the 2D curve of the EOS
@@ -554,9 +891,9 @@ class polyNSdata:
             axis_MR.set_xbound([4,16]) # displayed radius R values within [4,16] km
         elif projection=="3d":
             axis_MR.set_xlabel(r"R $[km]$",fontsize=14)
-            axis_MR.set_ylabel(r"$P_c$ $[MeV*fm^{-3}]$",fontsize=14)
+            axis_MR.set_ylabel(r"$P_c$ $[MeV\cdot fm^{-3}]$",fontsize=14)
             axis_MR.set_zlabel(r"$M$ $(M_\odot)$",fontsize=14)
-            axis_MR.set_xbound([4,20]) # displayed radius R values within [4,16] km
+            axis_MR.set_xbound([4,20]) # displayed radius R values within [4,20] km
             axis_MR.view_init(25,-125)    
 
         return []          
@@ -673,8 +1010,8 @@ class polyNSdata:
             
 
         # Adding labels for clarity, as well as setting the scale of both axes to logarithmic
-        axis_EOS.set_xlabel(r"$P_c$ $[MeV*fm^{-3}]$",fontsize=14)
-        axis_EOS.set_ylabel(r"$E_c$ $[MeV*fm^{-3}]$",fontsize=14)
+        axis_EOS.set_xlabel(r"$P_c$ $[MeV\cdot fm^{-3}]$",fontsize=14)
+        axis_EOS.set_ylabel(r"$E_c$ $[MeV\cdot fm^{-3}]$",fontsize=14)
         axis_EOS.set_xscale("log")
         axis_EOS.set_yscale("log")
 
@@ -1085,7 +1422,7 @@ class cflQSdata:
     # Constructor of the class
     def __init__(self,Beff_max=250,Beff_step=5,Delta_max=250,Delta_step=10):
         """
-        Initializing the polyNSdata class:
+        Initializing the `cflQSdata` class:
         1. Setting the minimum value of the Beff parameter to 60 [MeV*fm^-3] for this class. The actual minmum allowed value is [MeV*fm^-3] # according to the MIT bag model 
         2. Setting the minimum value of the Δ parameter of the MIT bag model to 50 [MeV] for this class. 
         3. Appending the (given) maximum value of the Beff parameter to the self variable 'Beff_max'
@@ -1200,7 +1537,7 @@ class cflQSdata:
         # Setting the axes bounds, labels and legend for clarity
         axis_valid_cfl.set_xbound([min(Delta_valid_range),max(Delta_valid_range)])
         axis_valid_cfl.set_xlabel(r"$\Delta$ $[MeV]$",fontsize=14)
-        axis_valid_cfl.set_ylabel(r"$B_{eff}$ $[MeV*fm^{-3}]$",fontsize=14)
+        axis_valid_cfl.set_ylabel(r"$B_{eff}$ $[MeV\cdot fm^{-3}]$",fontsize=14)
         axis_valid_cfl.legend()
 
         return fig_valid_cfl,axis_valid_cfl
@@ -1379,7 +1716,7 @@ class cflQSdata:
             axis_MR.set_xbound([0,20]) # displayed radius R values within [0,20] km
         elif projection=="3d":
             axis_MR.set_xlabel(r"R $[km]$",fontsize=14)
-            axis_MR.set_ylabel(r"$P_c$ $[MeV*fm^{-3}]$",fontsize=14)
+            axis_MR.set_ylabel(r"$P_c$ $[MeV\cdot fm^{-3}]$",fontsize=14)
             axis_MR.set_zlabel(r"$M$ $(M_\odot)$",fontsize=14)
             axis_MR.set_xbound([0,20]) # displayed radius R values within [0,20] km
             axis_MR.view_init(25,-125)    
@@ -1422,8 +1759,8 @@ class cflQSdata:
         print("-----------------------------------------------------------------------------------------------")
         
         # Adding labels for clarity
-        axis_EOS.set_xlabel(r"$P_c$ $[MeV*fm^{-3}]$",fontsize=14)
-        axis_EOS.set_ylabel(r"$E_c$ $[MeV*fm^{-3}]$",fontsize=14)
+        axis_EOS.set_xlabel(r"$P_c$ $[MeV\cdot fm^{-3}]$",fontsize=14)
+        axis_EOS.set_ylabel(r"$E_c$ $[MeV\cdot fm^{-3}]$",fontsize=14)
 
         return []
     
