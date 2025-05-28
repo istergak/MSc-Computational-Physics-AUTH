@@ -443,31 +443,30 @@ class mainNSdata:
             dEdP_data = sol_data[2] # getting the NS Slope dE_dP data
             M_data = sol_data[3] # getting the NS mass data
 
-            # Getting the data that do not violate causality
-            Pc_caus = Pc_data[0]
-            Ec_caus = Ec_data[0]
-            dEdP_caus = dEdP_data[0]
-            M_caus = M_data[0]
+            # Getting the raw data from the scaned file
+            Pc_data_raw = Pc_data[2]
+            Ec_data_raw = Ec_data[2]
+            dEdP_data_raw = dEdP_data[2]
+            M_data_raw = M_data[2]
 
-            # Sampling Slope (dE_dP) and Energy density on center values only if the causality part of the EOS overcomes 
-            # the value of the maximum pressure point plus 50
-            if Pc_caus[-1]>=max(Pc_points)+50:
+            # Sampling Slope (dE_dP) and Energy density on center values if the final pressure of the scaned file is greater
+            # than the maximum pressure point in Pc_points list
+            if Pc_data_raw[-1]>max(Pc_points):
                 for Pc in Pc_points:
-                    idx_press_val = Pc_caus.index(Pc)
-                    dEdP_sample.append(dEdP_caus[idx_press_val])
-                    enrg_dens_sample.append(Ec_caus[idx_press_val])
+                    idx_press_val = Pc_data_raw.index(Pc)
+                    dEdP_sample.append(dEdP_data_raw[idx_press_val])
+                    enrg_dens_sample.append(Ec_data_raw[idx_press_val])
                 
-                # Getting the center pressure at maximum mass
-                idx_max_mass = np.argmax(M_caus)
-                Pc_max_mass = Pc_caus[idx_max_mass]
-
-                #print(max(M_caus),Pc_max_mass)
+                # Getting the center pressure and energy density at maximum mass
+                idx_max_mass = np.argmax(M_data_raw)
+                Pc_max_mass = Pc_data_raw[idx_max_mass]
+                Ec_max_mass = Ec_data_raw[idx_max_mass]
 
                 # Adding noise to the Mass and Radius samples
                 dEdP_sample_with_noise = dEdP_sample + np.random.normal(loc=noiseSl_mv,scale=noiseSl_std,size=n)
                 enrg_dens_sample_with_noise = enrg_dens_sample + np.random.normal(loc=noiseEc_mv,scale=noiseEc_std,size=n)
 
-        return [dEdP_sample_with_noise,enrg_dens_sample_with_noise,Pc_max_mass]
+        return [dEdP_sample_with_noise,enrg_dens_sample_with_noise,Pc_max_mass,Ec_max_mass]
 
 
 
