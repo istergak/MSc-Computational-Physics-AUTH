@@ -801,7 +801,7 @@ class polyNSdata:
         2. mainEOSname: the name of the main EOS, by default 'HLPS-2'.
         3. first_segment_value: allowing the user to draw only the M-R curves with a certain value of Γ in the first segment of mass density
         (from the available coded choices). When the option 'all' is selected the aformentioned constraint is not applied.
-        4. linear_behavior: allowing the user to scan additionally for files containing TOV equations solution data from EOSs that display 
+        4. linear_behavior: allowing the user to scan for files containing TOV equations solution data from EOSs that display 
         linear rather than polytropic behavior at the last segment of mass density (in order to avoid the violation of causality). Allowed values: ["yes","no"]
         5. Pc_threshold: Threshold of the maximum pressure in [MeV*fm^-3]. The EOSs with maximum pressure less than the threshold are not included
         in the plots. By default its value is set to 0.
@@ -855,20 +855,21 @@ class polyNSdata:
         for Γ_combo in self.Γ_total_combos_sorted:
             # Checking if the "all" option is selected for the "first_segment value" argument
             if first_segment_value=="all" or Γ_combo[0]==first_segment_value:
-                # Scanning for data with EOS non-linear behavior at the last mass density segment
-                filename = f"{mainEOSname}_{Γ_combo}_sol.csv"
-                # Checking wether the file exists or not, and plottting the data if it exists
-                if os.path.exists(filename):
-                    MR_curve_result = self.plot_MR_curve(filename,axis_MR,clr_poly,"polytropic",Pc_threshold,projection,Pc_proj)
-                    EOSs_over_threshold = EOSs_over_threshold + MR_curve_result
-
                 # Scanning for data with EOS linear behavior at the last mass density segment (if selected)
                 if linear_behavior=="yes":
                     filename = f"{mainEOSname}_{Γ_combo}L_sol.csv"
                     # Checking wether the file exists or not, and plottting the data if it exists
                     if os.path.exists(filename):
                         MR_curve_result = self.plot_MR_curve(filename,axis_MR,clr_poly2,"polytropic",Pc_threshold,projection,Pc_proj)
-                        EOSs_over_threshold_lin = EOSs_over_threshold_lin + MR_curve_result     
+                        EOSs_over_threshold_lin = EOSs_over_threshold_lin + MR_curve_result
+                
+                # Scanning for data with EOS non-linear behavior at the last mass density segment
+                elif linear_behavior=="no":
+                    filename = f"{mainEOSname}_{Γ_combo}_sol.csv"
+                    # Checking wether the file exists or not, and plottting the data if it exists
+                    if os.path.exists(filename):
+                        MR_curve_result = self.plot_MR_curve(filename,axis_MR,clr_poly,"polytropic",Pc_threshold,projection,Pc_proj)
+                        EOSs_over_threshold = EOSs_over_threshold + MR_curve_result             
 
         # Print the number of EOSs over threshold pressure
         print(f"Γ coded value on first mass density segment -> {first_segment_value}")
@@ -929,7 +930,7 @@ class polyNSdata:
         2. mainEOSname: the name of the main EOS, by default 'HLPS-2'.
         3. first_segment_value: allowing the user to draw only the M-R curves with a certain value of Γ in the first segment of mass density
         (from the available coded choices). When the option 'all' the afformentioned constraint is not applied.
-        4. linear_behavior: allowing the user to scan additionally for files containing TOV equations solution data from EOSs that display 
+        4. linear_behavior: allowing the user to scan for files containing TOV equations solution data from EOSs that display 
         linear rather than polytropic behavior at the last segment of mass density (in order to avoid the violation of causality). Allowed values: ["yes","no"]
         5. Pc_threshold: Threshold of the maximum pressure in [MeV*fm^-3]. The EOSs with maximum pressure less than the threshold are not included
         in the plots. By default its value is set to 0.
@@ -979,13 +980,6 @@ class polyNSdata:
         for Γ_combo in self.Γ_total_combos_sorted:
             # Checking if the "all" option is selected for the "first_segment value" argument
             if first_segment_value=="all" or Γ_combo[0]==first_segment_value:
-                # Scanning for data with EOS non-linear behavior at the last mass density segment
-                filename = f"{mainEOSname}_{Γ_combo}_sol.csv"
-                # Checking wether the file exists or not, and plottting the data if it exists
-                if os.path.exists(filename):
-                    EOS_curve_result = self.plot_EOS_curve(filename,axis_EOS,clr_poly,"polytropic",Pc_threshold)
-                    EOSs_over_threshold = EOSs_over_threshold + EOS_curve_result
-
                 # Scanning for data with EOS linear behavior at the last mass density segment (if selected)
                 if linear_behavior=="yes":
                     filename = f"{mainEOSname}_{Γ_combo}L_sol.csv"
@@ -993,6 +987,14 @@ class polyNSdata:
                     if os.path.exists(filename):
                         EOS_curve_result = self.plot_EOS_curve(filename,axis_EOS,clr_poly2,"polytropic",Pc_threshold)
                         EOSs_over_threshold_lin = EOSs_over_threshold_lin + EOS_curve_result
+                
+                # Scanning for data with EOS non-linear behavior at the last mass density segment (if selected)
+                elif linear_behavior=="no":
+                    filename = f"{mainEOSname}_{Γ_combo}_sol.csv"
+                    # Checking wether the file exists or not, and plottting the data if it exists
+                    if os.path.exists(filename):
+                        EOS_curve_result = self.plot_EOS_curve(filename,axis_EOS,clr_poly,"polytropic",Pc_threshold)
+                        EOSs_over_threshold = EOSs_over_threshold + EOS_curve_result        
 
         # Print the number of EOSs over threshold pressure
         print(f"Γ coded value on first mass density segment -> {first_segment_value}")
@@ -1216,7 +1218,7 @@ class polyNSdata:
         return [dEdP_sample_with_noise,enrg_dens_sample_with_noise,Pc_max_mass]
 
     # Method that generates and records on .csv files data of polytropic Neutron Stars for regression purposes
-    def gen_reg_data(self,save_filename,samples_per_EOS=1,M_threshold=0,points_MR=16,Pc_points=[10,25,50,75,100,200,400,800],noises_mv=[0,0,0,0],noises_std=[0,0,0,0]):
+    def gen_reg_data(self,save_filename,samples_per_EOS=1,M_threshold=0,points_MR=16,Pc_points=[10,25,50,75,100,200,400,800],linear_behavior="no",noises_mv=[0,0,0,0],noises_std=[0,0,0,0]):
         """
         Sampling data of polytropic Neutron Stars for regression purposes and recording them on .csv files
         1. save_filename: the name of the final .csv file, in which the regression data are being recorded
@@ -1229,8 +1231,10 @@ class polyNSdata:
         By default, 16 points are selected to be sampled.
         5. Pc_points: values (points) of pressure in center of the polytropic Neutron Star, on which the algorithm will collect the values of Slope (dE_dP) and Energy Density.
         By default the following points are selected: 'Pc_points' = [10,25,50,75,100,200,400,800] MeV*fm^-3.
-        6. noises_mv: list containing the mean values for the artificial observational noise that is added to the sample values of the following: 1st element-> Mass, 2nd element -> Radius, 3rd element -> Slope (dP_dE) and 4th element -> Energy Density at center. By default the mean values are set to 0.
-        7. noises_std: list containing the standard deviations for the artificial observational noise that is added to the sample values of the following: 1st element-> Mass, 2nd element -> Radius, 3rd element -> Slope (dP_dE) and 4th element -> Energy Density at center. By default the standard deviations are set to 0.
+        6. linear_behavior: allowing the user to scan additionally for files containing TOV equations solution data from EOSs that display 
+        linear rather than polytropic behavior at the last segment of mass density (in order to avoid the violation of causality). Allowed values: ["no","yes","both"]
+        7. noises_mv: list containing the mean values for the artificial observational noise that is added to the sample values of the following: 1st element-> Mass, 2nd element -> Radius, 3rd element -> Slope (dP_dE) and 4th element -> Energy Density at center. By default the mean values are set to 0.
+        8. noises_std: list containing the standard deviations for the artificial observational noise that is added to the sample values of the following: 1st element-> Mass, 2nd element -> Radius, 3rd element -> Slope (dP_dE) and 4th element -> Energy Density at center. By default the standard deviations are set to 0.
         """ 
 
         # Allowed lentgh for the noises_mv list
@@ -1240,6 +1244,11 @@ class polyNSdata:
         # Allowed lentgh for the noises_std list
         if len(noises_std)!=4:
             raise ValueError(f"The length of the \"noises_std\" list must be 4, but a list with length {len(noises_std)} has been given.")
+        
+        # Allowed values for the 'linear_behavior' argument
+        linear_behavior_allowedvalues = ["no","yes","both"]
+        if linear_behavior not in linear_behavior_allowedvalues:
+            raise ValueError(f"Invalid value \"{linear_behavior}\" for the \"linear_behavior\" argument. Allowed values are: {linear_behavior_allowedvalues}")
 
         # Getting the mean values and the standard deviations of the observational noises
         obs_noiseM_mv = noises_mv[0] # mean value for the noise of the Mass values
@@ -1297,7 +1306,12 @@ class polyNSdata:
             file.write(headers_info)
 
         # Linear behavior signs
-        linear_behavior_signs = ["","L"]
+        if linear_behavior=="no":
+            linear_behavior_signs = [""]
+        elif linear_behavior=="yes":
+            linear_behavior_signs = ["L"]    
+        elif linear_behavior=="both":
+            linear_behavior_signs = ["","L"]    
 
         # Main EOSs to be included
         main_EOSs = ["HLPS-2","HLPS-3"]
