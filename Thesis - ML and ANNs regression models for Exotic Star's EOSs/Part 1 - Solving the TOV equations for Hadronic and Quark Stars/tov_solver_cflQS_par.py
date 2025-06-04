@@ -160,10 +160,10 @@ def tov_sol(p_0,r_step,Beff_val,Delta_val,EOS_name):
      
     # Pressure and mass initial values (initial conditions)       
     P_0 = Pc # initial pressure = pressure in center of NS
-    M_0 = 10**-12 # mass in center of the NS
+    M_0 = 10**-12 # mass in center of the QS
     initial_values = [P_0,M_0]
             
-    # Bounds of NS radius r interval for the 1st step 
+    # Bounds of QS radius r interval for the 1st step 
     # in the solving process
     r_min: float = 1e-9
     r_max: float = 1e-2
