@@ -4,7 +4,7 @@ This directory contains the modules (.py) and Jupyter notebooks (.ipynb) we deve
 
 ## Neutron Stars
 
-[eos_lib_NS.py](https://github.com/istergak/MSc-Computational-Physics-AUTH/blob/main/Thesis%20-%20ML%20and%20ANNs%20regression%20models%20for%20Exotic%20Star's%20EOSs/Part%201%20-%20Solving%20the%20TOV%20equations%20for%20Hadronic%20and%20Quark%20Stars/eos_lib_NS.py): module where the main EOSs for the core and the crust EOSs of the Neutron Star are defined (numerically and symbolically) and being stored in lists.
+[eos_lib_NS.py](https://github.com/istergak/MSc-Computational-Physics-AUTH/blob/main/Thesis%20-%20ML%20and%20ANNs%20regression%20models%20for%20Exotic%20Star's%20EOSs/Part%201%20-%20Solving%20the%20TOV%20equations%20for%20Hadronic%20and%20Quark%20Stars/eos_lib_NS.py): module where the main EOSs for the core and the crust EOSs of the Neutron Stars are defined (numerically and symbolically) and being stored in lists.
 
 [tov_solver_NS.py](https://github.com/istergak/MSc-Computational-Physics-AUTH/blob/main/Thesis%20-%20ML%20and%20ANNs%20regression%20models%20for%20Exotic%20Star's%20EOSs/Part%201%20-%20Solving%20the%20TOV%20equations%20for%20Hadronic%20and%20Quark%20Stars/tov_solver_NS.py): module to solve the TOV equations serially for a single core EOS of a Neutron Star included in **eos_lib_NS.py** module. The crust EOSs are always included.
 
