@@ -2,6 +2,15 @@
 
 This directory contains the modules (.py) and Jupyter notebooks (.ipynb) we developed in Python for the solution of TOV equations. We include solutions for different models of equations of states (EOSs) and both for Neutron and Quark stars. The solutions data are also included in seperate directories.
 
+**Notes**:
+
+1. The module files that solve the TOV equations must/can be executed via a terminal.<br>
+-> Execution command in **Windows**: `python tov_solver_XXYY.py`<br>
+-> Execution command in **Linux**: `python3 tov_solver_XXYY.py`<br>
+Replace XX with `NS`/`polyNS`/`cflQS`/`mitQS` and YY with `_par` or nothing.
+
+2. The solutions data are being stored in .csv files during the operation of this modules
+
 ## Neutron Stars
 
 [eos_lib_NS.py](https://github.com/istergak/MSc-Computational-Physics-AUTH/blob/main/Thesis%20-%20ML%20and%20ANNs%20regression%20models%20for%20Exotic%20Star's%20EOSs/Part%201%20-%20Solving%20the%20TOV%20equations%20for%20Hadronic%20and%20Quark%20Stars/eos_lib_NS.py): module where the main EOSs for the core and the crust EOSs of Neutron Stars are defined (numerically and symbolically) and being stored in lists.
@@ -23,6 +32,7 @@ This directory contains the modules (.py) and Jupyter notebooks (.ipynb) we deve
 
 [tov_solver_cflQS.py](https://github.com/istergak/MSc-Computational-Physics-AUTH/blob/main/Thesis%20-%20ML%20and%20ANNs%20regression%20models%20for%20Exotic%20Star's%20EOSs/Part%201%20-%20Solving%20the%20TOV%20equations%20for%20Hadronic%20and%20Quark%20Stars/tov_solver_cflQS.py): module to solve the TOV equations serially for a single CFL EOS of a Quark Star included in **eos_lib_QS.py** module. No crust EOSs are included.
 
-[tov_solver_cflQS_par.py](https://github.com/istergak/MSc-Computational-Physics-AUTH/blob/main/Thesis%20-%20ML%20and%20ANNs%20regression%20models%20for%20Exotic%20Star's%20EOSs/Part%201%20-%20Solving%20the%20TOV%20equations%20for%20Hadronic%20and%20Quark%20Stars/tov_solver_cflQS_par.py): module to solve the TOV equations in parallel for a selected number of CFL EOSs of a Quark Star. No crust EOSs are included. The user can determine the ranges of the $B_{eff}$ and $\Delta$ parameters and generate arbitrarily the preferred CFL models.
+[tov_solver_cflQS_par.py](https://github.com/istergak/MSc-Computational-Physics-AUTH/blob/main/Thesis%20-%20ML%20and%20ANNs%20regression%20models%20for%20Exotic%20Star's%20EOSs/Part%201%20-%20Solving%20the%20TOV%20equations%20for%20Hadronic%20and%20Quark%20Stars/tov_solver_cflQS_par.py): module to solve the TOV equations in parallel for a selected number of CFL EOSs of a Quark Star. No crust EOSs are included. The user can determine the ranges of the $B_{eff}$ and $\Delta$ parameters and generate arbitrarily the preferred CFL models. Each model is distributed to a single thread for solution.
 
-[tov_solver_mitQS_par.py](https://github.com/istergak/MSc-Computational-Physics-AUTH/blob/main/Thesis%20-%20ML%20and%20ANNs%20regression%20models%20for%20Exotic%20Star's%20EOSs/Part%201%20-%20Solving%20the%20TOV%20equations%20for%20Hadronic%20and%20Quark%20Stars/tov_solver_mitQS_par.py): module to solve the TOV equations in parallel for a selected number of MIT bag EOSs of a Quark Star. No crust EOSs are included. The user can determine the range of the $B_{eff}$ parameter and generate arbitrarily the preferred MIT bag models.
+[tov_solver_mitQS_par.py](https://github.com/istergak/MSc-Computational-Physics-AUTH/blob/main/Thesis%20-%20ML%20and%20ANNs%20regression%20models%20for%20Exotic%20Star's%20EOSs/Part%201%20-%20Solving%20the%20TOV%20equations%20for%20Hadronic%20and%20Quark%20Stars/tov_solver_mitQS_par.py): module to solve the TOV equations in parallel for a selected number of MIT bag EOSs of a Quark Star. No crust EOSs are included. The user can determine the range of the $B_{eff}$ parameter and generate arbitrarily the preferred MIT bag models. Each model is distributed to a single thread for solution.
+
