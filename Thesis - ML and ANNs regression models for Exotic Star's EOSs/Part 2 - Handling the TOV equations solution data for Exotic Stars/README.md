@@ -10,7 +10,8 @@ The data from the solution of TOV equations must be included in the same dierect
 
 ->Main Neutron Star EOSs solution data: [here](https://drive.google.com/drive/folders/1tzKjCmlceXtXBja5AHdiDcJv3q4RlP-a)<br>
 ->Polytropic and linear Neutron Star EOSs solution data: [here](https://drive.google.com/drive/folders/1iJNcD9arRdhSIKv6iQoxUYLkpZilexu4)<br>
-->Quark Stars EOSs solution data: [here](https://drive.google.com/drive/folders/1v7T21M9TRBBpSC7YjSZnBx3M62FIM82s)
+->MIT bag Quark Star EOSs solution data: [here](https://drive.google.com/drive/folders/1ggiVcc7ypTlooGC-VL1rPPhoCQL4Udgp)<br>
+->CFL Quarks Star EOSs solution data: [here](https://drive.google.com/drive/folders/1v7T21M9TRBBpSC7YjSZnBx3M62FIM82s)
 
 ## Modules
 
