@@ -122,7 +122,7 @@ class regression_ML:
         """
         Initializing the `regression_ML` class
         1. filename: name of the file containing data for regression purposes
-        2. mag_reg: name of the category of target (response) variables for the regression models. Allowed inputs: ["dPdE","enrg","PcMmax","Gamma"]
+        2. mag_reg: name of the category of target (response) variables for the regression models. Allowed inputs: ["dPdE","enrg","PtMmax","Gamma"]
         3. test_ratio: percentage (in decimal format) of the entire dataset to be used as a test dataset to evaluate the accuracy of the trained regression model
         """
         
@@ -131,7 +131,7 @@ class regression_ML:
             raise ValueError("An input for the \"filename\" argument must be given. Try again.")
         
         # Allowed values for the 'mag_reg' argument
-        mag_reg_allowedvalues = ["dPdE","enrg","PcMmax","Gamma"]
+        mag_reg_allowedvalues = ["dPdE","enrg","PtMmax","Gamma"]
         if mag_reg not in mag_reg_allowedvalues:
             raise ValueError(f"Invalid input \"{mag_reg}\" for the \"mag_reg\" argument. Valid inputs are: {mag_reg_allowedvalues}")
         
@@ -179,8 +179,8 @@ class regression_ML:
             Y_columns = [col for col in df.columns if col.startswith("E_c")]
             Y_data = df[Y_columns]
         # Center pressure at maximum mass    
-        elif self.mag_reg=="PcMmax":
-            Y_columns = [col for col in df.columns if col.startswith("Pc(M_max)")]
+        elif self.mag_reg=="PtMmax":
+            Y_columns = [col for col in df.columns if col.startswith("Pc(M_max)") or col.startswith("Ec(M_max)")]
             Y_data = df[Y_columns]
         # Polytropic parameter Γ    
         elif self.mag_reg=="Gamma":
@@ -228,7 +228,7 @@ class regression_ML:
     def train_test(self,ml_regressor,kfold_splits,hpar_grid,cv_scorer_type,cores_par=2,filesave=None):
         """
         Training and assessing a regression model using a selected machine learning algorithm.
-        1. ml_regressor: the machine learning regression algortihm to be selected for the model. Allowed inputs and their matches: ["rf"-> RandomForest,"dtree"-> Decision Tree,"svr"-> SVM sklearn, "gradboost"-> Gradient Boosting, "adaboost"-> AdaBoost]
+        1. ml_regressor: the machine learning regression algortihm to be selected for the model. Allowed inputs and their matches: ["rf"-> RandomForest,"dtree"-> Decision Tree,"svr"-> SVM sklearn, "gradboost"-> Gradient Boosting, "xgboost"-> Extreme Gradient Boosting, "adaboost"-> AdaBoost]
         2. kfold_splits: number of splits for the KFold cross-validation procedure
         3. hpar_grid: the grid of the values of the hyperparameters to be tuned during the Grid Search process. Must be given as a dictionary.
         4. cv_scorer_type: tool to evaluate the accuracy of the model during the cross-validation process. Allowed inputs and their matches: ["msle"-> mean squared log error, "mse"-> mean squared error]
@@ -237,7 +237,7 @@ class regression_ML:
         """ 
 
         # Allowed values for the 'ml_regressor' argument
-        ml_regressor_allowedvalues = ["rf","dtree","svr","gradboost","adaboost"]
+        ml_regressor_allowedvalues = ["rf","dtree","svr","gradboost","xgboost","adaboost"]
         if ml_regressor not in ml_regressor_allowedvalues:
             raise ValueError(f"Invalid input \"{ml_regressor}\" for the \"ml_regressor\" argument. Valid inputs are: {ml_regressor_allowedvalues}")
 
@@ -286,8 +286,8 @@ class regression_ML:
         scaler = StandardScaler()
 
         # Scaling the X (explanatory) data
-        X_train_scaled = scaler.fit_transform(self.X_train)
-        X_test_scaled = scaler.transform(self.X_test)
+        X_train_scaled = scaler.fit_transform(np.array(self.X_train))
+        X_test_scaled = scaler.transform(np.array(self.X_test))
         
         # Appending general data info and the fitted scaler info to a dictionary
         data_info = {"y_data_type":self.mag_reg, "y_columns":num_y_columns, 
@@ -325,18 +325,19 @@ class regression_ML:
         # REGRESSION MODEL SETTINGS
         print(">> ESTIMATOR INFO:")
         print("-------------------------------------------------------------------------------------------------------------------")
+        
         # Loading and initializing regression algorithm
-
-        # Random Forest
-        if ml_regressor=="rf":
-            from sklearn.ensemble import RandomForestRegressor
-            reg_model = RandomForestRegressor(random_state=45) # arbitrary selection of the random state
-            reg_type = "RandomForest"
+        
         # Decision Tree    
-        elif ml_regressor=="dtree":
+        if ml_regressor=="dtree":
             from sklearn.tree import DecisionTreeRegressor
             reg_model = DecisionTreeRegressor()
             reg_type = "DecisionTree"
+        # Random Forest
+        elif ml_regressor=="rf":
+            from sklearn.ensemble import RandomForestRegressor
+            reg_model = RandomForestRegressor(random_state=45) # arbitrary selection of the random state
+            reg_type = "RandomForest"
         # SVR (SVM sklearn)    
         elif ml_regressor=="svr":
             from sklearn.svm import SVR
@@ -351,6 +352,13 @@ class regression_ML:
             base_estimator = GradientBoostingRegressor(random_state=45) # arbitrary selection of the random state    
             reg_model = MultiOutputRegressor(base_estimator) 
             reg_type = "GradientBoosting"
+        # Extreme Gradient Boosting
+        elif ml_regressor=="xgboost":
+            from sklearn.multioutput import MultiOutputRegressor
+            from xgboost import XGBRegressor
+            base_estimator = XGBRegressor(objective='reg:squarederror', verbosity=0)
+            reg_model = MultiOutputRegressor(base_estimator)
+            reg_type = "ExtremeGradientBoosting (XGBoost)"    
         # AdaBoost    
         elif ml_regressor=="adaboost":
             from sklearn.tree import DecisionTreeRegressor
@@ -506,31 +514,31 @@ class regression_ML:
         print("===================================================================================================================\n\n\n")
 
         # LEARNING CURVE
-        print(">Learning curve")
-        print("===================================================================================================================")
+        # print(">Learning curve")
+        # print("===================================================================================================================")
 
-        # Getting the train scores and validation scores of the best estimator to make its learning curve
-        train_sizes, lc_train_scores, lc_val_scores = learning_curve(
-            best_model, X_train_scaled, self.Y_train, scoring='neg_mean_squared_log_error',cv=kfold_splits) # using the same KFold splits as in the GridSearchCV prossess
+        # # Getting the train scores and validation scores of the best estimator to make its learning curve
+        # train_sizes, lc_train_scores, lc_val_scores = learning_curve(
+        #     best_model, X_train_scaled, self.Y_train, scoring='neg_mean_squared_log_error',cv=kfold_splits) # using the same KFold splits as in the GridSearchCV prossess
 
-        lc_train_scores_mean = -lc_train_scores.mean(axis=1)
-        lc_val_scores_mean = -lc_val_scores.mean(axis=1)
+        # lc_train_scores_mean = -lc_train_scores.mean(axis=1)
+        # lc_val_scores_mean = -lc_val_scores.mean(axis=1)
 
-        # Appending the data of the learning curve to a dictionary
-        learning_curve_data = {"train_sizes": train_sizes, "mean_train_scores": lc_train_scores_mean, "mean_val_scores": lc_val_scores_mean}
+        # # Appending the data of the learning curve to a dictionary
+        # learning_curve_data = {"train_sizes": train_sizes, "mean_train_scores": lc_train_scores_mean, "mean_val_scores": lc_val_scores_mean}
         
-        # Defining the figure and axis where the learning curve will be included
-        fig_lc,axis_lc = plt.subplots(1,1,figsize=(8,5))
+        # # Defining the figure and axis where the learning curve will be included
+        # fig_lc,axis_lc = plt.subplots(1,1,figsize=(8,5))
 
-        axis_lc.plot(train_sizes, lc_train_scores_mean, label=f"Train: best MSLE->{lc_train_scores_mean[-1]:.2e}")
-        axis_lc.plot(train_sizes, lc_val_scores_mean, label=f"Validation: best MSLE->{lc_val_scores_mean[-1]:.2e}")
-        axis_lc.set_xlabel("Training size")
-        axis_lc.set_ylabel("MSLE")
-        axis_lc.set_yscale("log")
-        axis_lc.legend()
-        axis_lc.set_title(f"Learning Curve for best {reg_type} model")
-        plt.show()
-        print("===================================================================================================================\n\n\n")
+        # axis_lc.plot(train_sizes, lc_train_scores_mean, label=f"Train: best MSLE->{lc_train_scores_mean[-1]:.2e}")
+        # axis_lc.plot(train_sizes, lc_val_scores_mean, label=f"Validation: best MSLE->{lc_val_scores_mean[-1]:.2e}")
+        # axis_lc.set_xlabel("Training size")
+        # axis_lc.set_ylabel("MSLE")
+        # axis_lc.set_yscale("log")
+        # axis_lc.legend()
+        # axis_lc.set_title(f"Learning Curve for best {reg_type} model")
+        # plt.show()
+        # print("===================================================================================================================\n\n\n")
 
         # SAVING THE BEST ESTIMATOR INFO AND ITS METRICS
         print(">Saving the grid search info:")
@@ -538,7 +546,7 @@ class regression_ML:
 
         # Making an overview dictionary containing the grid search info
         grid_search_info = {"data_info": data_info, "best_estimator": best_estimator_info, 
-                            "ovf_metrics": ovf_metrics, "test_metrics": test_metrics, "learning_curve": learning_curve_data}
+                            "ovf_metrics": ovf_metrics, "test_metrics": test_metrics} # "learning_curve": learning_curve_data}
         
         # Saving the overview dictionary in a .pkl with the selected name
         joblib.dump(grid_search_info,f"{filesave}.pkl")
@@ -609,7 +617,7 @@ class load_ML:
     # Method that returns the learning curve info
     def get_learning_curve_info(self):
         """
-        Returning the he metrics of the predictions test
+        Returning the learning curve info 
         """
 
         return self.grid_load["learning_curve"]
@@ -753,12 +761,13 @@ class assess_ML:
     """
 
     # Constructor of the class
-    def __init__(self,star_type,mag_reg,x_data_types):
+    def __init__(self,star_type,mag_reg,x_data_types,EOS_type=None):
         """
         Initializing the 'assess_ML' class
         1. star_type: type of the star, the data of the EOSs of which were used in the regression processes. Allowed values: ["NS"->Neutron Star,"QS"->Quark Star]
         2. mag_reg: name of the category of target (response) variables for the regression models. Allowed inputs: ["dpde","enrg","gamma","PcMmax"]
         3. x_data_types: list of types of X (explanatory) data used in the regression in coded format. For example: '16X_rwsh' means 16 columns of rowwised shuffled X data
+        4. EOS_type: type of the EOS. Default: None. Allowed inputs: [None,"poly","lin"]
         """
         
         # Allowed inputs for the 'star_type' argument
@@ -771,11 +780,19 @@ class assess_ML:
         if mag_reg not in mag_reg_allowedvalues:
             raise ValueError(f"Invalid input \"{mag_reg}\" for the \"mag_reg\" argument. Valid inputs are: {mag_reg_allowedvalues}")
 
+        # Allowed inputs for the 'EOS_type' argument
+        EOS_type_allowedvalues = [None,"poly","lin"]
+        if EOS_type not in EOS_type_allowedvalues:
+            raise ValueError(f"Invalid input \"{EOS_type}\" for the \"EOS_type\" argument. Valid inputs are: {EOS_type_allowedvalues}")
+        if EOS_type==None:
+            EOS_type=""    
+
 
         # Appending the 'star_type', 'mag_reg' and 'X_data_types' inputs to self variables of the 'assess_ML' class
         self.star_type = star_type
         self.mag_reg = mag_reg
         self.x_data_types = x_data_types
+        self.EOS_type = EOS_type
      
         # Initialing the list of names of the ML algorithms as self variable
         self.ml_names = ["DecisionTree","RandomForest","GradientBoosting","AdaBoost"]
@@ -798,7 +815,7 @@ class assess_ML:
         # Allowed inputs for the 'metric' argument
         metric_allowedvalues = ["msle","mse"]
         if metric not in metric_allowedvalues:
-            raise ValueError(f"Invalid input \"{metric_type}\" for the \"metric_type\" argument. Valid inputs are: {metric_allowedvalues}")
+            raise ValueError(f"Invalid input \"{metric}\" for the \"metric_type\" argument. Valid inputs are: {metric_allowedvalues}")
         
 
         # Initializing an array where the values of the metric will be listed and stored
@@ -811,7 +828,7 @@ class assess_ML:
         for i in range(0,n):
             # Inner-Iterative process to scan all the available X data types in .pkl files
             for j in range(0,m):
-                filename = f"{self.star_type}_{self.ml_coded_names[i]}_grid_{self.mag_reg}_{self.x_data_types[j]}.pkl"
+                filename = f"{self.EOS_type}{self.star_type}_{self.ml_coded_names[i]}_grid_{self.mag_reg}_{self.x_data_types[j]}.pkl"
 
                 if os.path.exists(filename):
                     metrics_test = load_ML(filename).get_test_metrics() # getting the test metrics from the .pkl file
@@ -847,7 +864,7 @@ class assess_ML:
         m = len(self.x_data_types)
         
         # Name of the .csv file 
-        filename = f"{self.star_type}_{self.mag_reg}_{metric}_res.csv"
+        filename = f"{self.EOS_type}{self.star_type}_{self.mag_reg}_{metric}_res.csv"
 
         # Getting the array with the results
         if metric=="msle":
@@ -895,12 +912,12 @@ class assess_ML:
 
         n = len(self.ml_names) # number of ML regression algorithms
 
-        savefile = f"{self.star_type}_lc_{self.mag_reg}_{self.x_data_types[x_data_type_idx]}.pkl" # .pkl file where the learning curve info will be saved
+        savefile = f"{self.EOS_type}{self.star_type}_lc_{self.mag_reg}_{self.x_data_types[x_data_type_idx]}.pkl" # .pkl file where the learning curve info will be saved
         learning_curves_info = {} # dictionary of learning curve info
 
         # Outer-Iterative process to scan all the available ML algorithms in .pkl files
         for i in range(0,n):
-            filename = f"{self.star_type}_{self.ml_coded_names[i]}_grid_{self.mag_reg}_{self.x_data_types[x_data_type_idx]}.pkl"
+            filename = f"{EOS_type}{self.star_type}_{self.ml_coded_names[i]}_grid_{self.mag_reg}_{self.x_data_types[x_data_type_idx]}.pkl"
 
             learning_curve_model_info = load_ML(filename).get_learning_curve_info()
             learning_curves_info[f"{self.ml_coded_names[i]}"] = learning_curve_model_info
@@ -921,13 +938,13 @@ class assess_ML:
         # Allowed inputs for the 'metric' argument
         metric_allowedvalues = ["msle","mse"]
         if metric not in metric_allowedvalues:
-            raise ValueError(f"Invalid input \"{metric_type}\" for the \"metric_type\" argument. Valid inputs are: {metric_allowedvalues}")
+            raise ValueError(f"Invalid input \"{metric}\" for the \"metric_type\" argument. Valid inputs are: {metric_allowedvalues}")
 
         # Getting the name of the file with the metric results
         if metric=="msle":
-            filename = f"{self.star_type}_{self.mag_reg}_{metric}_res.csv"
+            filename = f"{self.EOS_type}{self.star_type}_{self.mag_reg}_{metric}_res.csv"
         elif metric=="mse":
-            filename = f"{self.star_type}_{self.mag_reg}_{metric}_res.csv"
+            filename = f"{self.EOS_type}{self.star_type}_{self.mag_reg}_{metric}_res.csv"
 
 
         # Check if the file exists in current folder and load its contents
@@ -978,14 +995,14 @@ class assess_ML:
         # Allowed inputs for the 'metric' argument
         metric_allowedvalues = ["msle","mse"]
         if metric not in metric_allowedvalues:
-            raise ValueError(f"Invalid input \"{metric_type}\" for the \"metric_type\" argument. Valid inputs are: {metric_allowedvalues}")
+            raise ValueError(f"Invalid input \"{metric}\" for the \"metric_type\" argument. Valid inputs are: {metric_allowedvalues}")
 
         
         # Getting the name of the file with the metric results
         if metric=="msle":
-            filename = f"{self.star_type}_{self.mag_reg}_{metric}_res.csv"
+            filename = f"{self.EOS_type}{self.star_type}_{self.mag_reg}_{metric}_res.csv"
         elif metric=="mse":
-            filename = f"{self.star_type}_{self.mag_reg}_{metric}_res.csv"
+            filename = f"{self.EOS_type}{self.star_type}_{self.mag_reg}_{metric}_res.csv"
 
 
        # Check if the file exists in current folder and load its contents
@@ -1053,7 +1070,7 @@ class assess_ML:
         """
 
         # Making the name of the .pkl file where the learning curves info are saved
-        filename = f"{self.star_type}_lc_{self.mag_reg}_{self.x_data_types[x_data_type_idx]}.pkl"
+        filename = f"{self.EOS_type}{self.star_type}_lc_{self.mag_reg}_{self.x_data_types[x_data_type_idx]}.pkl"
 
         # Check if the file exists in current folder and load its contents
         if os.path.exists(filename):
