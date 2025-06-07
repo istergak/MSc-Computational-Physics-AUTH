@@ -1618,10 +1618,10 @@ class QSdata:
         return fig_valid_cfl,axis_valid_cfl
 
 
-    # Method that plots a M-R 2D or 3D curve of a CFL matter QS EOS
+    # Method that plots a M-R 2D or 3D curve of a MIT bag or CFL matter QS EOS
     def plot_MR_curve(self,filename,axis_MR,clr_caus,clr_caus_3d,projection="2d",Pc_proj=0):
         """
-        Reading the EOS data from a given file and plot the respective M-R 2D or 3D curve of a CFL matter Quark Star's EOS
+        Reading the EOS data from a given file and plot the respective M-R 2D or 3D curve of a MIT bag or CFL matter Quark Star's EOS
         1.filename: name of the file to be read. By default the scanning is performed in the folder that contains the 'ExoticStarsDataHandling'
         module script. To scan on another folder, the exact path of the file must be provided.
         2. axis_MR: the axis that will include the M-R 2D or 3D curve
@@ -1672,10 +1672,10 @@ class QSdata:
 
         return 1
 
-    # Method that plots an EOS 2D curve of CFL matter QS EOS
+    # Method that plots an EOS 2D curve of MIT bag or CFL matter QS EOS
     def plot_EOS_curve(self,filename,axis_EOS,clr_caus):
         """
-        Reading the EOS data from a given file and plot the respective EOS 2D curve of a CFL matter Quark Star's EOS
+        Reading the EOS data from a given file and plot the respective EOS 2D curve of a MIT bag or CFL matter Quark Star's EOS
         1.filename: name of the file to be read. By default the scanning is performed in the folder that contains the 'ExoticStarsDataHandling'
         module script. To scan on another folder, the exact path of the file must be provided.
         2. axis_EOS: the axis that will include the 2D curve of the EOS
@@ -1701,10 +1701,10 @@ class QSdata:
 
         return 1
 
-    # Method that plots the Slope (dE_dP) vs Pressure 2D curve of a CFL matter QS EOS
+    # Method that plots the Slope (dE_dP) vs Pressure 2D curve of a MIT bag or CFL matter QS EOS
     def plot_dEdP_curve(self,filename,axis_slope,clr_caus):
         """
-        Reading the EOS data from a given file and plot the respective Slope (dE_dP) vs Pressure 2D curve of a CFL matter Quark Star's EOS
+        Reading the EOS data from a given file and plot the respective Slope (dE_dP) vs Pressure 2D curve of a MIT bag or CFL matter Quark Star's EOS
         1.filename: name of the file to be read. By default the scanning is performed in the folder that contains the 'ExoticStarsDataHandling'
         module script. To scan on another folder, the exact path of the file must be provided.
         2. axis_slope: the axis that will include the Slope (dE_dP) vs Pressure 2D curve
@@ -1730,10 +1730,10 @@ class QSdata:
 
         return 1                 
 
-    # Method that plots the Speed of sound vs Pressure 2D curve of a CFL matter QS EOS
+    # Method that plots the Speed of sound vs Pressure 2D curve of a MIT bag or CFL matter QS EOS
     def plot_cs_curve(self,filename,axis_cs,clr_caus):
         """
-        Reading the EOS data from a given file and plot the respective Speed of sound vs Pressure 2D curve of a CFL matter Quark Star's EOS
+        Reading the EOS data from a given file and plot the respective Speed of sound vs Pressure 2D curve of a MIT bag or CFL matter Quark Star's EOS
         1.filename: name of the file to be read. By default the scanning is performed in the folder that contains the 'ExoticStarsDataHandling'
         module script. To scan on another folder, the exact path of the file must be provided.
         2. axis_cs: the axis that will include the Speed of sound vs Pressure 2D curve
@@ -1762,10 +1762,10 @@ class QSdata:
 
         return 1            
 
-    # Method that plots the M-R 2D or 3D curves of CFL quark matter EOSs
+    # Method that plots the M-R 2D or 3D curves of MIT bag or CFL quark matter EOSs
     def plot_MR(self,axis_MR,idx_min_cfl=1,idx_max_cfl=2,idx_min_mitbag=1,idx_max_mitbag=2,projection="2d",Pc_proj=0):
         """
-        Plotting the M-R curves of CFL matter Quark Stars EOSs.
+        Plotting the M-R curves of MIT bag or CFL matter Quark Stars EOSs.
         1. axis_MR: the axis that will include the M-R curves
         2. projection: projection of the axis that plots the M-R curves. Values: ["2d","3d"]. By default: 2d projection and plot of the Mass and Radius data of the CFL Quark Star
         3. idx_min_cfl: minimum enumaration index of CFL EOS models
@@ -1825,10 +1825,10 @@ class QSdata:
         return []
     
 
-    # Method that plots the EOS 2D curves of CFL quark matter EOSs
+    # Method that plots the EOS 2D curves of MIT bag or CFL quark matter EOSs
     def plot_EOSs(self,axis_EOS,idx_min_cfl=1,idx_max_cfl=2,idx_min_mitbag=1,idx_max_mitbag=2):
         """
-        Plotting the EOS curves of CFL matter Quark Stars EOSs.
+        Plotting the EOS curves of MIT bag or CFL matter Quark Stars EOSs.
         1. axis_EOS: the axis that will include the 2D curves of the EOSs
         2. idx_min_cfl: minimum enumaration index of CFL EOS models
         3. idx_min_cfl: maximum enumaration index of CFL EOS models
@@ -1878,10 +1878,10 @@ class QSdata:
         return []
     
 
-    # Method that samples Mass and Radius data (that do not violate causality) from TOV solution data files of a CFL QS EOS
+    # Method that samples Mass and Radius data (that do not violate causality) from TOV solution data files of a MIT bag or CFL QS EOS
     def sample_MR(self,filename,M_threshold=0,points_MR=16,violate_caus="no",noiseM_mv=0,noiseM_std=0,noiseR_mv=0,noiseR_std=0):
         """
-        Scanning file containing the TOV equations' solution data for a CFL Quark Star EOS and sampling Mass and Radius values,
+        Scanning file containing the TOV equations' solution data for a MIT bag or CFL Quark Star EOS and sampling Mass and Radius values,
         that do not violate causality. Artificial observational noise (following normal distribution) can be added to the values of the samples.
         1. filename: name of the file to be scanned
         2. M_threshold: Threshold of Mass values. In order for the algorithm to create Mass and Radius samples, the scanned file must contain causality valid Mass values greater than M_threshold
@@ -1986,10 +1986,10 @@ class QSdata:
         return [mass_sample_with_noise,radius_sample_with_noise]
     
 
-    # Method that samples Slope (dE_dP) data, Energy density on center data (that do not violate causality) and center pressure at maximum mass from TOV solution data files of a CFL matter QS EOS
+    # Method that samples Slope (dE_dP) data, Energy density on center data (that do not violate causality) and center pressure at maximum mass from TOV solution data files of a MIT bag or CFL matter QS EOS
     def sample_EOS(self,filename,Pc_points=[10,100,300,600,800,1000,1200,1400],violate_caus="no",noiseSl_mv=0,noiseSl_std=0,noiseEc_mv=0,noiseEc_std=0):
         """
-        Scanning a file containing the TOV equations' solution data for a CFL matter Quark Star EOS and sampling Slope (dE_dP), Energy Density at center values and center pressure at maximum mass
+        Scanning a file containing the TOV equations' solution data for a MIT bag or CFL matter Quark Star EOS and sampling Slope (dE_dP), Energy Density at center values and center pressure at maximum mass
         that do not violate causality. Artificial observational noise (following normal distribution) can be added to the values of the samples.
         1. filename: name of the file to be scanned
         2. Pc_points: values (points) of pressure in center of the CFL matter Quark Star, on which the algorithm will collect the values of Slope (dE_dP) and Energy Density.
@@ -2074,10 +2074,10 @@ class QSdata:
 
         return [dEdP_sample_with_noise,enrg_dens_sample_with_noise,Pc_max_mass,Ec_max_mass]
     
-    # Method that generates and records on .csv files data of CFL matter Quark Stars for regression purposes
-    def gen_reg_data(self,save_filename,samples_per_EOS=1,M_threshold=0,points_MR=16,Pc_points=[10,100,300,600,800,1000,1200,1400],violate_caus="no",noises_mv=[0,0,0,0],noises_std=[0,0,0,0]):
+    # Method that generates and records on .csv files data of MIT bag or CFL matter Quark Stars for regression purposes
+    def gen_reg_data(self,save_filename,samples_per_EOS=1,M_threshold=0,points_MR=16,Pc_points=[10,100,200,300,400,500,600,700,800,900,1000,1100],idx_min_cfl=1,idx_max_cfl=2,idx_min_mitbag=1,idx_max_mitbag=2,eos_type="both",violate_caus="no",noises_mv=[0,0,0,0],noises_std=[0,0,0,0]):
         """
-        Getting data of CFL matter Quark Stars for regression purposes and recording them on .csv files
+        Getting data of MIT bag or CFL matter Quark Stars for regression purposes and recording them on .csv files
         1. save_filename: the name of the final .csv file, in which the regression data are being recorded
         2. samples_per_EOS: number of samples to be generated per CFL EOS. Each sample is recorded as a row in the final .csv file and includes the
         selected values of Speed of Sound c_s^2 = dP_dE, Energy Density at center, Mass and Radius. By default, 1 sample is generated per CFL EOS.
@@ -2087,11 +2087,21 @@ class QSdata:
         points_MR-1 segments with equal length. Then it selects the closest values of the Mass and the Radius to the boundary points of these segments, and stores these values for the Mass and the Radius samples, respectively.
         By default, 16 points are selected to be sampled.
         5. Pc_points: values (points) of pressure in center of the polytropic Neutron Star, on which the algorithm will collect the values of Slope (dE_dP) and Energy Density.
-        By default the following points are selected: 'Pc_points' = [10,100,300,600,800,1000,1200,1400] MeV*fm^-3.
-        6. violate_caus: wether the sampled M-R points do or do not violate causality, or both. Allowed values: ["no","yes","both"]
-        7. noises_mv: list containing the mean values for the artificial observational noise that is added to the sample values of the following: 1st element-> Mass, 2nd element -> Radius, 3rd element -> Slope (dE_dP) and 4th element -> Energy Density at center. By default the mean values are set to 0.
-        8. noises_std: list containing the standard deviations for the artificial observational noise that is added to the sample values of the following: 1st element-> Mass, 2nd element -> Radius, 3rd element -> Slope (dE_dP) and 4th element -> Energy Density at center. By default the standard deviations are set to 0.
+        6. idx_min_cfl: minimum enumaration index of CFL EOS models
+        7. idx_min_cfl: maximum enumaration index of CFL EOS models
+        8. idx_min_mitbag: minimum enumeration index of MIT bag EOS models
+        9. idx_max_mitbag: maximum enumaration index of MIT bag EOS models
+        By default the following points are selected: 'Pc_points' = [10,100,200,300,400,500,600,700,800,900,1000,1100] MeV*fm^-3.
+        10. eos_type: type of the quark matter EOS. Allowed inputs: ["mit_bag","cfl","both"]. Default: "both".
+        11. violate_caus: wether the sampled M-R points do or do not violate causality, or both. Allowed values: ["no","yes","both"]
+        12. noises_mv: list containing the mean values for the artificial observational noise that is added to the sample values of the following: 1st element-> Mass, 2nd element -> Radius, 3rd element -> Slope (dE_dP) and 4th element -> Energy Density at center. By default the mean values are set to 0.
+        13. noises_std: list containing the standard deviations for the artificial observational noise that is added to the sample values of the following: 1st element-> Mass, 2nd element -> Radius, 3rd element -> Slope (dE_dP) and 4th element -> Energy Density at center. By default the standard deviations are set to 0.
         """ 
+         
+        # Allowed values for the "eos_type" argument
+        eos_type_allowedvalues = ["mit_bag","cfl","both"]
+        if eos_type not in eos_type_allowedvalues:
+            raise ValueError(f"Invalid input \"{eos_type}\" for the \"eos_type\" argument. Allowed inputs are: {eos_type_allowedvalues}.")
 
         # Allowed lentgh for the noises_mv list
         if len(noises_mv)!=4:
@@ -2123,6 +2133,8 @@ class QSdata:
         headers_enrg = f"" # headers for the Energy Density at center values
         headers_Pc_max_mass = "Pc(M_max)," # headers for the center pressure at maximum mass
         headers_Ec_max_mass = "Ec(M_max)," # headers for the center energy density at maximum mass
+        headers_Beff = f"Beff," # headers for the Beff parameter
+        headers_Delta = f"Delta," # headers for the Delta parameter
         headers_mass = f"" # headers for the Mass values
         headers_radius = f"" # headers for the Radius values
 
@@ -2140,92 +2152,137 @@ class QSdata:
                 headers_radius = headers_radius + f"R_{i+1},"   
         
         # Forming the total info of the headers and the name of the recording .csv file
-        headers_info = headers_slope + headers_enrg + headers_Pc_max_mass + headers_Ec_max_mass + headers_mass + headers_radius
+        headers_info = headers_slope + headers_enrg + headers_Pc_max_mass + headers_Ec_max_mass + headers_Beff + headers_Delta + headers_mass + headers_radius
         with open(f"{save_filename}.csv","w") as file:
             file.write(headers_info)
 
         # Creating a copy .csv file where the values in the columns of the X data are shuffled rowwise to avoid correlation between them 
         with open(f"{save_filename}_rwshuffled.csv","w") as file:
-            file.write(headers_info)    
+            file.write(headers_info)
 
-        for cfl_model_name in self.total_cfl_models_info[0]:
-            # Getting the name of the file to be scanned
-            filename = f"{cfl_model_name}_sol.csv"
+        # Quark matter EOS types to be scanned
+        if eos_type=="mit_bag":
+            eos_models = ["MITbag"]
+        elif eos_type=="cfl":
+            eos_models = ["CFL"]
+        elif eos_type=="both":
+            eos_models=["MITbag","CFL"]
 
-            # Getting the basic sample of the Slope (dE_dP) and Energy Density at center values
-            dEdP_basic_sample,enrg_basic_sample,Pc_max_mass,Ec_max_mass = self.sample_EOS(filename,Pc_points,violate_caus=violate_caus,noiseSl_mv=0,noiseSl_std=0,noiseEc_mv=0,noiseEc_std=0)
+        # Scanning for all selected EOS models
+        for eos_model in eos_models:
+            if eos_model=="MITbag":
+                idx_min = idx_min_mitbag
+                idx_max = idx_max_mitbag
+            elif eos_model=="CFL":
+                idx_min = idx_min_cfl
+                idx_max = idx_max_cfl                       
 
-            # Getting the basic sample of the Mass and Radius values
-            mass_basic_sample,radius_basic_sample = self.sample_MR(filename,M_threshold,points_MR,violate_caus=violate_caus,noiseM_mv=0,noiseM_std=0,noiseR_mv=0,noiseR_std=0)
-                    
-            # print(slope_basic_sample)
-            # print(enrg_basic_sample)
-            # print(mass_basic_sample)
-            # print(radius_basic_sample)
+            for i in range(idx_min,idx_max+1):
+                # Getting the name of the file to be scanned
+                filename = f"{eos_model}-{i}_sol.csv"
 
-            # If any of the basic samples is NaN the algorithm skips the recording for this polytropic EOS and moves to the next polytrtopic EOS
-            if dEdP_basic_sample[0]==np.NaN or enrg_basic_sample[0]==np.NaN or mass_basic_sample[0]==np.NaN or radius_basic_sample[0]==np.NaN:
+                # Initializing the values of Beff and Delta parameters
+                Beff = np.NaN
+                Delta = np.NaN
+
+                # Getting the basic sample of the Slope (dE_dP) and Energy Density at center values
+                dEdP_basic_sample,enrg_basic_sample,Pc_max_mass,Ec_max_mass = self.sample_EOS(filename,Pc_points,violate_caus=violate_caus,noiseSl_mv=0,noiseSl_std=0,noiseEc_mv=0,noiseEc_std=0)
+
+                # Getting the basic sample of the Mass and Radius values
+                mass_basic_sample,radius_basic_sample = self.sample_MR(filename,M_threshold,points_MR,violate_caus=violate_caus,noiseM_mv=0,noiseM_std=0,noiseR_mv=0,noiseR_std=0)
+
+                # Getting the values for Beff and Delta parameters if the filename exists in same path
+                if os.path.exists(filename):
+                    if eos_model=="MITbag":
+                        EOS_data = pd.read_csv(filename)
+                        data_columns = EOS_data.columns
+
+                        Beff_column = data_columns[-1]
+                        Beff = float(Beff_column[3:])
+
+                        Delta = "-"
+                    elif eos_model=="CFL":
+                        EOS_data = pd.read_csv(filename)
+                        data_columns = EOS_data.columns
+
+                        Beff_column = data_columns[-2]
+                        Beff = float(Beff_column[7:])
+
+                        Delta_column = data_columns[-1]
+                        Delta = float(Delta_column[6:])
+
+                    # print(slope_basic_sample)
+                    # print(enrg_basic_sample)
+                    # print(mass_basic_sample)
+                    # print(radius_basic_sample)
+
+                # If any of the basic samples is NaN the algorithm skips the recording for this polytropic EOS and moves to the next polytrtopic EOS
+                if dEdP_basic_sample[0]==np.NaN or enrg_basic_sample[0]==np.NaN or mass_basic_sample[0]==np.NaN or radius_basic_sample[0]==np.NaN:
                     break
-            else:
-                j=1 # intiliazing a counter for the samples to be made per polytropic EOS
-                idx_mr = list(np.arange(0,num_mr_points)) # defining a list with the column indices of the mass/radius values in the basic mass/radius samples
-                while j<=samples_per_EOS:
-                    # Adding noise to the values of the main samples and recording the resuted sample as a row in the final .csv file
-                    dPdE_sample_with_noise = 1/np.array(dEdP_basic_sample) + np.random.normal(loc=obs_noiseSl_mv,scale=obs_noiseSl_std,size=num_pc_points)
-                    enrg_sample_with_noise = enrg_basic_sample + np.random.normal(loc=obs_noiseEc_mv,scale=obs_noiseEc_std,size=num_pc_points)
-                    mass_sample_with_noise = np.abs(mass_basic_sample + np.random.normal(loc=obs_noiseM_mv,scale=obs_noiseM_std,size=num_mr_points)) # getting the absolute value to ensure positive values for the Mass
-                    radius_sample_with_noise = radius_basic_sample + np.random.normal(loc=obs_noiseR_mv,scale=obs_noiseR_std,size=num_mr_points)
+                else:
+                    j=1 # intiliazing a counter for the samples to be made per polytropic EOS
+                    idx_mr = list(np.arange(0,num_mr_points)) # defining a list with the column indices of the mass/radius values in the basic mass/radius samples
+                    while j<=samples_per_EOS:
+                        # Adding noise to the values of the main samples and recording the resuted sample as a row in the final .csv file
+                        dPdE_sample_with_noise = 1/np.array(dEdP_basic_sample) + np.random.normal(loc=obs_noiseSl_mv,scale=obs_noiseSl_std,size=num_pc_points)
+                        enrg_sample_with_noise = enrg_basic_sample + np.random.normal(loc=obs_noiseEc_mv,scale=obs_noiseEc_std,size=num_pc_points)
+                        mass_sample_with_noise = np.abs(mass_basic_sample + np.random.normal(loc=obs_noiseM_mv,scale=obs_noiseM_std,size=num_mr_points)) # getting the absolute value to ensure positive values for the Mass
+                        radius_sample_with_noise = radius_basic_sample + np.random.normal(loc=obs_noiseR_mv,scale=obs_noiseR_std,size=num_mr_points)
 
-                    # Initializing the row info for the basic .csv file
-                    row_slope_info = f"" # row info for the Slope (dE_dP) values
-                    row_enrg_info = f"" # row info for the Energy Density at center values
-                    row_Pc_max_mass_info = f"{Pc_max_mass}," # row info for the center pressure at maximum mass
-                    row_Ec_max_mass_info = f"{Ec_max_mass}," # row info for the center energy density at maximum mass
-                    row_mass_info = f"" # row info for the Mass values
-                    row_radius_info = f"" # rwo info for the Radius values
+                        # Initializing the row info for the basic .csv file
+                        row_slope_info = f"" # row info for the Slope (dE_dP) values
+                        row_enrg_info = f"" # row info for the Energy Density at center values
+                        row_Pc_max_mass_info = f"{Pc_max_mass}," # row info for the center pressure at maximum mass
+                        row_Ec_max_mass_info = f"{Ec_max_mass}," # row info for the center energy density at maximum mass
+                        row_Beff = f"{Beff}," # row info for the Beff parameter
+                        row_Delta = f"{Delta}," # row info for the Delta parameter
+                        row_mass_info = f"" # row info for the Mass values
+                        row_radius_info = f"" # rwo info for the Radius values
 
-                    # Initializing the row info for the shuffled .csv file
-                    shuffled_row_slope_info = f"" # row info for the Slope (dE_dP) values
-                    shuffled_row_enrg_info = f"" # row info for the Energy Density at center values
-                    shuffled_row_Pc_max_mass_info = f"{Pc_max_mass}," # row info for the center pressure at maximum mass
-                    shuffled_row_Ec_max_mass_info = f"{Ec_max_mass}," # row info for the center energy density at maximum mass 
-                    shuffled_row_mass_info = f"" # row info for the Mass values
-                    shuffled_row_radius_info = f"" # rwo info for the Radius values
+                        # Initializing the row info for the shuffled .csv file
+                        shuffled_row_slope_info = f"" # row info for the Slope (dE_dP) values
+                        shuffled_row_enrg_info = f"" # row info for the Energy Density at center values
+                        shuffled_row_Pc_max_mass_info = f"{Pc_max_mass}," # row info for the center pressure at maximum mass
+                        shuffled_row_Ec_max_mass_info = f"{Ec_max_mass}," # row info for the center energy density at maximum mass
+                        shuffled_row_Beff = f"{Beff}," # row info for the Beff parameter
+                        shuffled_row_Delta = f"{Delta}," # row info for the Delta parameter 
+                        shuffled_row_mass_info = f"" # row info for the Mass values
+                        shuffled_row_radius_info = f"" # rwo info for the Radius values
 
-                    # Getting the row info for the Y data (response variables) of the regression, i.e. the Slope (dE_dP) and Energy Density at center values
-                    for k in range(0,num_pc_points):
-                        row_slope_info = row_slope_info + f"{dPdE_sample_with_noise[k]},"
-                        row_enrg_info = row_enrg_info + f"{enrg_sample_with_noise[k]},"
-                        shuffled_row_slope_info = shuffled_row_slope_info + f"{dPdE_sample_with_noise[k]},"
-                        shuffled_row_enrg_info = shuffled_row_enrg_info + f"{enrg_sample_with_noise[k]},"
+                        # Getting the row info for the Y data (response variables) of the regression, i.e. the Slope (dE_dP) and Energy Density at center values
+                        for k in range(0,num_pc_points):
+                            row_slope_info = row_slope_info + f"{dPdE_sample_with_noise[k]},"
+                            row_enrg_info = row_enrg_info + f"{enrg_sample_with_noise[k]},"
+                            shuffled_row_slope_info = shuffled_row_slope_info + f"{dPdE_sample_with_noise[k]},"
+                            shuffled_row_enrg_info = shuffled_row_enrg_info + f"{enrg_sample_with_noise[k]},"
                     
                     
-                    # Getting the row info for the X data (explanatory variables) of the regression, i.e. the Mass and Radius values
-                    np.random.shuffle(idx_mr) # shuffling randomly the column indices of the mass/radius values to reduce/avoid linear correlations between the columns 
-                    mr_points_count = 1
-                    for k in idx_mr:
-                        row_mass_info = row_mass_info + f"{mass_sample_with_noise[mr_points_count-1]},"
-                        shuffled_row_mass_info = shuffled_row_mass_info + f"{mass_sample_with_noise[k]},"
-                        if mr_points_count==num_mr_points:
-                            # the last column of the row needs \n and not a comma in the end
-                            row_radius_info = row_radius_info + f"{radius_sample_with_noise[mr_points_count-1]}\n"
-                            shuffled_row_radius_info = shuffled_row_radius_info + f"{radius_sample_with_noise[k]}\n" 
-                        else:
-                            row_radius_info = row_radius_info + f"{radius_sample_with_noise[mr_points_count-1]},"
-                            shuffled_row_radius_info = shuffled_row_radius_info + f"{radius_sample_with_noise[k]},"
-                        mr_points_count +=1        
+                        # Getting the row info for the X data (explanatory variables) of the regression, i.e. the Mass and Radius values
+                        np.random.shuffle(idx_mr) # shuffling randomly the column indices of the mass/radius values to reduce/avoid linear correlations between the columns 
+                        mr_points_count = 1
+                        for k in idx_mr:
+                            row_mass_info = row_mass_info + f"{mass_sample_with_noise[mr_points_count-1]},"
+                            shuffled_row_mass_info = shuffled_row_mass_info + f"{mass_sample_with_noise[k]},"
+                            if mr_points_count==num_mr_points:
+                                # the last column of the row needs \n and not a comma in the end
+                                row_radius_info = row_radius_info + f"{radius_sample_with_noise[mr_points_count-1]}\n"
+                                shuffled_row_radius_info = shuffled_row_radius_info + f"{radius_sample_with_noise[k]}\n" 
+                            else:
+                                row_radius_info = row_radius_info + f"{radius_sample_with_noise[mr_points_count-1]},"
+                                shuffled_row_radius_info = shuffled_row_radius_info + f"{radius_sample_with_noise[k]},"
+                            mr_points_count +=1        
                             
-                    # Getting the total info of the row and recording it to the final .csv file
-                    row_info = row_slope_info + row_enrg_info + row_Pc_max_mass_info + row_Ec_max_mass_info + row_mass_info + row_radius_info
-                    with open(f"{save_filename}.csv","a+") as file:
-                        file.write(row_info)
+                        # Getting the total info of the row and recording it to the final .csv file
+                        row_info = row_slope_info + row_enrg_info + row_Pc_max_mass_info + row_Ec_max_mass_info + row_Beff + row_Delta + row_mass_info + row_radius_info
+                        with open(f"{save_filename}.csv","a+") as file:
+                            file.write(row_info)
 
-                    # Getting the total info of the row and recording it to the final shuffled .csv file
-                    shuffled_row_info = shuffled_row_slope_info + shuffled_row_enrg_info + shuffled_row_Pc_max_mass_info + shuffled_row_Ec_max_mass_info + shuffled_row_mass_info + shuffled_row_radius_info
-                    with open(f"{save_filename}_rwshuffled.csv","a+") as file:
-                        file.write(shuffled_row_info)    
+                        # Getting the total info of the row and recording it to the final shuffled .csv file
+                        shuffled_row_info = shuffled_row_slope_info + shuffled_row_enrg_info + shuffled_row_Pc_max_mass_info + shuffled_row_Ec_max_mass_info + shuffled_row_Beff + shuffled_row_Delta + shuffled_row_mass_info + shuffled_row_radius_info
+                        with open(f"{save_filename}_rwshuffled.csv","a+") as file:
+                            file.write(shuffled_row_info)    
 
-                    j = j + 1 # increasing the counter of the samples per polytropic EOS by 1              
+                        j = j + 1 # increasing the counter of the samples per polytropic EOS by 1              
         
         # Getting the final .csv file and removing all the NaN elements
         reg_df = pd.read_csv(f"{save_filename}.csv")
