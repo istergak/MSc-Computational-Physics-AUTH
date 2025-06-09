@@ -583,7 +583,7 @@ class polyNSdata:
         return Γ_result
     
     # Method that plots a M-R 2D or 3D curve of a main or a polytropic NS EOS
-    def plot_MR_curve(self,filename,axis_MR,clr_caus,EOS_type="main",Pc_threshold=0,projection="2d",Pc_proj=0):
+    def plot_MR_curve(self,filename,axis_MR,clr_caus,EOS_type="main",curve_label=None,Pc_threshold=0,projection="2d",Pc_proj=0):
         """
         Reading the EOS data from a given file and plot the respective M-R 2D or 3D curve of a main or a polytropic Neutron Star's EOS, when the EOS overcomes the given threshold pressure
         1.filename: name of the file to be read. By default the scanning is performed in the folder that contains the 'ExoticStarsDataHandling'
@@ -593,11 +593,12 @@ class polyNSdata:
         with 'darkgrey' color.
         4. EOS_type: the user can select wether the scanned file contains the TOV solution data for a main EOS or a polytropic Neutron Star EOS.
         Allowed values: ["main","polytropic"]
-        5. Pc_threshold: Threshold of the maximum pressure in [MeV*fm^-3]. The EOSs with maximum pressure less than the threshold are not included
+        5. curve_label: The user can include a label in the plot of the EOS curve. By default: curve_label=None, and no label is added.
+        6. Pc_threshold: Threshold of the maximum pressure in [MeV*fm^-3]. The EOSs with maximum pressure less than the threshold are not included
         in the plots.
-        6. projection: projection of the axis that plots the M-R curves. Values: ["2d","3d"]. By default: 2d projection and plot of the Mass and Radius data of the Neutron
+        7. projection: projection of the axis that plots the M-R curves. Values: ["2d","3d"]. By default: 2d projection and plot of the Mass and Radius data of the Neutron
         Star. When the 3d option is selected: including additionally the pressure in center data of the Neutron Star in a 3rd axis.
-        7. Pc_proj: the pressure of a plane parallel to the M-R plane, on which the 2d-projections of the 3d M-R curves will be displayed, when the "3d" option is selected
+        8. Pc_proj: the pressure of a plane parallel to the M-R plane, on which the 2d-projections of the 3d M-R curves will be displayed, when the "3d" option is selected
         for the 'projection' argument. By default the value 0 is appended to the argument 'Pc_proj'.   
         """
         
@@ -642,7 +643,10 @@ class polyNSdata:
 
             if projection=="2d": # 2D-plotting
                 # Plotting the M-R data that do not violate causality
-                axis_MR.plot(R_data[0],M_data[0],lw=line_width,color=clr_caus)
+                if curve_label==None:
+                    axis_MR.plot(R_data[0],M_data[0],lw=line_width,color=clr_caus)
+                else:
+                    axis_MR.plot(R_data[0],M_data[0],lw=line_width,color=clr_caus,label=curve_label)    
                 # Plotting the M-R data that do violate causality
                 axis_MR.plot(R_data[1],M_data[1],lw=line_width,color="darkgrey")
             elif projection=="3d": # 3D-plotting
@@ -658,7 +662,7 @@ class polyNSdata:
         return EOS_overcome
 
     # Method that plots the Ec-Pc 2D curve of a main or a polytropic NS EOS
-    def plot_EOS_curve(self,filename,axis_EOS,clr_caus,EOS_type="main",Pc_threshold=0):
+    def plot_EOS_curve(self,filename,axis_EOS,clr_caus,EOS_type="main",curve_label=None,Pc_threshold=0):
         """
         Reading the EOS data from a given file and plot the respective Ec-Pc 2D curve of a main or a polytropic Neutron Star's EOS, when the EOS overcomes the given threshold pressure
         1.filename: name of the file to be read. By default the scanning is performed in the folder that contains the 'ExoticStarsDataHandling'
@@ -668,7 +672,8 @@ class polyNSdata:
         with 'darkgrey' color.
         4. EOS_type: the user can select wether the scanned file contains the TOV solution data for a main EOS or a polytropic Neutron Star EOS.
         Allowed values: ["main","polytropic"]
-        5. Pc_threshold: Threshold of the maximum pressure in [MeV*fm^-3]. The EOSs with maximum pressure less than the threshold are not included
+        5. curve_label: The user can include a label in the plot of the EOS curve. By default: curve_label=None, and no label is added.
+        6. Pc_threshold: Threshold of the maximum pressure in [MeV*fm^-3]. The EOSs with maximum pressure less than the threshold are not included
         in the plots.
         """
         
@@ -702,7 +707,10 @@ class polyNSdata:
             EOS_overcome = 1
             
             # Plotting the Ec-Pc data that do not violate causality
-            axis_EOS.plot(Pc_data[0],Ec_data[0],lw=line_width,color=clr_caus)
+            if curve_label==None:
+                axis_EOS.plot(Pc_data[0],Ec_data[0],lw=line_width,color=clr_caus)
+            else:
+                axis_EOS.plot(Pc_data[0],Ec_data[0],lw=line_width,color=clr_caus,label=curve_label)    
             # Plotting the Ec-Pc data that do violate causality
             axis_EOS.plot(Pc_data[1],Ec_data[1],lw=line_width,color="darkgrey")
             
@@ -710,7 +718,7 @@ class polyNSdata:
         return EOS_overcome
 
     # Method that plots the Slope (dE_dP) vs Pressure 2D curve of a main or a polytropic NS EOS
-    def plot_dEdP_curve(self,filename,axis_slope,clr_caus,EOS_type="main",Pc_threshold=0):
+    def plot_dEdP_curve(self,filename,axis_slope,clr_caus,EOS_type="main",curve_label=None,Pc_threshold=0):
         """
         Reading the EOS data from a given file and plot the respective Slope (dE_dP) vs Pressure 2D curve of a main or a polytropic Neutron Star's EOS, when the EOS overcomes the given threshold pressure
         1.filename: name of the file to be read. By default the scanning is performed in the folder that contains the 'ExoticStarsDataHandling'
@@ -720,7 +728,8 @@ class polyNSdata:
         with 'darkgrey' color.
         4. EOS_type: the user can select wether the scanned file contains the TOV solution data for a main EOS or a polytropic Neutron Star EOS.
         Allowed values: ["main","polytropic"]
-        5. Pc_threshold: Threshold of the maximum pressure in [MeV*fm^-3]. The EOSs with maximum pressure less than the threshold are not included
+        5. curve_label: The user can include a label in the plot of the EOS curve. By default: curve_label=None, and no label is added.
+        6. Pc_threshold: Threshold of the maximum pressure in [MeV*fm^-3]. The EOSs with maximum pressure less than the threshold are not included
         in the plots.
         """
         
@@ -754,7 +763,10 @@ class polyNSdata:
             EOS_overcome = 1
             
             # Plotting the c_s-Pc data that do not violate causality
-            axis_slope.plot(Pc_data[0],dEdP_data[0],lw=line_width,color=clr_caus)
+            if curve_label==None:
+                axis_slope.plot(Pc_data[0],dEdP_data[0],lw=line_width,color=clr_caus)
+            else:
+                axis_slope.plot(Pc_data[0],dEdP_data[0],lw=line_width,color=clr_caus,label=curve_label)    
             # Plotting the c_s-Pc data that do violate causality
             axis_slope.plot(Pc_data[1],dEdP_data[1],lw=line_width,color="darkgrey")
             
@@ -762,7 +774,7 @@ class polyNSdata:
         return EOS_overcome                 
 
     # Method that plots the Speed of sound vs Pressure 2D curve of a main or a polytropic NS EOS
-    def plot_cs_curve(self,filename,axis_cs,clr_caus,EOS_type="main",Pc_threshold=0):
+    def plot_cs_curve(self,filename,axis_cs,clr_caus,EOS_type="main",curve_label=None,Pc_threshold=0):
         """
         Reading the EOS data from a given file and plot the respective Speed of sound vs Pressure 2D curve of a main or a polytropic Neutron Star's EOS, when the EOS overcomes the given threshold pressure
         1.filename: name of the file to be read. By default the scanning is performed in the folder that contains the 'ExoticStarsDataHandling'
@@ -772,7 +784,8 @@ class polyNSdata:
         with 'darkgrey' color.
         4. EOS_type: the user can select wether the scanned file contains the TOV solution data for a main EOS or a polytropic Neutron Star EOS.
         Allowed values: ["main","polytropic"]
-        5. Pc_threshold: Threshold of the maximum pressure in [MeV*fm^-3]. The EOSs with maximum pressure less than the threshold are not included
+        5. curve_label: The user can include a label in the plot of the EOS curve. By default: curve_label=None, and no label is added.
+        6. Pc_threshold: Threshold of the maximum pressure in [MeV*fm^-3]. The EOSs with maximum pressure less than the threshold are not included
         in the plots.
         """
         
@@ -810,7 +823,10 @@ class polyNSdata:
             EOS_overcome = 1
             
             # Plotting the c_s-Pc data that do not violate causality
-            axis_cs.plot(Pc_data[0],cs_caus,lw=line_width,color=clr_caus)
+            if curve_label==None:
+                axis_cs.plot(Pc_data[0],cs_caus,lw=line_width,color=clr_caus)
+            else:
+                axis_cs.plot(Pc_data[0],cs_caus,lw=line_width,color=clr_caus,label=curve_label)    
             # Plotting the c_s-Pc data that do violate causality
             axis_cs.plot(Pc_data[1],cs_no_caus,lw=line_width,color="darkgrey")
             
@@ -885,7 +901,7 @@ class polyNSdata:
                     filename = f"{mainEOSname}_{Γ_combo}L_sol.csv"
                     # Checking wether the file exists or not, and plottting the data if it exists
                     if os.path.exists(filename):
-                        MR_curve_result = self.plot_MR_curve(filename,axis_MR,clr_poly2,"polytropic",Pc_threshold,projection,Pc_proj)
+                        MR_curve_result = self.plot_MR_curve(filename,axis_MR=axis_MR,clr_caus=clr_poly2,EOS_type="polytropic",Pc_threshold=Pc_threshold,projection=projection,Pc_proj=Pc_proj)
                         EOSs_over_threshold_lin = EOSs_over_threshold_lin + MR_curve_result
                 
                 # Scanning for data with EOS non-linear behavior at the last mass density segment
@@ -893,7 +909,7 @@ class polyNSdata:
                     filename = f"{mainEOSname}_{Γ_combo}_sol.csv"
                     # Checking wether the file exists or not, and plottting the data if it exists
                     if os.path.exists(filename):
-                        MR_curve_result = self.plot_MR_curve(filename,axis_MR,clr_poly,"polytropic",Pc_threshold,projection,Pc_proj)
+                        MR_curve_result = self.plot_MR_curve(filename,axis_MR=axis_MR,clr_caus=clr_poly,EOS_type="polytropic",Pc_threshold=Pc_threshold,projection=projection,Pc_proj=Pc_proj)
                         EOSs_over_threshold = EOSs_over_threshold + MR_curve_result             
 
         # Print the number of EOSs over threshold pressure
@@ -908,7 +924,7 @@ class polyNSdata:
         filename = f"{mainEOSname}_sol.csv"
         # Checking wether the file exists or not, and plottting the data if it exists
         if os.path.exists(filename):
-            self.plot_MR_curve(filename,axis_MR,clr_main,"main",Pc_threshold,projection,Pc_proj)  
+            self.plot_MR_curve(filename,axis_MR=axis_MR,clr_caus=clr_main,EOS_type="main",Pc_threshold=Pc_threshold,projection=projection,Pc_proj=Pc_proj)  
 
         # Adding labels and setting axes scale for clarity
         if projection=="2d":
@@ -1010,7 +1026,7 @@ class polyNSdata:
                     filename = f"{mainEOSname}_{Γ_combo}L_sol.csv"
                     # Checking wether the file exists or not, and plottting the data if it exists
                     if os.path.exists(filename):
-                        EOS_curve_result = self.plot_EOS_curve(filename,axis_EOS,clr_poly2,"polytropic",Pc_threshold)
+                        EOS_curve_result = self.plot_EOS_curve(filename,axis_EOS=axis_EOS,clr_caus=clr_poly2,EOS_type="polytropic",Pc_threshold=Pc_threshold)
                         EOSs_over_threshold_lin = EOSs_over_threshold_lin + EOS_curve_result
                 
                 # Scanning for data with EOS non-linear behavior at the last mass density segment (if selected)
@@ -1018,7 +1034,7 @@ class polyNSdata:
                     filename = f"{mainEOSname}_{Γ_combo}_sol.csv"
                     # Checking wether the file exists or not, and plottting the data if it exists
                     if os.path.exists(filename):
-                        EOS_curve_result = self.plot_EOS_curve(filename,axis_EOS,clr_poly,"polytropic",Pc_threshold)
+                        EOS_curve_result = self.plot_EOS_curve(filename,axis_EOS=axis_EOS,clr_caus=clr_poly,EOS_type="polytropic",Pc_threshold=Pc_threshold)
                         EOSs_over_threshold = EOSs_over_threshold + EOS_curve_result        
 
         # Print the number of EOSs over threshold pressure
@@ -1033,7 +1049,7 @@ class polyNSdata:
         filename = f"{mainEOSname}_sol.csv"
         # Checking wether the file exists or not, and plottting the data if it exists
         if os.path.exists(filename):
-            self.plot_EOS_curve(filename,axis_EOS,clr_main,"main",Pc_threshold)
+            self.plot_EOS_curve(filename,axis_EOS=axis_EOS,clr_caus=clr_main,EOS_type="main",Pc_threshold=Pc_threshold)
             
 
         # Adding labels for clarity, as well as setting the scale of both axes to logarithmic
@@ -1619,7 +1635,7 @@ class QSdata:
 
 
     # Method that plots a M-R 2D or 3D curve of a MIT bag or CFL matter QS EOS
-    def plot_MR_curve(self,filename,axis_MR,clr_caus,clr_caus_3d,projection="2d",Pc_proj=0):
+    def plot_MR_curve(self,filename,axis_MR,clr_caus,clr_caus_3d,curve_label=None,projection="2d",Pc_proj=0):
         """
         Reading the EOS data from a given file and plot the respective M-R 2D or 3D curve of a MIT bag or CFL matter Quark Star's EOS
         1.filename: name of the file to be read. By default the scanning is performed in the folder that contains the 'ExoticStarsDataHandling'
@@ -1629,9 +1645,10 @@ class QSdata:
         with 'darkgrey' color.
         4. clr_caus_3d: the color of the points of the M-R 3D curve that do not violate causality. The rest points (that violate causality) are plotted
         with 'darkgrey' color.
-        5. projection: projection of the axis that plots the M-R curves. Values: ["2d","3d"]. By default: 2d projection and plot of the Mass and Radius data of the Neutron
+        5. curve_label: The user can include a label in the plot of the EOS curve. By default: curve_label=None, and no label is added.
+        6. projection: projection of the axis that plots the M-R curves. Values: ["2d","3d"]. By default: 2d projection and plot of the Mass and Radius data of the Neutron
         Star. When the 3d option is selected: including additionally the pressure in center data of the Neutron Star in a 3rd axis.
-        6. Pc_proj: the pressure of a plane parallel to the M-R plane, on which the 2d-projections of the 3d M-R curves will be displayed, when the "3d" option is selected
+        7. Pc_proj: the pressure of a plane parallel to the M-R plane, on which the 2d-projections of the 3d M-R curves will be displayed, when the "3d" option is selected
         for the 'projection' argument. By default the value 0 is appended to the argument 'Pc_proj'.   
         """
         
@@ -1657,7 +1674,10 @@ class QSdata:
 
         if projection=="2d": # 2D-plotting
             # Plotting the M-R data that do not violate causality
-            axis_MR.plot(R_data[0],M_data[0],lw=0.8,color=clr_caus)
+            if curve_label==None:
+                axis_MR.plot(R_data[0],M_data[0],lw=0.8,color=clr_caus)
+            else:
+                axis_MR.plot(R_data[0],M_data[0],lw=0.8,color=clr_caus,label=curve_label)   
             # Plotting the M-R data that do violate causality
             axis_MR.plot(R_data[1],M_data[1],lw=0.8,color="darkgrey")
         elif projection=="3d": # 3D-plotting
@@ -1673,7 +1693,7 @@ class QSdata:
         return 1
 
     # Method that plots an EOS 2D curve of MIT bag or CFL matter QS EOS
-    def plot_EOS_curve(self,filename,axis_EOS,clr_caus):
+    def plot_EOS_curve(self,filename,axis_EOS,clr_caus,curve_label=None):
         """
         Reading the EOS data from a given file and plot the respective EOS 2D curve of a MIT bag or CFL matter Quark Star's EOS
         1.filename: name of the file to be read. By default the scanning is performed in the folder that contains the 'ExoticStarsDataHandling'
@@ -1681,6 +1701,7 @@ class QSdata:
         2. axis_EOS: the axis that will include the 2D curve of the EOS
         3. clr_caus: the color of the points of the EOS 2D curve that do not violate causality. The rest points (that violate causality) are plotted
         with 'darkgrey' color.
+        4. curve_label: The user can include a label in the plot of the EOS curve. By default: curve_label=None, and no label is added.
         """
     
         
@@ -1694,7 +1715,10 @@ class QSdata:
         Ec_data = sol_data[1] # getting the NS energy density on center data
             
         # Plotting the Ec-Pc data that do not violate causality
-        axis_EOS.plot(Pc_data[0],Ec_data[0],lw=0.8,color=clr_caus)
+        if curve_label==None:
+            axis_EOS.plot(Pc_data[0],Ec_data[0],lw=0.8,color=clr_caus)
+        else:
+            axis_EOS.plot(Pc_data[0],Ec_data[0],lw=0.8,color=clr_caus,label=curve_label)    
         # Plotting the Ec-Pc data that do violate causality
         axis_EOS.plot(Pc_data[1],Ec_data[1],lw=0.8,color="darkgrey")
             
@@ -1702,7 +1726,7 @@ class QSdata:
         return 1
 
     # Method that plots the Slope (dE_dP) vs Pressure 2D curve of a MIT bag or CFL matter QS EOS
-    def plot_dEdP_curve(self,filename,axis_slope,clr_caus):
+    def plot_dEdP_curve(self,filename,axis_slope,clr_caus,curve_label=None):
         """
         Reading the EOS data from a given file and plot the respective Slope (dE_dP) vs Pressure 2D curve of a MIT bag or CFL matter Quark Star's EOS
         1.filename: name of the file to be read. By default the scanning is performed in the folder that contains the 'ExoticStarsDataHandling'
@@ -1710,6 +1734,7 @@ class QSdata:
         2. axis_slope: the axis that will include the Slope (dE_dP) vs Pressure 2D curve
         3. clr_caus: the color of the points of the Slope (dE_dP) vs Pressure 2D curve that do not violate causality. The rest points (that violate causality) are plotted
         with 'darkgrey' color.
+        4. curve_label: The user can include a label in the plot of the EOS curve. By default: curve_label=None, and no label is added.
         """
     
         
@@ -1723,7 +1748,10 @@ class QSdata:
         dEdP_data = sol_data[2] # getting the NS Slope (dE_dP) on center data
 
         # Plotting the c_s-Pc data that do not violate causality
-        axis_slope.plot(Pc_data[0],dEdP_data[0],lw=0.8,color=clr_caus)
+        if curve_label==None:
+            axis_slope.plot(Pc_data[0],dEdP_data[0],lw=0.8,color=clr_caus)
+        else:
+            axis_slope.plot(Pc_data[0],dEdP_data[0],lw=0.8,color=clr_caus,label=curve_label)    
         # Plotting the c_s-Pc data that do violate causality
         axis_slope.plot(Pc_data[1],dEdP_data[1],lw=0.8,color="darkgrey")
             
@@ -1731,7 +1759,7 @@ class QSdata:
         return 1                 
 
     # Method that plots the Speed of sound vs Pressure 2D curve of a MIT bag or CFL matter QS EOS
-    def plot_cs_curve(self,filename,axis_cs,clr_caus):
+    def plot_cs_curve(self,filename,axis_cs,clr_caus,curve_label=None):
         """
         Reading the EOS data from a given file and plot the respective Speed of sound vs Pressure 2D curve of a MIT bag or CFL matter Quark Star's EOS
         1.filename: name of the file to be read. By default the scanning is performed in the folder that contains the 'ExoticStarsDataHandling'
@@ -1739,6 +1767,7 @@ class QSdata:
         2. axis_cs: the axis that will include the Speed of sound vs Pressure 2D curve
         3. clr_caus: the color of the points of the Speed of sound vs Pressure 2D curve that do not violate causality. The rest points (that violate causality) are plotted
         with 'darkgrey' color.
+        4. curve_label: The user can include a label in the plot of the EOS curve. By default: curve_label=None, and no label is added.
         """
         
         # Scanning and reading the file
@@ -1755,7 +1784,10 @@ class QSdata:
         cs_no_caus = np.sqrt(1/np.array(dEdP_data[1])) # values that do violate causality
             
         # Plotting the c_s-Pc data that do not violate causality
-        axis_cs.plot(Pc_data[0],cs_caus,lw=0.8,color=clr_caus)
+        if curve_label==None:
+            axis_cs.plot(Pc_data[0],cs_caus,lw=0.8,color=clr_caus)
+        else:
+            axis_cs.plot(Pc_data[0],cs_caus,lw=0.8,color=clr_caus,label=curve_label)   
         # Plotting the c_s-Pc data that do violate causality
         axis_cs.plot(Pc_data[1],cs_no_caus,lw=0.8,color="darkgrey")
             
@@ -1794,14 +1826,14 @@ class QSdata:
         for i in range(idx_min_cfl,idx_max_cfl+1):
             filename = f"CFL-{i}_sol.csv"
             if os.path.exists(filename):
-                MR_curve_result = self.plot_MR_curve(filename,axis_MR,"cornflowerblue","darkorange",projection,Pc_proj)
+                MR_curve_result = self.plot_MR_curve(filename,axis_MR=axis_MR,clr_caus="cornflowerblue",clr_caus_3d="darkorange",projection=projection,Pc_proj=Pc_proj)
                 available_cfl_models = available_cfl_models + MR_curve_result
 
         # Scanning for files containing TOV solution data for MIT bag EOS models and plotting the respective M-R curves
         for i in range(idx_min_mitbag,idx_max_mitbag+1):
             filename = f"MITbag-{i}_sol.csv"
             if os.path.exists(filename):
-                MR_curve_result = self.plot_MR_curve(filename,axis_MR,"indianred","darkgreen",projection,Pc_proj)
+                MR_curve_result = self.plot_MR_curve(filename,axis_MR=axis_MR,clr_caus="indianred",clr_caus_3d="darkgreen",projection=projection,Pc_proj=Pc_proj)
                 available_mitbag_models = available_mitbag_models + MR_curve_result        
         
 
@@ -1854,14 +1886,14 @@ class QSdata:
         for i in range(idx_min_cfl,idx_max_cfl+1):
             filename = f"CFL-{i}_sol.csv"
             if os.path.exists(filename):
-                EOS_curve_result = self.plot_EOS_curve(filename,axis_EOS,"cornflowerblue")
+                EOS_curve_result = self.plot_EOS_curve(filename,axis_EOS=axis_EOS,clr_caus="cornflowerblue")
                 available_cfl_models = available_cfl_models + EOS_curve_result
 
         # Scanning for files containing TOV solution data for MITbag EOS models and plotting the respective Ec-Pc curves
         for i in range(idx_min_mitbag,idx_max_mitbag+1):
             filename = f"MITbag-{i}_sol.csv"
             if os.path.exists(filename):
-                EOS_curve_result = self.plot_EOS_curve(filename,axis_EOS,"indianred")
+                EOS_curve_result = self.plot_EOS_curve(filename,axis_EOS=axis_EOS,clr_caus="indianred")
                 available_mitbag_models = available_mitbag_models + EOS_curve_result        
 
         
