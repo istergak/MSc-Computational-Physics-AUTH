@@ -1390,6 +1390,11 @@ class polyNSdata:
 
         # Main EOSs to be included
         main_EOSs = ["HLPS-2","HLPS-3"]
+        
+        # Shuffling randomly the Γ_combos
+        random.seed(23) # fixing the seed for random shuffling
+        random.shuffle(self.Γ_total_combos_sorted)
+        # print(self.Γ_total_combos_sorted)
 
         # Scanning all the files for all main EOSs
         for main_EOS in main_EOSs:
@@ -2193,55 +2198,53 @@ class QSdata:
             file.write(headers_info)
 
         # Quark matter EOS types to be scanned
-        if eos_type=="mit_bag":
-            eos_models = ["MITbag"]
-        elif eos_type=="cfl":
-            eos_models = ["CFL"]
-        elif eos_type=="both":
-            eos_models=["MITbag","CFL"]
+        eos_models = []
+        # Getting the MITbag EOS models
+        for i in range(idx_min_mitbag,idx_max_mitbag+1):
+            eos_models.append(f"MITbag-{i}")
+        # Getting the CFL EOS models
+        for i in range(idx_min_cfl,idx_max_cfl+1):
+            eos_models.append(f"CFL-{i}")
+        
+        # print(eos_models)
+        random.seed(23) # fixing the seed for random shuffling
+        random.shuffle(eos_models)
+        # print(eos_models)
 
         # Scanning for all selected EOS models
-        for eos_model in eos_models:
-            if eos_model=="MITbag":
-                idx_min = idx_min_mitbag
-                idx_max = idx_max_mitbag
-            elif eos_model=="CFL":
-                idx_min = idx_min_cfl
-                idx_max = idx_max_cfl                       
+        for eos_model in eos_models:                       
+            # Getting the name of the file to be scanned
+            filename = f"{eos_model}_sol.csv"
 
-            for i in range(idx_min,idx_max+1):
-                # Getting the name of the file to be scanned
-                filename = f"{eos_model}-{i}_sol.csv"
+            # Initializing the values of Beff and Delta parameters
+            Beff = np.NaN
+            Delta = np.NaN
 
-                # Initializing the values of Beff and Delta parameters
-                Beff = np.NaN
-                Delta = np.NaN
+            # Getting the basic sample of the Slope (dE_dP) and Energy Density at center values
+            dEdP_basic_sample,enrg_basic_sample,Pc_max_mass,Ec_max_mass = self.sample_EOS(filename,Pc_points,violate_caus=violate_caus,noiseSl_mv=0,noiseSl_std=0,noiseEc_mv=0,noiseEc_std=0)
 
-                # Getting the basic sample of the Slope (dE_dP) and Energy Density at center values
-                dEdP_basic_sample,enrg_basic_sample,Pc_max_mass,Ec_max_mass = self.sample_EOS(filename,Pc_points,violate_caus=violate_caus,noiseSl_mv=0,noiseSl_std=0,noiseEc_mv=0,noiseEc_std=0)
+            # Getting the basic sample of the Mass and Radius values
+            mass_basic_sample,radius_basic_sample = self.sample_MR(filename,M_threshold,points_MR,violate_caus=violate_caus,noiseM_mv=0,noiseM_std=0,noiseR_mv=0,noiseR_std=0)
 
-                # Getting the basic sample of the Mass and Radius values
-                mass_basic_sample,radius_basic_sample = self.sample_MR(filename,M_threshold,points_MR,violate_caus=violate_caus,noiseM_mv=0,noiseM_std=0,noiseR_mv=0,noiseR_std=0)
+            # Getting the values for Beff and Delta parameters if the filename exists in same path
+            if os.path.exists(filename):
+                if eos_model.count("MITbag")>0:
+                    EOS_data = pd.read_csv(filename)
+                    data_columns = EOS_data.columns
 
-                # Getting the values for Beff and Delta parameters if the filename exists in same path
-                if os.path.exists(filename):
-                    if eos_model=="MITbag":
-                        EOS_data = pd.read_csv(filename)
-                        data_columns = EOS_data.columns
+                    Beff_column = data_columns[-1]
+                    Beff = float(Beff_column[3:])
 
-                        Beff_column = data_columns[-1]
-                        Beff = float(Beff_column[3:])
+                    Delta = "-"
+                elif eos_model.count("CFL"):
+                    EOS_data = pd.read_csv(filename)
+                    data_columns = EOS_data.columns
 
-                        Delta = "-"
-                    elif eos_model=="CFL":
-                        EOS_data = pd.read_csv(filename)
-                        data_columns = EOS_data.columns
+                    Beff_column = data_columns[-2]
+                    Beff = float(Beff_column[7:])
 
-                        Beff_column = data_columns[-2]
-                        Beff = float(Beff_column[7:])
-
-                        Delta_column = data_columns[-1]
-                        Delta = float(Delta_column[6:])
+                    Delta_column = data_columns[-1]
+                    Delta = float(Delta_column[6:])
 
                     # print(slope_basic_sample)
                     # print(enrg_basic_sample)
