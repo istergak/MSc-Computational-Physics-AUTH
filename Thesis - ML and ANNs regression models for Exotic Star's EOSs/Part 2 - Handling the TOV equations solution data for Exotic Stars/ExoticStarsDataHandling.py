@@ -933,7 +933,7 @@ class polyNSdata:
             axis_MR.set_xbound([4,16]) # displayed radius R values within [4,16] km
         elif projection=="3d":
             axis_MR.set_xlabel(r"R $[km]$",fontsize=14)
-            axis_MR.set_ylabel(r"$P_c$ $[MeV\cdot fm^{-3}]$",fontsize=14)
+            axis_MR.set_ylabel(r"$P$ $[MeV\cdot fm^{-3}]$",fontsize=14)
             axis_MR.set_zlabel(r"$M$ $(M_\odot)$",fontsize=14)
             axis_MR.set_xbound([4,20]) # displayed radius R values within [4,20] km
             axis_MR.view_init(25,-125)    
@@ -1053,8 +1053,8 @@ class polyNSdata:
             
 
         # Adding labels for clarity, as well as setting the scale of both axes to logarithmic
-        axis_EOS.set_xlabel(r"$P_c$ $[MeV\cdot fm^{-3}]$",fontsize=14)
-        axis_EOS.set_ylabel(r"$E_c$ $[MeV\cdot fm^{-3}]$",fontsize=14)
+        axis_EOS.set_xlabel(r"$P$ $[MeV\cdot fm^{-3}]$",fontsize=14)
+        axis_EOS.set_ylabel(r"$\epsilon$ $[MeV\cdot fm^{-3}]$",fontsize=14)
         axis_EOS.set_xscale("log")
         axis_EOS.set_yscale("log")
 
@@ -1854,7 +1854,7 @@ class QSdata:
             axis_MR.set_xbound([0,20]) # displayed radius R values within [0,20] km
         elif projection=="3d":
             axis_MR.set_xlabel(r"R $[km]$",fontsize=14)
-            axis_MR.set_ylabel(r"$P_c$ $[MeV\cdot fm^{-3}]$",fontsize=14)
+            axis_MR.set_ylabel(r"$P$ $[MeV\cdot fm^{-3}]$",fontsize=14)
             axis_MR.set_zlabel(r"$M$ $(M_\odot)$",fontsize=14)
             axis_MR.set_xbound([0,20]) # displayed radius R values within [0,20] km
             axis_MR.view_init(25,-125)    
@@ -1909,8 +1909,8 @@ class QSdata:
         print("-----------------------------------------------------------------------------------------------")
         
         # Adding labels for clarity
-        axis_EOS.set_xlabel(r"$P_c$ $[MeV\cdot fm^{-3}]$",fontsize=14)
-        axis_EOS.set_ylabel(r"$E_c$ $[MeV\cdot fm^{-3}]$",fontsize=14)
+        axis_EOS.set_xlabel(r"$P$ $[MeV\cdot fm^{-3}]$",fontsize=14)
+        axis_EOS.set_ylabel(r"$\epsilon$ $[MeV\cdot fm^{-3}]$",fontsize=14)
 
         return []
     
