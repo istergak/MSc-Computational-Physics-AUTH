@@ -1462,7 +1462,8 @@ class polyNSdata:
                         row_enrg_info = row_enrg_info + f"{enrg_sample_with_noise[k]},"
                         shuffled_row_dPdE_info = shuffled_row_dPdE_info + f"{dPdE_sample_with_noise[k]},"
                         shuffled_row_enrg_info = shuffled_row_enrg_info + f"{enrg_sample_with_noise[k]},"
-
+                    
+                    Γ_combo = eos_model.removeprefix("HLPS-2_").removeprefix("HLPS-3_").removesuffix("L")
                     # Getting the row info for the Γ parameter data
                     for k in range(0,self.num_segments):
                         row_Γ_info = row_Γ_info + f"{self.Γ_decode(Γ_combo[k])},"
