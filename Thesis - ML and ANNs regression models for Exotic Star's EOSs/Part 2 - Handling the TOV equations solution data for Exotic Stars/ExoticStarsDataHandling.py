@@ -1402,7 +1402,7 @@ class polyNSdata:
         #print(eos_models)
         
         # Shuffling randomly the Γ_combos
-        random.seed(23) # fixing the seed for random shuffling
+        random.seed(13) # fixing the seed for random shuffling
         random.shuffle(eos_models)
         #print(eos_models)
 
