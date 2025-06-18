@@ -1616,7 +1616,7 @@ class QSdata:
             raise ValueError("The value of the \"point_size\" argument must be a number. Try again.")
         
         # Initializing a figure to include the valid CFL points of Beff and Δ parameters
-        fig_valid_cfl, axis_valid_cfl = plt.subplots(1,1,figsize=(10,10))
+        fig_valid_cfl, axis_valid_cfl = plt.subplots(1,1,figsize=(11,7))
 
         # Getting and printing the amount of valid CFL models
         total_cfl_models = len(self.total_cfl_models_info[0])
@@ -1643,7 +1643,7 @@ class QSdata:
         axis_valid_cfl.set_xbound([min(Delta_valid_range),max(Delta_valid_range)])
         axis_valid_cfl.set_xlabel(r"$\Delta$ $[MeV]$",fontsize=14)
         axis_valid_cfl.set_ylabel(r"$B_{eff}$ $[MeV\cdot fm^{-3}]$",fontsize=14)
-        axis_valid_cfl.legend()
+        axis_valid_cfl.legend(fontsize=12)
 
         return fig_valid_cfl,axis_valid_cfl
 
