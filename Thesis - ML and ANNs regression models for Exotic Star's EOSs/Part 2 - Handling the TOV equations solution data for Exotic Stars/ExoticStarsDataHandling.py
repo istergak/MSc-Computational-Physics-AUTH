@@ -1649,7 +1649,7 @@ class QSdata:
 
 
     # Method that plots a M-R 2D or 3D curve of a MIT bag or CFL matter QS EOS
-    def plot_MR_curve(self,filename,axis_MR,clr_caus='#1f77b4',clr_caus_3d='#d62728',curve_label=None,projection="2d",Pc_proj=0):
+    def plot_MR_curve(self,filename,axis_MR,clr_caus='#1f77b4',clr_caus_3d='#ff7f0e',curve_label=None,projection="2d",Pc_proj=0):
         """
         Reading the EOS data from a given file and plot the respective M-R 2D or 3D curve of a MIT bag or CFL matter Quark Star's EOS
         1.filename: name of the file to be read. By default the scanning is performed in the folder that contains the 'ExoticStarsDataHandling'
