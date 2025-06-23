@@ -155,7 +155,7 @@ class mainNSdata:
 
 
     # Method that plots the M-R 2D or 3D curve of a main NS EOS
-    def plot_MR_curve(self,main_EOS_name,axis_MR,clr_caus,EOS_type="main",projection="2d",Pc_proj=0):
+    def plot_MR_curve(self,main_EOS_name,axis_MR,clr_caus='#1f77b4',EOS_type="main",projection="2d",Pc_proj=0):
         """
         Reading the EOS data from a given file and plot the respective M-R 2D or 3D curve of a main Neutron Star's EOS
         1. main_EOS_name: the name of the main Neutron Star EOS 
@@ -204,7 +204,7 @@ class mainNSdata:
         # Plotting the EOS in 2d or 3d space
         if projection=="2d": # 2D-plotting
             # Plotting the M-R data that do not violate causality
-            axis_MR.plot(R_data[0],M_data[0],lw=line_width,color=clr_caus,label=f"{main_EOS_name}")
+            axis_MR.plot(R_data[0],M_data[0],".",ms=2,color=clr_caus,label=f"{main_EOS_name}")
             # Plotting the M-R data that do violate causality
             axis_MR.plot(R_data[1],M_data[1],"--",lw=0.75*line_width,color="darkgrey")
         elif projection=="3d": # 3D-plotting
@@ -218,7 +218,7 @@ class mainNSdata:
             axis_MR.plot(R_data[1],Pc_proj*np.ones_like(Pc_data[1]),M_data[1],"--",lw=0.75*line_width,color="darkgrey")
 
     # Method that plots the Ec-Pc 2D curve of a main NS EOS
-    def plot_EOS_curve(self,main_EOS_name,axis_EOS,clr_caus,EOS_type="main"):
+    def plot_EOS_curve(self,main_EOS_name,axis_EOS,clr_caus='#1f77b4',EOS_type="main"):
         """
         Reading the EOS data from a given file and plot the respective Ec-Pc 2D curve of a main Neutron Star's EOS
         1. main_EOS_name: the name of the main Neutron Star EOS 
@@ -583,7 +583,7 @@ class polyNSdata:
         return Γ_result
     
     # Method that plots a M-R 2D or 3D curve of a main or a polytropic NS EOS
-    def plot_MR_curve(self,filename,axis_MR,clr_caus,EOS_type="main",curve_label=None,Pc_threshold=0,projection="2d",Pc_proj=0):
+    def plot_MR_curve(self,filename,axis_MR,clr_caus='#1f77b4',EOS_type="main",curve_label=None,Pc_threshold=0,projection="2d",Pc_proj=0):
         """
         Reading the EOS data from a given file and plot the respective M-R 2D or 3D curve of a main or a polytropic Neutron Star's EOS, when the EOS overcomes the given threshold pressure
         1.filename: name of the file to be read. By default the scanning is performed in the folder that contains the 'ExoticStarsDataHandling'
@@ -662,7 +662,7 @@ class polyNSdata:
         return EOS_overcome
 
     # Method that plots the Ec-Pc 2D curve of a main or a polytropic NS EOS
-    def plot_EOS_curve(self,filename,axis_EOS,clr_caus,EOS_type="main",curve_label=None,Pc_threshold=0):
+    def plot_EOS_curve(self,filename,axis_EOS,clr_caus='#1f77b4',EOS_type="main",curve_label=None,Pc_threshold=0):
         """
         Reading the EOS data from a given file and plot the respective Ec-Pc 2D curve of a main or a polytropic Neutron Star's EOS, when the EOS overcomes the given threshold pressure
         1.filename: name of the file to be read. By default the scanning is performed in the folder that contains the 'ExoticStarsDataHandling'
@@ -718,7 +718,7 @@ class polyNSdata:
         return EOS_overcome
 
     # Method that plots the Slope (dE_dP) vs Pressure 2D curve of a main or a polytropic NS EOS
-    def plot_dEdP_curve(self,filename,axis_slope,clr_caus,EOS_type="main",curve_label=None,Pc_threshold=0):
+    def plot_dEdP_curve(self,filename,axis_slope,clr_caus='#1f77b4',EOS_type="main",curve_label=None,Pc_threshold=0):
         """
         Reading the EOS data from a given file and plot the respective Slope (dE_dP) vs Pressure 2D curve of a main or a polytropic Neutron Star's EOS, when the EOS overcomes the given threshold pressure
         1.filename: name of the file to be read. By default the scanning is performed in the folder that contains the 'ExoticStarsDataHandling'
@@ -774,7 +774,7 @@ class polyNSdata:
         return EOS_overcome                 
 
     # Method that plots the Speed of sound vs Pressure 2D curve of a main or a polytropic NS EOS
-    def plot_cs_curve(self,filename,axis_cs,clr_caus,EOS_type="main",curve_label=None,Pc_threshold=0):
+    def plot_cs_curve(self,filename,axis_cs,clr_caus='#1f77b4',EOS_type="main",curve_label=None,Pc_threshold=0):
         """
         Reading the EOS data from a given file and plot the respective Speed of sound vs Pressure 2D curve of a main or a polytropic Neutron Star's EOS, when the EOS overcomes the given threshold pressure
         1.filename: name of the file to be read. By default the scanning is performed in the folder that contains the 'ExoticStarsDataHandling'
@@ -933,7 +933,7 @@ class polyNSdata:
             axis_MR.set_xbound([4,16]) # displayed radius R values within [4,16] km
         elif projection=="3d":
             axis_MR.set_xlabel(r"R $[km]$",fontsize=14)
-            axis_MR.set_ylabel(r"$P$ $[MeV\cdot fm^{-3}]$",fontsize=14)
+            axis_MR.set_ylabel(r"$P_c$ $[MeV\cdot fm^{-3}]$",fontsize=14)
             axis_MR.set_zlabel(r"$M$ $(M_\odot)$",fontsize=14)
             axis_MR.set_xbound([4,20]) # displayed radius R values within [4,20] km
             axis_MR.view_init(25,-125)    
@@ -1649,7 +1649,7 @@ class QSdata:
 
 
     # Method that plots a M-R 2D or 3D curve of a MIT bag or CFL matter QS EOS
-    def plot_MR_curve(self,filename,axis_MR,clr_caus,clr_caus_3d,curve_label=None,projection="2d",Pc_proj=0):
+    def plot_MR_curve(self,filename,axis_MR,clr_caus='#1f77b4',clr_caus_3d='#d62728',curve_label=None,projection="2d",Pc_proj=0):
         """
         Reading the EOS data from a given file and plot the respective M-R 2D or 3D curve of a MIT bag or CFL matter Quark Star's EOS
         1.filename: name of the file to be read. By default the scanning is performed in the folder that contains the 'ExoticStarsDataHandling'
@@ -1707,7 +1707,7 @@ class QSdata:
         return 1
 
     # Method that plots an EOS 2D curve of MIT bag or CFL matter QS EOS
-    def plot_EOS_curve(self,filename,axis_EOS,clr_caus,curve_label=None):
+    def plot_EOS_curve(self,filename,axis_EOS,clr_caus='#1f77b4',curve_label=None):
         """
         Reading the EOS data from a given file and plot the respective EOS 2D curve of a MIT bag or CFL matter Quark Star's EOS
         1.filename: name of the file to be read. By default the scanning is performed in the folder that contains the 'ExoticStarsDataHandling'
@@ -1740,7 +1740,7 @@ class QSdata:
         return 1
 
     # Method that plots the Slope (dE_dP) vs Pressure 2D curve of a MIT bag or CFL matter QS EOS
-    def plot_dEdP_curve(self,filename,axis_slope,clr_caus,curve_label=None):
+    def plot_dEdP_curve(self,filename,axis_slope,clr_caus='#1f77b4',curve_label=None):
         """
         Reading the EOS data from a given file and plot the respective Slope (dE_dP) vs Pressure 2D curve of a MIT bag or CFL matter Quark Star's EOS
         1.filename: name of the file to be read. By default the scanning is performed in the folder that contains the 'ExoticStarsDataHandling'
@@ -1773,7 +1773,7 @@ class QSdata:
         return 1                 
 
     # Method that plots the Speed of sound vs Pressure 2D curve of a MIT bag or CFL matter QS EOS
-    def plot_cs_curve(self,filename,axis_cs,clr_caus,curve_label=None):
+    def plot_cs_curve(self,filename,axis_cs,clr_caus='#1f77b4',curve_label=None):
         """
         Reading the EOS data from a given file and plot the respective Speed of sound vs Pressure 2D curve of a MIT bag or CFL matter Quark Star's EOS
         1.filename: name of the file to be read. By default the scanning is performed in the folder that contains the 'ExoticStarsDataHandling'
@@ -1814,12 +1814,13 @@ class QSdata:
         Plotting the M-R curves of MIT bag or CFL matter Quark Stars EOSs.
         1. axis_MR: the axis that will include the M-R curves
         2. projection: projection of the axis that plots the M-R curves. Values: ["2d","3d"]. By default: 2d projection and plot of the Mass and Radius data of the CFL Quark Star
-        3. idx_min_cfl: minimum enumaration index of CFL EOS models
-        4. idx_min_cfl: maximum enumaration index of CFL EOS models
+        3. idx_min_cfl: minimum enumeration index of CFL EOS models
+        4. idx_min_cfl: maximum enumeration index of CFL EOS models
         5. idx_min_mitbag: minimum enumeration index of MIT bag EOS models
-        6. idx_max_mitbag: maximum enumaration index of MIT bag EOS models
-        Star. When the 3d option is selected: including additionally the pressure in center data of the Quark Star in a 3rd axis.
-        7. Pc_proj: the pressure of a plane parallel to the M-R plane, on which the 2d-projections of the 3d M-R curves will be displayed, when the "3d" option is selected
+        6. idx_max_mitbag: maximum enumeration index of MIT bag EOS models
+        7. projection: projection of the axis that plots the M-R curves. Values: ["2d","3d"]. By default: 2d projection and plot of the Mass and Radius data 
+        of the Quark Star. When the 3d option is selected: including additionally the pressure in center data of the Quark Star in a 3rd axis.
+        8. Pc_proj: the pressure of a plane parallel to the M-R plane, on which the 2d-projections of the 3d M-R curves will be displayed, when the "3d" option is selected
         for the 'projection' argument. By default the value 0 is appended to the argument 'Pc_proj'.
 
         The files to be scanned have the general format:
@@ -1863,7 +1864,7 @@ class QSdata:
             axis_MR.set_xbound([0,20]) # displayed radius R values within [0,20] km
         elif projection=="3d":
             axis_MR.set_xlabel(r"R $[km]$",fontsize=14)
-            axis_MR.set_ylabel(r"$P$ $[MeV\cdot fm^{-3}]$",fontsize=14)
+            axis_MR.set_ylabel(r"$P_c$ $[MeV\cdot fm^{-3}]$",fontsize=14)
             axis_MR.set_zlabel(r"$M$ $(M_\odot)$",fontsize=14)
             axis_MR.set_xbound([0,20]) # displayed radius R values within [0,20] km
             axis_MR.view_init(25,-125)    
