@@ -113,12 +113,14 @@ class regression_ANN:
     """
 
     # Constructor of the class
-    def __init__(self,filename=None,mag_reg="dPdE",test_ratio=0.25):
+    def __init__(self,filename=None,mag_reg="dPdE",test_ratio=0.25,val_ratio=0.2,samples_per_EOS=1):
         """
         Initializing the `regression_ANN` class
         1. filename: name of the file containing data for regression purposes
-        2. mag_reg: name of the category of target (response) variables for the regression models. Allowed inputs: ["dPdE","enrg","PcMmax","Gamma"]
+        2. mag_reg: name of the category of target (response) variables for the regression models. Allowed inputs: ["dPdE","enrg","PtMmax","Gamma"]
         3. test_ratio: decimal ratio of the entire dataset to be used as a test dataset to evaluate the accuracy of the trained ANN regression model
+        4. val_ratio: decimal ratio of the train dataset to be used as a validation dataset to evaluate the accuracy during the training process ANN regression model
+        5. samples_per_EOS: the number of rows that correspond to a single EOS. Each row represents a sample of this EOS. By default: 1 sample per EOS.
         """
         
         # Allowe values for the 'filesave' argument
@@ -126,7 +128,7 @@ class regression_ANN:
             raise ValueError("An input for the \"filename\" argument must be given. Try again.")
         
         # Allowed values for the 'mag_reg' argument
-        mag_reg_allowedvalues = ["dPdE","enrg","PcMmax","Gamma"]
+        mag_reg_allowedvalues = ["dPdE","enrg","PtMmax","Gamma"]
         if mag_reg not in mag_reg_allowedvalues:
             raise ValueError(f"Invalid input \"{mag_reg}\" for the \"mag_reg\" argument. Valid inputs are: {mag_reg_allowedvalues}")
         
@@ -143,8 +145,30 @@ class regression_ANN:
         # Getting and appending the X (explanatory) and Y (response) data for regression to self variables of the class
         self.X_data,self.Y_data = self.split_df()
 
+        # Getting the shape of X data
+        X_rows,_ = np.shape(self.X_data)
+        
+        # Getting the split index bewteen train and test dataframes
+        split_index = round((1-test_ratio)*(X_rows/samples_per_EOS))*samples_per_EOS
+
         # Splitting the X and Y data into train and test parts and appending them to self variables of tne class
-        self.X_train, self.X_test, self.Y_train, self.Y_test = train_test_split(self.X_data, self.Y_data, test_size = test_ratio, random_state = 45) # arbitrary selection of the random state
+        self.X_train = self.X_data.iloc[:split_index,:]
+        self.X_test = self.X_data.iloc[split_index:,:]
+        self.Y_train = self.Y_data.iloc[:split_index,:]
+        self.Y_test = self.Y_data.iloc[split_index:,:]
+
+        # Getting the shape of X train data
+        X_rows_train,_ = np.shape(self.X_train)
+
+        # Getting the split index bewteen final train and validation dataframes
+        split_index_val = round((1-val_ratio)*(X_rows_train/samples_per_EOS))*samples_per_EOS
+
+        # Splitting the X and Y train data into final train and validation parts and appending them to self variables of tne class
+        self.X_final_train = self.X_train.iloc[:split_index_val,:]
+        self.X_val = self.X_train.iloc[split_index_val:,:]
+        self.Y_final_train = self.Y_train.iloc[:split_index_val,:]
+        self.Y_val = self.Y_train.iloc[split_index_val:,:]
+
 
 
     # Method that returns the X (explanatory) data and Y (response) data for regression
@@ -174,8 +198,8 @@ class regression_ANN:
             Y_columns = [col for col in df.columns if col.startswith("E_c")]
             Y_data = df[Y_columns]
         # Center pressure at maximum mass    
-        elif self.mag_reg=="PcMmax":
-            Y_columns = [col for col in df.columns if col.startswith("Pc(M_max)")]
+        elif self.mag_reg=="PtMmax":
+            Y_columns = [col for col in df.columns if col.startswith("Pc(M_max)") or col.startswith("Ec(M_max)")]
             Y_data = df[Y_columns]
         # Polytropic parameter Γ    
         elif self.mag_reg=="Gamma":
@@ -206,6 +230,12 @@ class regression_ANN:
         print(">>> Test dataset:")
         disp.display(self.X_test)
 
+        print(">>> Final Train dataset:")
+        disp.display(self.X_final_train)
+
+        print(">>> Validation dataset:")
+        disp.display(self.X_val)
+
         print("\n>> Y DATA (RESPONSE)\n")
 
         print(">>> Entire dataset:")
@@ -216,6 +246,12 @@ class regression_ANN:
 
         print(">>> Test dataset:")
         disp.display(self.Y_test)
+
+        print(">>> Final Train dataset:")
+        disp.display(self.Y_final_train)
+
+        print(">>> Validation dataset:")
+        disp.display(self.Y_val)
 
 
     # Method to build and compile an ANN for regression
@@ -274,7 +310,7 @@ class regression_ANN:
 
                 # Dropout of neurons of the layer
                 if layers_dropouts!=None:
-                    model_structure.append(Dropout(layers_dropouts[i]))
+                    model_structure.append(Dropout(rate=layers_dropouts[i]))
 
         # OUTPUT LAYER
         model_structure.append(Dense(y_cols))
@@ -294,25 +330,26 @@ class regression_ANN:
 
     
     # Method to train the neural network using the loaded regression data
-    def train_model(self,layers_neurons=None,layers_activations=None,layers_dropouts=None,adam_learn_rate=1e-4,train_shuffle=True,train_epochs=100,batch_size=100,val_split=0.2,filesave=None):
+    def train_model(self,y_scaling="no",layers_neurons=None,layers_activations=None,layers_dropouts=None,adam_learn_rate=1e-4,train_shuffle=True,train_epochs=100,batch_size=100,filesave=None):
         """
         Training the neural network using the loaded regression data
-        1. layers_neurons: list with the numbers of neurons for each of the middle layers of the network. The length of the list is equal to the amount of middle layers of the network.
+        1. y_scaling: wether the algorithm will use the scaled response data or not. By default: "no". Allowed inputs: ["no","yes"].
+        2. layers_neurons: list with the numbers of neurons for each of the middle layers of the network. The length of the list is equal to the amount of middle layers of the network.
         If `None` is given as input (default), only one middle layer will be included in the network, having twice the number of neurons of the input layer, the `relu` activation function and no dropout of neurons.
-        2. layers_activations: list with the activation functions of each middle layer of the network. If `None` is given as input (default), the 'relu' function will be used as activation function for each middle layer.
-        3. layers_dropouts: list with the dropouts of neurons after the optimization of each middle layer. The dropouts of neurons helps to avoid overfitting and to generalize the model.
+        3. layers_activations: list with the activation functions of each middle layer of the network. If `None` is given as input (default), the 'relu' function will be used as activation function for each middle layer.
+        4. layers_dropouts: list with the dropouts of neurons after the optimization of each middle layer. The dropouts of neurons helps to avoid overfitting and to generalize the model.
         if `None` is given as input (default), then no dropouts will be used in the training process of the network.
-        4. adam_learn_rate: the learning rate of the `Adam` optimizer during the training process of the network. By default a learing rate of `1e-4` is given.
-        5. train_shuffle: Boolean, whether the algorithm shuffles the train dataset before each epoch or not. The validation dataset is not shuffled.
-        6. train_epochs [Default = 100.]: epochs of the training process.
-        7. batch_size [Default = 100]: batch size of the training process.
-        8. val_split [Default = 0.2]: percentage (in decimal format) of the train data to be used as validation data to assess the overfitting of the model
+        5. adam_learn_rate: the learning rate of the `Adam` optimizer during the training process of the network. By default a learing rate of `1e-4` is given.
+        6. train_shuffle: Boolean, whether the algorithm shuffles the train dataset before each epoch or not. The validation dataset is not shuffled.
+        7. train_epochs [Default = 100.]: epochs of the training process.
+        8. batch_size [Default = 100]: batch size of the training process.
         9. filesave: name of the .pkl file, where the info of the trained model, its log history and its metrics will be saved
         """
         
-        # Allowed values for the 'val_split'
-        if val_split<0 or val_split>1:
-            raise ValueError(f"The value of the \"val_split\" argument must be a number in the [0,1] interval. Try again.")
+        # Allowed values for the 'y_scaling' argument
+        y_scaling_allowedvalues = ["no","yes"]
+        if y_scaling not in y_scaling_allowedvalues:
+            raise ValueError(f"Invalid input \"{y_scaling}\" for the \"y_scaling\" argument. Valid inputs are: {y_scaling_allowedvalues}")
         
         # Allowed values for the 'filesave' argument
         if filesave==None:
@@ -335,18 +372,25 @@ class regression_ANN:
         num_test_rows,_ = np.shape(self.Y_test) # number of rows of the test datasets
 
 
-        # Initializing the scaler
-        scaler = StandardScaler()
+        # Initializing the scalers for X and Y data
+        scaler_x = StandardScaler()
+        scaler_y = StandardScaler()
 
         # Scaling the X (explanatory) data
-        X_train_scaled = scaler.fit_transform(self.X_train)
-        X_test_scaled = scaler.transform(self.X_test)
+        X_final_train_scaled = scaler_x.fit_transform(np.array(self.X_final_train))
+        X_val_scaled = scaler_x.transform(np.array(self.X_val))
+        X_test_scaled = scaler_x.transform(np.array(self.X_test))
+
+        # Scaling the Y (response) data
+        Y_final_train_scaled = scaler_y.fit_transform(np.array(self.Y_final_train))
+        Y_val_scaled = scaler_y.transform(np.array(self.Y_val))
+        Y_test_scaled = scaler_y.transform(np.array(self.Y_test))
         
         # Appending general data info and the fitted scaler info to a dictionary
         data_info = {"y_data_type":self.mag_reg, "y_columns":num_y_columns, 
                      "mass_columns":num_m_columns, "radius_columns":num_r_columns, 
                      "rows_train": num_train_rows, "rows_test": num_test_rows,
-                     "test_size":self.test_ratio, "data_scaler":scaler}
+                     "test_size":self.test_ratio, "data_scaler": {"X": scaler_x, "Y": scaler_y}}
         
         print(">> DATA INFO AND SCALING:")
         print("-------------------------------------------------------------------------------------------------------------------")
@@ -355,6 +399,7 @@ class regression_ANN:
         print("X (explanatory) data type: \"Mass\" and \"Radius\"")
         print(f"Number of X columns:  {num_m_columns+num_r_columns}")
         print("The scaling of the X (explanatory) data has been completed")
+        print("The scaling of the Y (response) data has been completed")
         print("===================================================================================================================\n\n\n")
 
         # COMPILING AND FITTING PROCEDURES
@@ -374,8 +419,11 @@ class regression_ANN:
         print("Ongoing fitting process...")
 
         start_time = time.time() # starting the fitting time measurement
-
-        training_log = model.fit(X_train_scaled, self.Y_train, epochs = train_epochs, shuffle=train_shuffle, batch_size=batch_size,validation_split=val_split)
+        
+        if y_scaling == "no":
+            training_log = model.fit(X_final_train_scaled, self.Y_final_train, epochs = train_epochs, shuffle=train_shuffle, batch_size=batch_size,validation_data=(X_val_scaled,self.Y_val))
+        elif y_scaling == "yes":
+            training_log = model.fit(X_final_train_scaled, Y_final_train_scaled, epochs = train_epochs, shuffle=train_shuffle, batch_size=batch_size,validation_data=(X_val_scaled,Y_val_scaled))    
 
         end_time = time.time() # terminating the fitting time measurement
         cpu_time_total = (end_time - start_time) # total execution time in seconds
@@ -387,95 +435,103 @@ class regression_ANN:
 
 
         # OVERFITTING METRICS
-        # print(">Overfitting metrics (using the train dataset as test dataset)")
-        # print("===================================================================================================================")
-        # print(">> PREDICTIONS AND REAL VALUES:")
-        # print("-------------------------------------------------------------------------------------------------------------------")
+        print(">Overfitting metrics (using the train dataset as test dataset)")
+        print("===================================================================================================================")
+        print(">> PREDICTIONS AND REAL VALUES:")
+        print("-------------------------------------------------------------------------------------------------------------------")
 
-        # # Predictions of the best estimator on the X train data
-        # Y_predict_ovf = model.predict(X_train_scaled)
+        # Predictions of the best estimator on the X train data
+        if y_scaling == "no":
+            Y_predict_ovf = abs(model.predict(X_final_train_scaled))
+        elif y_scaling == "yes":
+            Y_predict_ovf_scaled = model.predict(X_final_train_scaled)    
+            Y_predict_ovf = abs(scaler_y.inverse_transform(Y_predict_ovf_scaled))
         
-        # # Printing the predicted values
-        # print(f"Predictions of \"{self.mag_reg}\"")
-        # disp.display(Y_predict_ovf)
+        # Printing the predicted values
+        print(f"Predictions of \"{self.mag_reg}\"")
+        disp.display(Y_predict_ovf)
         
-        # # Printing the real values
-        # print(f"Actual values of \"{self.mag_reg}\"")
-        # disp.display(self.Y_train)
-        # print("-------------------------------------------------------------------------------------------------------------------")
+        # Printing the real values
+        print(f"Actual values of \"{self.mag_reg}\"")
+        disp.display(self.Y_final_train)
+        print("-------------------------------------------------------------------------------------------------------------------")
         
-        # print(">> MEAN SQUARED LOG ERROR (MSLE) RESULTS:")
-        # print("-------------------------------------------------------------------------------------------------------------------")
-        # # Measuring the mean squared log error (MSLE)
-        # msle_ovftest_raw = mean_squared_log_error(self.Y_train,Y_predict_ovf,multioutput="raw_values")
-        # msle_ovftest_avg = mean_squared_log_error(self.Y_train,Y_predict_ovf,multioutput="uniform_average")
+        print(">> MEAN SQUARED LOG ERROR (MSLE) RESULTS:")
+        print("-------------------------------------------------------------------------------------------------------------------")
+        # Measuring the mean squared log error (MSLE)
+        msle_ovftest_raw = mean_squared_log_error(self.Y_final_train,Y_predict_ovf,multioutput="raw_values")
+        msle_ovftest_avg = mean_squared_log_error(self.Y_final_train,Y_predict_ovf,multioutput="uniform_average")
 
-        # print("Raw values")
-        # print(msle_ovftest_raw)
-        # print("Uniform average")
-        # print(msle_ovftest_avg)
-        # print("-------------------------------------------------------------------------------------------------------------------")
+        print("Raw values")
+        print(msle_ovftest_raw)
+        print("Uniform average")
+        print(msle_ovftest_avg)
+        print("-------------------------------------------------------------------------------------------------------------------")
 
-        # print(">> MEAN SQUARED ERROR (MSE) RESULTS:")
-        # print("-------------------------------------------------------------------------------------------------------------------")
-        # # Measuring the mean squared error (MSE)
-        # mse_ovftest_raw = mean_squared_error(self.Y_train,Y_predict_ovf,multioutput="raw_values")
-        # mse_ovftest_avg = mean_squared_error(self.Y_train,Y_predict_ovf,multioutput="uniform_average")
+        print(">> MEAN SQUARED ERROR (MSE) RESULTS:")
+        print("-------------------------------------------------------------------------------------------------------------------")
+        # Measuring the mean squared error (MSE)
+        mse_ovftest_raw = mean_squared_error(self.Y_final_train,Y_predict_ovf,multioutput="raw_values")
+        mse_ovftest_avg = mean_squared_error(self.Y_final_train,Y_predict_ovf,multioutput="uniform_average")
 
-        # print("Raw values")
-        # print(mse_ovftest_raw)
-        # print("Uniform average")
-        # print(mse_ovftest_avg)
+        print("Raw values")
+        print(mse_ovftest_raw)
+        print("Uniform average")
+        print(mse_ovftest_avg)
 
-        # # Appending all the overfitting metrics to a dictionary
-        # ovf_metrics = {"msle_raw":msle_ovftest_raw, "msle_avg":msle_ovftest_avg, "mse_raw": mse_ovftest_raw, "mse_avg": mse_ovftest_avg}
-        # print("===================================================================================================================\n\n\n")
+        # Appending all the overfitting metrics to a dictionary
+        ovf_metrics = {"msle_raw":msle_ovftest_raw, "msle_avg":msle_ovftest_avg, "mse_raw": mse_ovftest_raw, "mse_avg": mse_ovftest_avg}
+        print("===================================================================================================================\n\n\n")
 
 
-        # # PREDICTION METRICS
-        # print(">Prediction metrics (using the actual test dataset)")
-        # print("===================================================================================================================")
-        # print(">> PREDICTIONS AND REAL VALUES:")
-        # print("-------------------------------------------------------------------------------------------------------------------")
+        # PREDICTION METRICS
+        print(">Prediction metrics (using the actual test dataset)")
+        print("===================================================================================================================")
+        print(">> PREDICTIONS AND REAL VALUES:")
+        print("-------------------------------------------------------------------------------------------------------------------")
 
-        # # Predictions of the best estimator on the X train data
-        # Y_predict = model.predict(X_test_scaled)
+        # Predictions of the best estimator on the X train data
+        if y_scaling=="no":
+            Y_predict = abs(model.predict(X_test_scaled))
+        elif y_scaling=="yes":
+            Y_predict_scaled = model.predict(X_test_scaled)  
+            Y_predict = abs(scaler_y.inverse_transform(Y_predict_scaled))
         
-        # # Printing the predicted values
-        # print(f"Predictions of \"{self.mag_reg}\"")
-        # disp.display(Y_predict)
+        # Printing the predicted values
+        print(f"Predictions of \"{self.mag_reg}\"")
+        disp.display(Y_predict)
         
-        # # Printing the real values
-        # print(f"Actual values of \"{self.mag_reg}\"")
-        # disp.display(self.Y_test)
-        # print("-------------------------------------------------------------------------------------------------------------------")
+        # Printing the real values
+        print(f"Actual values of \"{self.mag_reg}\"")
+        disp.display(self.Y_test)
+        print("-------------------------------------------------------------------------------------------------------------------")
         
-        # print(">> MEAN SQUARED LOG ERROR (MSLE) RESULTS:")
-        # print("-------------------------------------------------------------------------------------------------------------------")
-        # # Measuring the mean squared log error (MSLE)
-        # msle_test_raw = mean_squared_log_error(self.Y_test,Y_predict,multioutput="raw_values")
-        # msle_test_avg = mean_squared_log_error(self.Y_test,Y_predict,multioutput="uniform_average")
+        print(">> MEAN SQUARED LOG ERROR (MSLE) RESULTS:")
+        print("-------------------------------------------------------------------------------------------------------------------")
+        # Measuring the mean squared log error (MSLE)
+        msle_test_raw = mean_squared_log_error(self.Y_test,Y_predict,multioutput="raw_values")
+        msle_test_avg = mean_squared_log_error(self.Y_test,Y_predict,multioutput="uniform_average")
 
-        # print("Raw values")
-        # print(msle_test_raw)
-        # print("Uniform average")
-        # print(msle_test_avg)
-        # print("-------------------------------------------------------------------------------------------------------------------")
+        print("Raw values")
+        print(msle_test_raw)
+        print("Uniform average")
+        print(msle_test_avg)
+        print("-------------------------------------------------------------------------------------------------------------------")
 
-        # print(">> MEAN SQUARED ERROR (MSE) RESULTS:")
-        # print("-------------------------------------------------------------------------------------------------------------------")
-        # # Measuring the mean squared error (MSE)
-        # mse_test_raw = mean_squared_error(self.Y_test,Y_predict,multioutput="raw_values")
-        # mse_test_avg = mean_squared_error(self.Y_test,Y_predict,multioutput="uniform_average")
+        print(">> MEAN SQUARED ERROR (MSE) RESULTS:")
+        print("-------------------------------------------------------------------------------------------------------------------")
+        # Measuring the mean squared error (MSE)
+        mse_test_raw = mean_squared_error(self.Y_test,Y_predict,multioutput="raw_values")
+        mse_test_avg = mean_squared_error(self.Y_test,Y_predict,multioutput="uniform_average")
 
-        # print("Raw values")
-        # print(mse_test_raw)
-        # print("Uniform average")
-        # print(mse_test_avg)
+        print("Raw values")
+        print(mse_test_raw)
+        print("Uniform average")
+        print(mse_test_avg)
 
-        # # Appending all the overfitting metrics to a dictionary
-        # test_metrics = {"msle_raw":msle_test_raw, "msle_avg":msle_test_avg, "mse_raw": mse_test_raw, "mse_avg": mse_test_avg}
-        # print("===================================================================================================================\n\n\n")
+        # Appending all the overfitting metrics to a dictionary
+        test_metrics = {"msle_raw":msle_test_raw, "msle_avg":msle_test_avg, "mse_raw": mse_test_raw, "mse_avg": mse_test_avg}
+        print("===================================================================================================================\n\n\n")
 
 
         # LEARNING CURVE
@@ -487,7 +543,7 @@ class regression_ANN:
         
         # Making a dictionary for the learning curve info
         learning_curve_info = {'loss_log': training_log.history['loss'],
-                               'val_loss': training_log.history['val_loss']}
+                               'val_loss_log': training_log.history['val_loss']}
 
         axis_lc.plot(training_log.history['loss'], label='Training Loss', linestyle='--', color='blue')
         axis_lc.plot(training_log.history['val_loss'], label='Validation Loss', linestyle='-', color='orange')
@@ -506,8 +562,14 @@ class regression_ANN:
 
         # Making an overview dictionary containing the grid search info
         model_info = {"data_info": data_info, "estimator": model,
-                      "fit_time": [cpu_time_total_mins,cpu_time_res], "learning_curve": learning_curve_info}
+                      "fit_time": [cpu_time_total_mins,cpu_time_res],
+                      "ovf_metrics": ovf_metrics, "test_metrics": test_metrics,
+                      "learning_curve": learning_curve_info}
         
+        # Adding the suffix 'ysc' in the name if y_scaling was included in the training
+        if y_scaling=="yes":
+            filesave = filesave + "_ysc"
+
         # Saving the overview dictionary in a .pkl with the selected name
         joblib.dump(model_info,f"{filesave}.pkl")
 
