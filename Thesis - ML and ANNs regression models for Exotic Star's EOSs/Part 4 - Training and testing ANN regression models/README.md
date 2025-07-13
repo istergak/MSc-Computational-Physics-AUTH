@@ -15,7 +15,7 @@ See [here](https://drive.google.com/drive/folders/1eFYPW1juSy4aSwTBDs-ye0ToogRbS
 
 [data_analysis_ES_ANNs.py](https://github.com/istergak/MSc-Computational-Physics-AUTH/blob/main/Thesis%20-%20ML%20and%20ANNs%20regression%20models%20for%20Exotic%20Star's%20EOSs/Part%204%20-%20Training%20and%20testing%20ANN%20regression%20models/data_analysis_ES_ANNs.py): module containing functions and classes for **a)** assessing linear correlations in regression data, **b)** training and testing deep learning regression models and **c)** storaging the fitting results in .pkl files and loading the .pkl files of trained models
 
-## Jupyter Noteboooks
+## Jupyter Notebooks
 
 [activation_functions.ipynb](https://github.com/istergak/MSc-Computational-Physics-AUTH/blob/main/Thesis%20-%20ML%20and%20ANNs%20regression%20models%20for%20Exotic%20Star's%20EOSs/Part%204%20-%20Training%20and%20testing%20ANN%20regression%20models/activation_functions.ipynb): defining and plotting the activation functions `sigmoid` and `ReLU`, along with their first derivatives. No additional files needed in the same directory to operate properly.
 
