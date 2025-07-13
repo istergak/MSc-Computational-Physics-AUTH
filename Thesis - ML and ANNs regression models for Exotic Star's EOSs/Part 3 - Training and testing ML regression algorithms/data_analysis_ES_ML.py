@@ -118,12 +118,13 @@ class regression_ML:
     """
 
     # Constructor of the class
-    def __init__(self,filename=None,mag_reg="dPdE",test_ratio=0.25):
+    def __init__(self,filename=None,mag_reg="dPdE",test_ratio=0.25,samples_per_EOS=1):
         """
         Initializing the `regression_ML` class
         1. filename: name of the file containing data for regression purposes
         2. mag_reg: name of the category of target (response) variables for the regression models. Allowed inputs: ["dPdE","enrg","PtMmax","Gamma"]
         3. test_ratio: percentage (in decimal format) of the entire dataset to be used as a test dataset to evaluate the accuracy of the trained regression model
+        4. samples_per_EOS: the number of rows that correspond to a single EOS. Each row represents a sample of this EOS. By default: 1 sample per EOS.
         """
         
         # Allowe values for the 'filesave' argument
@@ -148,8 +149,17 @@ class regression_ML:
         # Getting and appending the X (explanatory) and Y (response) data for regression to self variables of the class
         self.X_data,self.Y_data = self.split_df()
 
+        # Getting the shape of X data
+        X_rows,_ = np.shape(self.X_data)
+        
+        # Getting the split index bewteen train and test dataframes
+        split_index = round((1-test_ratio)*(X_rows/samples_per_EOS))*samples_per_EOS
+
         # Splitting the X and Y data into train and test parts and appending them to self variables of tne class
-        self.X_train, self.X_test, self.Y_train, self.Y_test = train_test_split(self.X_data, self.Y_data, test_size = test_ratio, random_state = 45) # arbitrary selection of the random state
+        self.X_train = self.X_data.iloc[:split_index,:]
+        self.X_test = self.X_data.iloc[split_index:,:]
+        self.Y_train = self.Y_data.iloc[:split_index,:]
+        self.Y_test = self.Y_data.iloc[split_index:,:]
 
 
     # Method that returns the X (explanatory) data and Y (response) data for regression
@@ -615,12 +625,12 @@ class load_ML:
         return self.grid_load["test_metrics"]
     
     # Method that returns the learning curve info
-    def get_learning_curve_info(self):
-        """
-        Returning the learning curve info 
-        """
+    # def get_learning_curve_info(self):
+    #     """
+    #     Returning the learning curve info 
+    #     """
 
-        return self.grid_load["learning_curve"]
+    #     return self.grid_load["learning_curve"]
     
     # Method that makes predictions on foreign data
     def predict_new(self,new_data_file=None):
@@ -795,10 +805,10 @@ class assess_ML:
         self.EOS_type = EOS_type
      
         # Initialing the list of names of the ML algorithms as self variable
-        self.ml_names = ["DecisionTree","RandomForest","GradientBoosting","AdaBoost"]
+        self.ml_names = ["DecisionTree","RandomForest","GradientBoosting","XGBoost"]
 
         # Initialing the list of coded names of the ML regression algorithms as self variable
-        self.ml_coded_names = ["dtree","rf","gradboost","adaboost"] # same order as in the self.ml_names list
+        self.ml_coded_names = ["dtree","rf","gradboost","xgboost"] # same order as in the self.ml_names list
 
         # Getting and appending the MSLE and MSE results to a self variable
         self.msle_array = self.listing_metric_results("msle")
@@ -904,27 +914,27 @@ class assess_ML:
         print(f"The {metric.upper()} results for \"{self.mag_reg}\" prediction have been summarized and saved on the {filename} file !!!")
     
     # Method that summarizes and saves the learning curve info in a .pkl file
-    def save_lc_info(self,x_data_type_idx):
-        """
-        Summarizing and saving the learning curve info in a .pkl file
-        1. x_data_type_idx: index of elements in the 'self.x_data_types' list
-        """
+    # def save_lc_info(self,x_data_type_idx):
+    #     """
+    #     Summarizing and saving the learning curve info in a .pkl file
+    #     1. x_data_type_idx: index of elements in the 'self.x_data_types' list
+    #     """
 
-        n = len(self.ml_names) # number of ML regression algorithms
+    #     n = len(self.ml_names) # number of ML regression algorithms
 
-        savefile = f"{self.EOS_type}{self.star_type}_lc_{self.mag_reg}_{self.x_data_types[x_data_type_idx]}.pkl" # .pkl file where the learning curve info will be saved
-        learning_curves_info = {} # dictionary of learning curve info
+    #     savefile = f"{self.EOS_type}{self.star_type}_lc_{self.mag_reg}_{self.x_data_types[x_data_type_idx]}.pkl" # .pkl file where the learning curve info will be saved
+    #     learning_curves_info = {} # dictionary of learning curve info
 
-        # Outer-Iterative process to scan all the available ML algorithms in .pkl files
-        for i in range(0,n):
-            filename = f"{EOS_type}{self.star_type}_{self.ml_coded_names[i]}_grid_{self.mag_reg}_{self.x_data_types[x_data_type_idx]}.pkl"
+    #     # Outer-Iterative process to scan all the available ML algorithms in .pkl files
+    #     for i in range(0,n):
+    #         filename = f"{EOS_type}{self.star_type}_{self.ml_coded_names[i]}_grid_{self.mag_reg}_{self.x_data_types[x_data_type_idx]}.pkl"
 
-            learning_curve_model_info = load_ML(filename).get_learning_curve_info()
-            learning_curves_info[f"{self.ml_coded_names[i]}"] = learning_curve_model_info
+    #         learning_curve_model_info = load_ML(filename).get_learning_curve_info()
+    #         learning_curves_info[f"{self.ml_coded_names[i]}"] = learning_curve_model_info
 
-        # Saving the dictionary of learning curve info as .pkl file
-        joblib.dump(learning_curves_info,savefile)
-        print(f"The learning curves info for \"{self.x_data_types[x_data_type_idx]}\" X data and \"{self.mag_reg}\" Y data have been summarized and saved on the {savefile} file !!!")     
+    #     # Saving the dictionary of learning curve info as .pkl file
+    #     joblib.dump(learning_curves_info,savefile)
+    #     print(f"The learning curves info for \"{self.x_data_types[x_data_type_idx]}\" X data and \"{self.mag_reg}\" Y data have been summarized and saved on the {savefile} file !!!")     
 
 
 
@@ -1062,50 +1072,50 @@ class assess_ML:
         axis_gbar.legend(bbox_to_anchor=(1,1.01))
 
     # Method that plots the learning curves for a specific type of X (explanatory data)
-    def plot_learning_curves(self,x_data_type_idx,axis_lc,colors_lc):
-        """
-        Plotting the learning curves for a specific type of X (explanatory data)
-        1. x_data_type_idx: index of elements in the 'self.x_data_types' list
-        2. axis_lc: the axis where the learning curves will be included
-        """
+    # def plot_learning_curves(self,x_data_type_idx,axis_lc,colors_lc):
+    #     """
+    #     Plotting the learning curves for a specific type of X (explanatory data)
+    #     1. x_data_type_idx: index of elements in the 'self.x_data_types' list
+    #     2. axis_lc: the axis where the learning curves will be included
+    #     """
 
-        # Making the name of the .pkl file where the learning curves info are saved
-        filename = f"{self.EOS_type}{self.star_type}_lc_{self.mag_reg}_{self.x_data_types[x_data_type_idx]}.pkl"
+    #     # Making the name of the .pkl file where the learning curves info are saved
+    #     filename = f"{self.EOS_type}{self.star_type}_lc_{self.mag_reg}_{self.x_data_types[x_data_type_idx]}.pkl"
 
-        # Check if the file exists in current folder and load its contents
-        if os.path.exists(filename):
-            learning_curves_info = joblib.load(filename)
-            models = list(learning_curves_info.keys()) # getting the names of the ML models used for regression
-        else:
-            raise ValueError(f"The file \"{filename}\" does not exist in current folder. You may use the \"save_lc_info()\" method of the class and try again.")    
+    #     # Check if the file exists in current folder and load its contents
+    #     if os.path.exists(filename):
+    #         learning_curves_info = joblib.load(filename)
+    #         models = list(learning_curves_info.keys()) # getting the names of the ML models used for regression
+    #     else:
+    #         raise ValueError(f"The file \"{filename}\" does not exist in current folder. You may use the \"save_lc_info()\" method of the class and try again.")    
             
 
-        for i in range(0,len(models)):
-            # Getting the train sizes, the mean train and validation scores for the current ML model
-            train_sizes = learning_curves_info[models[i]]["train_sizes"]
-            mean_train_scores = learning_curves_info[models[i]]["mean_train_scores"]
-            mean_val_scores = learning_curves_info[models[i]]["mean_val_scores"]
+    #     for i in range(0,len(models)):
+    #         # Getting the train sizes, the mean train and validation scores for the current ML model
+    #         train_sizes = learning_curves_info[models[i]]["train_sizes"]
+    #         mean_train_scores = learning_curves_info[models[i]]["mean_train_scores"]
+    #         mean_val_scores = learning_curves_info[models[i]]["mean_val_scores"]
 
-            # Plotting the train learning curve of current model
-            axis_lc.plot(train_sizes,mean_train_scores,color=colors_lc[i],label=f"{models[i]}_train")
+    #         # Plotting the train learning curve of current model
+    #         axis_lc.plot(train_sizes,mean_train_scores,color=colors_lc[i],label=f"{models[i]}_train")
 
-            # Plotting the validation learning curve of current model
-            axis_lc.plot(train_sizes,mean_val_scores,"--",color=colors_lc[i],label=f"{models[i]}_valid.")
+    #         # Plotting the validation learning curve of current model
+    #         axis_lc.plot(train_sizes,mean_val_scores,"--",color=colors_lc[i],label=f"{models[i]}_valid.")
 
             
-        # Setting the title in latex format
-        if self.mag_reg=="dpde":
-            y_type_latex = r"$\frac{dP}{dE}$"
-        elif self.mag_reg=="enrg":
-            y_type_latex = r"$E_c$"
-        elif self.mag_reg=="gamma":
-            y_type_latex = r"$Γ$"
-        if self.mag_reg=="PcMmax":
-            y_type_latex = r"$P_c(M_{max})$" 
+    #     # Setting the title in latex format
+    #     if self.mag_reg=="dpde":
+    #         y_type_latex = r"$\frac{dP}{dE}$"
+    #     elif self.mag_reg=="enrg":
+    #         y_type_latex = r"$E_c$"
+    #     elif self.mag_reg=="gamma":
+    #         y_type_latex = r"$Γ$"
+    #     if self.mag_reg=="PcMmax":
+    #         y_type_latex = r"$P_c(M_{max})$" 
 
-        # Adding tlabels, scale, legend and title for clarity
-        axis_lc.set_xlabel("Train size",fontsize=12)
-        axis_lc.set_ylabel("MSLE",fontsize=12)
-        axis_lc.set_yscale("log")
-        axis_lc.set_title("Predicting " + y_type_latex + f" values from {self.x_data_types[x_data_type_idx]} data",fontsize=13)
-        axis_lc.legend(bbox_to_anchor=(1,1.01),fontsize=10)
+    #     # Adding tlabels, scale, legend and title for clarity
+    #     axis_lc.set_xlabel("Train size",fontsize=12)
+    #     axis_lc.set_ylabel("MSLE",fontsize=12)
+    #     axis_lc.set_yscale("log")
+    #     axis_lc.set_title("Predicting " + y_type_latex + f" values from {self.x_data_types[x_data_type_idx]} data",fontsize=13)
+    #     axis_lc.legend(bbox_to_anchor=(1,1.01),fontsize=10)
