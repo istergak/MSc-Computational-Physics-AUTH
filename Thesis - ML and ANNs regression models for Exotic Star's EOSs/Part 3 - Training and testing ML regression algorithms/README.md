@@ -23,7 +23,7 @@ We used the following machine learning algorithms:<br>
 
 ## Modules
 
-[data_analysis_ES_ML.py](https://github.com/istergak/MSc-Computational-Physics-AUTH/blob/main/Thesis%20-%20ML%20and%20ANNs%20regression%20models%20for%20Exotic%20Star's%20EOSs/Part%203%20-%20Training%20and%20testing%20ML%20regression%20algorithms/data_analysis_ES_ML.py): module containing functions and classes for assessing linear correlations in regression data, training and testing machine learning regression models, storaging the fitting results in .pkl files, loading the .pkl files of trained models, storaging summary results in .csv files, loading and presenting the summary results in **PrettyTable** and **bar plots** forms
+[data_analysis_ES_ML.py](https://github.com/istergak/MSc-Computational-Physics-AUTH/blob/main/Thesis%20-%20ML%20and%20ANNs%20regression%20models%20for%20Exotic%20Star's%20EOSs/Part%203%20-%20Training%20and%20testing%20ML%20regression%20algorithms/data_analysis_ES_ML.py):Module containing functions and classes for **a)** assessing linear correlations in regression data, **b)** training and testing machine learning regression models, **c)** storaging the fitting results in .pkl files and loading the .pkl files of trained models, and **d)** storaging summary results in .csv files, loading and presenting the summary results in *PrettyTable* and *bar plots* forms
 
 ## Jupyter Notebooks
 
@@ -37,4 +37,4 @@ We used the following machine learning algorithms:<br>
 
 [train_test_xgboost_regress.ipynb](https://github.com/istergak/MSc-Computational-Physics-AUTH/blob/main/Thesis%20-%20ML%20and%20ANNs%20regression%20models%20for%20Exotic%20Star's%20EOSs/Part%203%20-%20Training%20and%20testing%20ML%20regression%20algorithms/train_test_xgboost_regress.ipynb): demonstrating the use of **data_analysis_ES_ML.py** module for fitting *`XGBoost`* models on our regression data and storaging the results on .pkl files
 
-[assessing_summary_ml_reg.ipynb](https://github.com/istergak/MSc-Computational-Physics-AUTH/blob/main/Thesis%20-%20ML%20and%20ANNs%20regression%20models%20for%20Exotic%20Star's%20EOSs/Part%203%20-%20Training%20and%20testing%20ML%20regression%20algorithms/assessing_summary_ml_reg.ipynb): demonstrating the use of **data_analysis_ES_ML.py** module for loading the .pkl files of trained models, storaging summary results in .csv files, loading and presenting the summary results in **PrettyTable** and **bar plots** forms
+[assessing_summary_ml_reg.ipynb](https://github.com/istergak/MSc-Computational-Physics-AUTH/blob/main/Thesis%20-%20ML%20and%20ANNs%20regression%20models%20for%20Exotic%20Star's%20EOSs/Part%203%20-%20Training%20and%20testing%20ML%20regression%20algorithms/assessing_summary_ml_reg.ipynb): demonstrating the use of **data_analysis_ES_ML.py** module for loading the .pkl files of trained models, storaging summary results in .csv files, loading and presenting the summary results in *PrettyTable* and *bar plots* forms
