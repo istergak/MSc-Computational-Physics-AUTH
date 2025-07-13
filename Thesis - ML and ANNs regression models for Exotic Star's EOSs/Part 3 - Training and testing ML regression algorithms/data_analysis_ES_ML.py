@@ -1058,7 +1058,7 @@ class assess_ML:
         if self.mag_reg=="dpde":
             y_type_latex = r"$\frac{dP}{dE}$"
         elif self.mag_reg=="enrg":
-            y_type_latex = r"$E_c$"
+            y_type_latex = r"$\epsilon_c$"
         elif self.mag_reg=="gamma":
             y_type_latex = r"$Γ$"
         if self.mag_reg=="PcMmax":
