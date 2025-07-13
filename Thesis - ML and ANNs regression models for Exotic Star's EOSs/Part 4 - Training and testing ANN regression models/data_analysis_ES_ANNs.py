@@ -13,13 +13,14 @@
 
 # Description: 
 # Module offering classes and functions for assessing and analyzing the regression data
-# of Exotic Stars by building and using Artificial Neural Networks (ANNs)
+# of Exotic Stars by building and using Deep Neural Networks (DNNs)
 
 # Abbrevations:
 # ES -> Exotic Star
 # NS -> Neutron Star
 # QS -> Quark Star
-# ML -> Machine Learning
+# DL -> Deep Learning
+# DNN -> Deep Neural Network
 
 
 # Importing necessary basic modules
