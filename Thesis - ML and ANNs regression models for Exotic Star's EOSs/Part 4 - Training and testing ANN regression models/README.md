@@ -3,6 +3,10 @@
 In this directory we present all our codes for building and fitting deep learning regression models, using our regression data.
 For more about how these data where produced, see [Part 1](https://github.com/istergak/MSc-Computational-Physics-AUTH/tree/main/Thesis%20-%20ML%20and%20ANNs%20regression%20models%20for%20Exotic%20Star's%20EOSs/Part%201%20-%20Solving%20the%20TOV%20equations%20for%20Hadronic%20and%20Quark%20Stars) and [Part 2](https://github.com/istergak/MSc-Computational-Physics-AUTH/tree/main/Thesis%20-%20ML%20and%20ANNs%20regression%20models%20for%20Exotic%20Star's%20EOSs/Part%202%20-%20Handling%20the%20TOV%20equations%20solution%20data%20for%20Exotic%20Stars).
 
+**Algorithms**
+
+We used the `Tensorflow` package for building and fitting `Deep Neural Network` models (see [documentation](https://www.tensorflow.org/))
+
 **Notes**
 
 Files of regression data must be included in the same directory with the following modules and notebooks, for the algorithms to run properly.
