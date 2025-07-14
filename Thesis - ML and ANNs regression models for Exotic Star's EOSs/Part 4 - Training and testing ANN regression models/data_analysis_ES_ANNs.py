@@ -292,7 +292,7 @@ class regression_ANN:
         # INPUT LAYER
         model_structure.append(Input(shape=(x_cols,)))
 
-        # MIDDLE LAYERS
+        # MIDDLE (HIDDEN) LAYERS
         if layers_neurons==None: # default case (one middle layer with twice the number of neurons of the input layer)
             # Dense layer
             model_structure.append(Dense(2*x_cols,activation='relu')) 
@@ -309,7 +309,7 @@ class regression_ANN:
                 # Regularization process to reduce overfitting
                 model_structure.append(BatchNormalization())
 
-                # Dropout of neurons of the layer
+                # Dropout of neurons of the current layer to further reduce overfitting
                 if layers_dropouts!=None:
                     model_structure.append(Dropout(rate=layers_dropouts[i]))
 
