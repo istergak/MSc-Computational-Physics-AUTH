@@ -19,7 +19,7 @@ In order for the codes to run properly, include the following files along with *
 
 ## Jupyter Notebooks
 
-[metrics_learning_curves_final_results.ipynb](https://github.com/istergak/MSc-Computational-Physics-AUTH/blob/main/Thesis%20-%20ML%20and%20ANNs%20regression%20models%20for%20Exotic%20Star's%20EOSs/Part%205%20-%20Final%20Results/metrics_learning%20curves_final_results.ipynb): obtaining and illustrating the final results of a) metrics MSLE and MSE and b) learning curves of DNN.
+[metrics_learning_curves_final_results.ipynb](https://github.com/istergak/MSc-Computational-Physics-AUTH/blob/main/Thesis%20-%20ML%20and%20ANNs%20regression%20models%20for%20Exotic%20Star's%20EOSs/Part%205%20-%20Final%20Results/metrics_learning%20curves_final_results.ipynb): obtaining and illustrating the final results of a) metrics MSLE and MSE and b) learning curves of DNN models.
 
 [reconstruct_EOS_NS.ipynb](https://github.com/istergak/MSc-Computational-Physics-AUTH/blob/main/Thesis%20-%20ML%20and%20ANNs%20regression%20models%20for%20Exotic%20Star's%20EOSs/Part%205%20-%20Final%20Results/reconstruct_EOS_NS.ipynb): reconstructing the 21 "main" EoSs and 6 mock poly-linear EoSs of Neutron Stars. Needs the respective files to run properly.
 
