@@ -1068,7 +1068,7 @@ class assess_ML:
         axis_gbar.set_xticks(start_pos)
         axis_gbar.set_xticklabels(self.ml_names,fontsize=12)
         axis_gbar.set_ylabel(f"{metric.upper()}",fontsize=12)
-        axis_gbar.set_title("Model " + metric.upper() + " Performance and Overfitting (Train/Test Comparison) on predicting " + y_type_latex + " values",fontsize=13)
+        axis_gbar.set_title("Model " + metric.upper() + " Performance (Train/Test Comparison) on predicting " + y_type_latex + " values",fontsize=13)
         axis_gbar.legend(bbox_to_anchor=(1,1.01))
 
     # Method that plots the learning curves for a specific type of X (explanatory data)
