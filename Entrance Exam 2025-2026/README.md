@@ -12,7 +12,7 @@ Create a programm, where two real numbers are appended as values to the variable
 Create a programm, where two numbers are appended as values to the variables a and b. The programm then should switch the values: a should take the value of b and b the value of a.
 
 ## Question 3
-Create a programm, which reads from the keybord a positive integer number. The programm should then calculate and print the value of the factorial of this number $(n!=1*2*3*...*n)$.
+Create a programm, which reads from the keybord a positive integer number. The programm should then calculate and print the value of the factorial of this number (n!=1*2*3*...*n).
 
 ## Question 4
 Create a programm, which reads from the keybord a positive integer number in the interval $[2,1000]$ and prints if the number is a prime number.
