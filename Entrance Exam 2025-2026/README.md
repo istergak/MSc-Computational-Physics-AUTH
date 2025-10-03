@@ -20,6 +20,6 @@ Create a programm, which reads from the keybord a positive integer number in the
 ## Question 5
 In order to find the root of a function $f(x)$ using the Newton-Raphson method we execute the following iterative process
 
-$$x_{k+1} = x_k - f(x_k)/f'(x_k),  k=1,2,3,..., $$
+$$\begin{matrix} x_{k+1} = x_k - f(x_k)/f'(x_k), & k=1,2,3,..., \end{matrix}$$
 
 where $f^{'}$ is the derivative of $f$. Create a programm, which finds the root of the function $f(x) = x^3 + x - 3$, starting the iterative process with the value $x_0=1.0$ and terminating the process when $|x_{k+1} - x_k| < 10^{-8}$. 
