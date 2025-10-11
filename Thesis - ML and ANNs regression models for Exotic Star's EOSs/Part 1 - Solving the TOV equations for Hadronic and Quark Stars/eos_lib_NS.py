@@ -3,16 +3,16 @@
 # Master's Thesis
 
 # Thesis Title:  
-# Reconstruction of the EoSs of Exotic Stars using ML and ANNs regression models 
+# Reconstruction of the EoSs and classification of Exotic Stars using ML and ANNs models
 
 # Implemented by: Ioannis Stergakis
 # AEM: 4439
 
-# Python Script: Py1
+# Python Script 1
 # Name: eos_lib_NS.py
 
 # Description: 
-# -> Defining different equations of states (EoSs) for a Neutron Star
+# -> Defining different equation of states (EoSs) for a Neutron Star
 # -> Storaging these equations in lists
 
 # Abbrevations:
@@ -22,6 +22,9 @@
 # Importing useful modules
 import sympy as smp
 import numpy as np
+
+# Useful symbols
+pp = smp.symbols("p", real=True)
 
 # Numerical definition of the EoSs (CORE)
 # The following 21 models are being defined:
@@ -147,9 +150,108 @@ def WFF_1_sym(p):
 def WFF_2_sym(p):
     return 0.00244523*pow(p,1.62692)+122.076*pow(p,0.340401)
 
+# Symbolic definition of derivatives of the EoSs (CORE)
+# The same 21 models are being defined:
 
+# APR-1
+# BGP
+# BL-1, BL-2
+# DH
+# HHJ-1, HHJ-2
+# HLPS-2, HLPS-3
+# MDI-1, MDI-2, MDI-3, MDI-4, 
+# NLD
+# PS
+# SCVBB
+# Ska
+# SkI4
+# W
+# WFF-1, WFF-2
 
-# Definition of the EoSs (CRUST) and their slopes
+def dAPR_1_sym(p):
+    return APR_1_sym(pp).diff(pp).subs(pp,p)
+def dBGP_sym(p):
+    return BGP_sym(pp).diff(pp).subs(pp,p)
+def dBL_1_sym(p):
+    return BL_1_sym(pp).diff(pp).subs(pp,p)
+def dBL_2_sym(p):
+    return BL_2_sym(pp).diff(pp).subs(pp,p)
+def dDH_sym(p):
+    return DH_sym(pp).diff(pp).subs(pp,p)
+def dHHJ_1_sym(p):
+    return HHJ_1_sym(pp).diff(pp).subs(pp,p)
+def dHHJ_2_sym(p):
+    return HHJ_2_sym(pp).diff(pp).subs(pp,p)                    
+def dHLPS_2_sym(p):
+    return HLPS_2_sym(pp).diff(pp).subs(pp,p)
+def dHLPS_3_sym(p):
+    return HLPS_3_sym(pp).diff(pp).subs(pp,p)
+def dMDI_1_sym(p):
+    return MDI_1_sym(pp).diff(pp).subs(pp,p)
+def dMDI_2_sym(p):
+    return MDI_2_sym(pp).diff(pp).subs(pp,p)
+def dMDI_3_sym(p):
+    return MDI_3_sym(pp).diff(pp).subs(pp,p)
+def dMDI_4_sym(p):
+    return MDI_4_sym(pp).diff(pp).subs(pp,p)
+def dNLD_sym(p):
+    return NLD_sym(pp).diff(pp).subs(pp,p)
+def dPS_sym(p):
+    return PS_sym(pp).diff(pp).subs(pp,p)
+def dSCVBB_sym(p):
+    return SCVBB_sym(pp).diff(pp).subs(pp,p)    
+def dSka_sym(p):
+    return Ska_sym(pp).diff(pp).subs(pp,p)
+def dSkI4_sym(p):
+    return SkI4_sym(pp).diff(pp).subs(pp,p)
+def dW_sym(p):
+    return W_sym(pp).diff(pp).subs(pp,p)
+def dWFF_1_sym(p):
+    return WFF_1_sym(pp).diff(pp).subs(pp,p)
+def dWFF_2_sym(p):
+    return WFF_2_sym(pp).diff(pp).subs(pp,p)
+
+# Numerical definition of derivatives of the EoSs (CORE)
+# The same 21 models are being defined:
+
+# APR-1
+# BGP
+# BL-1, BL-2
+# DH
+# HHJ-1, HHJ-2
+# HLPS-2, HLPS-3
+# MDI-1, MDI-2, MDI-3, MDI-4, 
+# NLD
+# PS
+# SCVBB
+# Ska
+# SkI4
+# W
+# WFF-1, WFF-2
+
+dAPR_1_num = smp.lambdify(pp,dAPR_1_sym(pp),"numpy")
+dBGP_num = smp.lambdify(pp,dBGP_sym(pp),"numpy")
+dBL_1_num = smp.lambdify(pp,dBL_1_sym(pp),"numpy")
+dBL_2_num = smp.lambdify(pp,dBL_2_sym(pp),"numpy")
+dDH_num = smp.lambdify(pp,dDH_sym(pp),"numpy")
+dHHJ_1_num = smp.lambdify(pp,dHHJ_1_sym(pp),"numpy")
+dHHJ_2_num = smp.lambdify(pp,dHHJ_2_sym(pp),"numpy")
+dHLPS_2_num = smp.lambdify(pp,dHLPS_2_sym(pp),"numpy")
+dHLPS_3_num = smp.lambdify(pp,dHLPS_3_sym(pp),"numpy")
+dMDI_1_num = smp.lambdify(pp,dMDI_1_sym(pp),"numpy")
+dMDI_2_num = smp.lambdify(pp,dMDI_2_sym(pp),"numpy")
+dMDI_3_num = smp.lambdify(pp,dMDI_3_sym(pp),"numpy")
+dMDI_4_num = smp.lambdify(pp,dMDI_4_sym(pp),"numpy")
+dNLD_num = smp.lambdify(pp,dNLD_sym(pp),"numpy")
+dPS_num = smp.lambdify(pp,dPS_sym(pp),"numpy")
+dSCVBB_num = smp.lambdify(pp,dSCVBB_sym(pp),"numpy")
+dSka_num = smp.lambdify(pp,dSka_sym(pp),"numpy")
+dSkI4_num = smp.lambdify(pp,dSkI4_sym(pp),"numpy")
+dW_num = smp.lambdify(pp,dW_sym(pp),"numpy")
+dWFF_1_num = smp.lambdify(pp,dWFF_1_sym(pp),"numpy")
+dWFF_2_num = smp.lambdify(pp,dWFF_2_sym(pp),"numpy")
+
+# Numerical definition of the EoSs (CRUST)
 # The following EoSs for the 4 layers of the NS
 # OUTER-CRUST are being defined:
 
@@ -161,7 +263,6 @@ def WFF_2_sym(p):
 # eos_crust3 -> EoS for pressure P : 1.44875*10^-11 < P < 4.1725*10^-8 [MeV/fm^3]
 
 # eos_crust4 -> EoS for pressure P : P < 1.44875*10^-11 [MeV/fm^3]
-
 
 def eos_crust1(p):
     return 0.00873 + 103.17338*(1-np.exp(-p/0.38527))+7.34979*(1-np.exp(-p/0.01211))
@@ -178,67 +279,104 @@ def eos_crust4(p):
     c5 = 0.000028*(np.log10(p)**5)
     return 10**(c0 + c1 + c2 + c3 + c4 + c5)
 
+# Symbolic definition of the EoSs (CRUST)
+# The following EoSs for the 4 layers of the NS
+# OUTER-CRUST are being defined:
 
-def slope_eos_crust1(p):
-    return 267.8274087168961 * np.exp(-p / 0.38527) + 606.8353790330587 * np.exp(-p / 0.01211)
-def slope_eos_crust2(p):
-    return 700.994825 * np.exp(-p * 344827.5) + 834.262074 * np.exp(-p * 7692.3076)
-def slope_eos_crust3(p):
-    return 1.20923e6 * np.exp(-p * 0.2373 * 1e10) + 5.628e6 * np.exp(-p * 0.4020 * 1e8)
-def slope_eos_crust4(p):
-    log10_p = np.log10(p)
-    
-    # Calculate the original exponent g(p) = c0(r) + c1(r) +c2(r) + c3(r) + c4(r) + c5(r)
+# eos_crust1 -> EoS for pressure P : 9.34375*10^-5 < P < 0.184 [MeV/fm^3] 
+# (for the PS EoS the upper bound, i.e. the crust/core bound, is 0.696 [MeV/fm^3])
+
+# eos_crust2 -> EoS for pressure P : 4.1725*10^-8 < P < 9.34375*10^-5 [MeV/fm^3]
+
+# eos_crust3 -> EoS for pressure P : 1.44875*10^-11 < P < 4.1725*10^-8 [MeV/fm^3]
+
+# eos_crust4 -> EoS for pressure P : P < 1.44875*10^-11 [MeV/fm^3]
+
+def eos_crust1_sym(p):
+    return 0.00873 + 103.17338*(1-smp.exp(-p/0.38527))+7.34979*(1-smp.exp(-p/0.01211))
+def eos_crust2_sym(p):
+    return 0.00015 + 0.00203*(1-smp.exp(-p*344827.5))+0.10851*(1-smp.exp(-p*7692.3076))
+def eos_crust3_sym(p):
+    return 0.0000051*(1-smp.exp(-p*0.2373*1e10))+0.00014*(1-smp.exp(-p*0.4020*1e8))
+def eos_crust4_sym(p):
     c0 = 31.93753
-    c1 = 10.82611*log10_p
-    c2 = 1.29312 * (log10_p**2)
-    c3 = 0.08014*(log10_p**3)
-    c4 = 0.00242*(log10_p**4)
-    c5 = 0.000028*(log10_p**5)
-    g_p = c0+c1+c2+c3+c4+c5
-    
-    
-    # Calculate the derivative of g'(r) = c0'(r) + c1'(r) +c2'(r) + c3'(r) + c4'(r) + c5'(r)
-    d1 = 10.82611
-    d2 = 2*1.29312*log10_p
-    d3 = 3*0.08014*log10_p**2
-    d4 = 4*0.00242*log10_p**3
-    d5 = 5*0.000028*log10_p**4
-    dg_dp = (d1+d2+d2+d3+d4+d5)/(p*np.log(10))
-    
-    # Return the full derivative
-    return 10**g_p*np.log(10)*dg_dp    
+    c1 = 10.82611*smp.log(p,10)
+    c2 = 1.29312 * (smp.log(p,10)**2)
+    c3 = 0.08014*(smp.log(p,10)**3)
+    c4 = 0.00242*(smp.log(p,10)**4)
+    c5 = 0.000028*(smp.log(p,10)**5)
+    return 10**(c0 + c1 + c2 + c3 + c4 + c5)
+
+# Symbolic definition of the derivatives of the EoSs (CRUST)
+# The following EoSs for the 4 layers of the NS
+# OUTER-CRUST are being defined:
+
+# eos_crust1 -> EoS for pressure P : 9.34375*10^-5 < P < 0.184 [MeV/fm^3] 
+# (for the PS EoS the upper bound, i.e. the crust/core bound, is 0.696 [MeV/fm^3])
+
+# eos_crust2 -> EoS for pressure P : 4.1725*10^-8 < P < 9.34375*10^-5 [MeV/fm^3]
+
+# eos_crust3 -> EoS for pressure P : 1.44875*10^-11 < P < 4.1725*10^-8 [MeV/fm^3]
+
+# eos_crust4 -> EoS for pressure P : P < 1.44875*10^-11 [MeV/fm^3]
+
+def deos_crust1_sym(p):
+    return eos_crust1_sym(pp).diff(pp).subs(pp,p)
+def deos_crust2_sym(p):
+    return eos_crust2_sym(pp).diff(pp).subs(pp,p)
+def deos_crust3_sym(p):
+    return eos_crust3_sym(pp).diff(pp).subs(pp,p)
+def deos_crust4_sym(p):
+    return eos_crust4_sym(pp).diff(pp).subs(pp,p)
+
+# Numerical definition of the derivatives of the EoSs (CRUST)
+# The following EoSs for the 4 layers of the NS
+# OUTER-CRUST are being defined:
+
+# eos_crust1 -> EoS for pressure P : 9.34375*10^-5 < P < 0.184 [MeV/fm^3] 
+# (for the PS EoS the upper bound, i.e. the crust/core bound, is 0.696 [MeV/fm^3])
+
+# eos_crust2 -> EoS for pressure P : 4.1725*10^-8 < P < 9.34375*10^-5 [MeV/fm^3]
+
+# eos_crust3 -> EoS for pressure P : 1.44875*10^-11 < P < 4.1725*10^-8 [MeV/fm^3]
+
+# eos_crust4 -> EoS for pressure P : P < 1.44875*10^-11 [MeV/fm^3]
+
+deos_crust1_num = smp.lambdify(pp,deos_crust1_sym(pp),"numpy")
+deos_crust2_num = smp.lambdify(pp,deos_crust2_sym(pp),"numpy")
+deos_crust3_num = smp.lambdify(pp,deos_crust3_sym(pp),"numpy")
+deos_crust4_num = smp.lambdify(pp,deos_crust4_sym(pp),"numpy")
 
 
 # Defining a list to store the EoSs of the CORE of the Neutron Star
 
-eos_list_core = [["APR-1",APR_1,APR_1_sym],
-            ["BGP",BGP,BGP_sym],
-            ["BL-1",BL_1,BL_1_sym],
-            ["BL-2",BL_2,BL_2_sym],
-            ["DH",DH,DH_sym],
-            ["HHJ-1",HHJ_1,HHJ_1_sym],
-            ["HHJ-2",HHJ_2,HHJ_2_sym],
-            ["HLPS-2",HLPS_2,HLPS_2_sym],
-            ["HLPS-3",HLPS_3,HLPS_3_sym],
-            ["MDI-1",MDI_1,MDI_1_sym],
-            ["MDI-2",MDI_2,MDI_2_sym],
-            ["MDI-3",MDI_3,MDI_3_sym],
-            ["MDI-4",MDI_4,MDI_4_sym],
-            ["NLD",NLD,NLD_sym],
-            ["PS",PS,PS_sym],
-            ["SCVBB",SCVBB,SCVBB_sym],
-            ["Ska",Ska,Ska_sym],
-            ["SkI4",SkI4,SkI4_sym],
-            ["W",W,W_sym],
-            ["WFF-1",WFF_1,WFF_1_sym],
-            ["WFF-2",WFF_2,WFF_2_sym]
+eos_list_core = [["APR-1",APR_1,APR_1_sym,dAPR_1_num,dAPR_1_sym],
+            ["BGP",BGP,BGP_sym,dBGP_num,dBGP_sym],
+            ["BL-1",BL_1,BL_1_sym,dBL_1_num,dBL_1_sym],
+            ["BL-2",BL_2,BL_2_sym,dBL_2_num,dBL_2_sym],
+            ["DH",DH,DH_sym,dDH_num,dDH_sym],
+            ["HHJ-1",HHJ_1,HHJ_1_sym,dHHJ_1_num,dHHJ_1_sym],
+            ["HHJ-2",HHJ_2,HHJ_2_sym,dHHJ_2_num,dHHJ_2_sym],
+            ["HLPS-2",HLPS_2,HLPS_2_sym,dHLPS_2_num,dHLPS_2_sym],
+            ["HLPS-3",HLPS_3,HLPS_3_sym,dHLPS_3_num,dHLPS_3_sym],
+            ["MDI-1",MDI_1,MDI_1_sym,dMDI_1_num,dMDI_1_sym],
+            ["MDI-2",MDI_2,MDI_2_sym,dMDI_2_num,dMDI_2_sym],
+            ["MDI-3",MDI_3,MDI_3_sym,dMDI_3_num,dMDI_3_sym],
+            ["MDI-4",MDI_4,MDI_4_sym,dMDI_4_num,dMDI_4_sym],
+            ["NLD",NLD,NLD_sym,dNLD_num,dNLD_sym],
+            ["PS",PS,PS_sym,dPS_num,dPS_sym],
+            ["SCVBB",SCVBB,SCVBB_sym,dSCVBB_num,dSCVBB_sym],
+            ["Ska",Ska,Ska_sym,dSka_num,dSka_sym],
+            ["SkI4",SkI4,SkI4_sym,dSkI4_num,dSkI4_sym],
+            ["W",W,W_sym,dW_num,dW_sym],
+            ["WFF-1",WFF_1,WFF_1_sym,dWFF_1_num,dWFF_1_sym],
+            ["WFF-2",WFF_2,WFF_2_sym,dWFF_2_num,dWFF_2_sym]
             ]
 
 
 # Defining a list to store the EoSs of the CRUST of the Neutron Star
 
-eos_list_crust = [["Crust-1",eos_crust1,slope_eos_crust1],
-                  ["Crust-2",eos_crust2,slope_eos_crust2],
-                  ["Crust-3",eos_crust3,slope_eos_crust3],
-                  ["Crust-4",eos_crust4,slope_eos_crust4]]
+eos_list_crust = [["Crust-1",eos_crust1, eos_crust1_sym, deos_crust1_num, deos_crust1_sym],
+                  ["Crust-2",eos_crust2, eos_crust2_sym, deos_crust2_num, deos_crust2_sym],
+                  ["Crust-3",eos_crust3, eos_crust3_sym, deos_crust3_num, deos_crust3_sym],
+                  ["Crust-4",eos_crust4, eos_crust4_sym, deos_crust4_num, deos_crust4_sym]]
