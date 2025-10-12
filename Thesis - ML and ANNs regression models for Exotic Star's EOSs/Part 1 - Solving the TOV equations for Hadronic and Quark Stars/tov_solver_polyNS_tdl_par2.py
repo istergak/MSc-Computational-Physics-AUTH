@@ -8,8 +8,8 @@
 # Implemented by: Ioannis Stergakis
 # AEM: 4439
 
-# Python Script: Py3b
-# Name: tov_solver_polyNS_tdl_par2.py (Version 2 - Tidal Deformability Calculation Included)
+# Python Script: Py3b (Version 2 - Tidal Deformability Calculation Included)
+# Name: tov_solver_polyNS_tdl_par2.py 
 
 # Description: 
 # -> Parallel solving of the TOV equations for polytropic constructed EoSs of a Neutron Star
@@ -742,4 +742,5 @@ if __name__ == "__main__":
     # Signal the progress printer process to stop if not interrupted
     if progress_process.is_alive():
         progress_queue.put("DONE")
+
         progress_process.join()
