@@ -29,6 +29,7 @@ Replace XX with `NS`/`polyNS`/`cflQS`/`mitQS` and YY with `_par` or nothing.
 
 [tov_solver_polyNS_par2.py](https://github.com/istergak/MSc-Computational-Physics-AUTH/blob/main/Thesis%20-%20ML%20and%20ANNs%20regression%20models%20for%20Exotic%20Star's%20EOSs/Part%201%20-%20Solving%20the%20TOV%20equations%20for%20Hadronic%20and%20Quark%20Stars/tov_solver_polyNS_par2.py): same as **tov_solver_polyNS_par.py** module, but corrections in the polytropic part of the mock EOSs are being made to avoid violation of causality. The corrections involve the replace of the polytropic part of the mock EOS that violates causality with a linear part, with fixed slope that does not violate causality.
 
+[tov_solver_polyNS_tdl_par2.py](https://github.com/istergak/MSc-Computational-Physics-AUTH/blob/main/Thesis%20-%20ML%20and%20ANNs%20regression%20models%20for%20Exotic%20Star's%20EOSs/Part%201%20-%20Solving%20the%20TOV%20equations%20for%20Hadronic%20and%20Quark%20Stars/tov_solver_polyNS_tdl_par2.py): same as **tov_solver_polyNS_par2.py** module with additional calculation of tidal deformability parameters $k2$ and $\Lambda$.
 
 ## Quark Stars
 
