@@ -55,8 +55,8 @@ def valid_cfl_models(Beff_max,Beff_step,Delta_max,Delta_step):
     valid_ms = []
 
     i = 1
-    for B_eff_val in range(60,Beff_max+Beff_step,Beff_step):
-        for Delta_val in range(Delta_min,Delta_max+Delta_step,Delta_step):
+    for B_eff_val in np.arange(60,Beff_max+Beff_step,Beff_step):
+        for Delta_val in np.arange(Delta_min,Delta_max+Delta_step,Delta_step):
             if B_eff_val < B_eff_bound(Delta_val):
                 models_names.append(f"CFL-{i}")
                 valid_ms.append(m_s)
@@ -296,26 +296,26 @@ if __name__ == "__main__":
     
     print("Minimum value of B_eff parameter in our study: 60.00 [MeV*fm^-3]")
     # Ask the user to give the maximum value for the Beff parameter
-    Beff_max_val = int(input("Give the maximum value of the B_eff parameter in [MeV*fm^-3]:  "))
+    Beff_max_val = float(input("Give the maximum value of the B_eff parameter in [MeV*fm^-3]:  "))
     while Beff_max_val<=57:
-        Beff_max_val = int(input("The value must be greater than 57 [MeV*fm^-3]. Try again:  "))
+        Beff_max_val = float(input("The value must be greater than 57 [MeV*fm^-3]. Try again:  "))
 
     # Ask the user to give the step for the scan of the Beff area
-    Beff_step_val = int(input("Give the step for the scan of the Beff area in [MeV*fm^-3]:  "))
+    Beff_step_val = float(input("Give the step for the scan of the Beff area in [MeV*fm^-3]:  "))
     while Beff_step_val<=0:
-        Beff_step_val = int(input("The value must be positive. Try again:  "))
+        Beff_step_val = float(input("The value must be positive. Try again:  "))
     print('-------------------------------------------------------------------------------')
     
     print("Minimum value of Δ parameter in our study: %.2f [MeV]"%Delta_min)
     # Ask the user to give the maximum value for the Δ parameter
-    Delta_max_val = int(input("Give the maximum value of the Δ parameter in [MeV]:  "))
+    Delta_max_val = float(input("Give the maximum value of the Δ parameter in [MeV]:  "))
     while Delta_max_val<=50:
-        Delta_max_val = int(input("The value must be greater than 50 [MeV]. Try again:  "))
+        Delta_max_val = float(input("The value must be greater than 50 [MeV]. Try again:  "))
 
     # Ask the user to give the step for the scan of the Δ area
-    Delta_step_val = int(input("Give the step for the scan of the Δ area in [MeV]:  "))
+    Delta_step_val = float(input("Give the step for the scan of the Δ area in [MeV]:  "))
     while Beff_step_val<=0:
-        Beff_step_val = int(input("The value must be positive. Try again:  "))         
+        Beff_step_val = float(input("The value must be positive. Try again:  "))         
     print('-------------------------------------------------------------------------------')
 
     valid_combos_results = valid_cfl_models(Beff_max_val,Beff_step_val,Delta_max_val,Delta_step_val)

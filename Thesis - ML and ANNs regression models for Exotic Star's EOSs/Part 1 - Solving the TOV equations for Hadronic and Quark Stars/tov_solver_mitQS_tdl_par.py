@@ -8,8 +8,8 @@
 # Implemented by: Ioannis Stergakis
 # AEM: 4439
 
-# Python Script: Py6b
-# Name: tov_solver_mitQS_par.py
+# Python Script: Py6b (Version 2 - Tidal Deformability Calculation Included)
+# Name: tov_solver_mitQS_tdl_par.py
 
 # Description: 
 # -> Parallel solving of the TOV equations for MIT bag EOS models of Quark Stars
@@ -43,7 +43,7 @@ def MIT_bag_models(B_max,B_step):
     models_names = []
     B_values = []
 
-    i = 1
+    i = 1 
     for B_val in np.arange(60,B_max+B_step,B_step):
         models_names.append(f"MITbag-{i}")
         B_values.append(B_val)
@@ -94,40 +94,47 @@ def EOS_MITbag(p,B):
 
 # Numerical definition of the slope dE/dP of EOS
 def EOS_MITbag_slope(p):
-    e = 3
-    return e
+    dedp = 3
+    return dedp
 
 
 # Defining a function that returns the system of the TOV equations
-def tov_eq(r,y,EOS):
+def tov_eq(r,z,EOS,dEOS):
     # Appending values
-    P = y[0] # value of the pressure at radius r
-    M = y[1] # value of the mass at radius r
+    P = z[0] # value of the pressure at radius r
+    M = z[1] # value of the mass at radius r
+    y = z[2] # value of y at radius r
     e = EOS(P) # value of the energy's density at radius r
+    dedp = dEOS(P) # value of the energy's density first derivative with respect to pressure at radius r
 
-    # Defining the system of TOV equations
+    # F(r) function
+    F = (1-1.474*11.2e-6*(r**2)*(e-P))*((1-2.948*M/r)**(-1))
+    # r^2Q(r) function
+    r2Q = 1.474*11.2e-6*(r**2)*(5*e+9*P+(e+P)/(1/dedp))*((1-2.948*M/r)**(-1))-6*((1-2.948*M/r)**(-1))-4*(1.474**2*M**2)/(r**2)*((1+11.2e-6*r**3*P/M)**2)*((1-2.948*M/r)**(-2))
+
+
+    # Defining the system of TOV equations (including a third equation for tidal)
     dP_dr = -1.474*(e*M/r**2)*(1+P/e)*(1+11.2e-6*r**3*P/M)/(1-2.948*M/r)
     dM_dr = 11.2e-6*r**2*e
-    return [dP_dr,dM_dr] 
+    dy_dr = (-y*y-y*F-r2Q)/r
+    return [dP_dr,dM_dr,dy_dr] 
 
 
 # Defining a function that solves the system of TOV equations
 # for a given EOS
-def tov_sol(p_0,r_step,B_val,EOS_name):
-    # Defining the formula of the EOS function
-    def EOS_formula(P):
-        return EOS_MITbag(P,B_val)
+def tov_sol(p_0,r_step,B_val,EOS_name, EOS_formula, dEOS_formula):
     
     # Calculating the mass density, energy density, EOS slope (dE/dP) and speed of sound c_s at NS center
     Pc = p_0 # pressure at QS center
     E_c = EOS_formula(Pc) # energy density at QS center
-    dE_dP = EOS_MITbag_slope(Pc) # EOS slope at QS center
+    dE_dP = dEOS_formula(Pc) # EOS slope at QS center
   
      
     # Pressure and mass initial values (initial conditions)       
     P_0 = Pc # initial pressure = pressure in center of NS
     M_0 = 10**-12 # mass in center of the QS
-    initial_values = [P_0,M_0]
+    y_0 = 2 # y value at center of the NS
+    initial_values = [P_0,M_0,y_0]
             
     # Bounds of QS radius r interval for the 1st step 
     # in the solving process
@@ -137,18 +144,21 @@ def tov_sol(p_0,r_step,B_val,EOS_name):
     # Useful storage lists
     P_out = None
     M_vals = []
-    R_final = None
+    R = None
+    yR_int = None
     
             
     # Solving the TOV equations for the main core and crust section
     EOS_func = EOS_formula
+    dEOS_func = dEOS_formula
     while P_0>10**-12:
 
         # Solving the TOV equations system in the [r_min,r_max] radius interval  
-        solution = solve_ivp(tov_eq,(r_min,r_max),initial_values,method="LSODA",args=(EOS_func,),atol=10**-12,rtol=10**-8)
+        solution = solve_ivp(tov_eq,(r_min,r_max),initial_values,method="RK45",args=(EOS_func,dEOS_func),atol=10**-12,rtol=10**-8)
         # Updating the initial values to be used in the next [r_min,r_max] interval
         initial_values[0] = solution.y[0][-1] # pressure
         initial_values[1] = solution.y[1][-1] # mass
+        initial_values[2] = solution.y[2][-1] # y
 
         # Check if the new initial mass is negative or zero
         # and break if so
@@ -165,12 +175,31 @@ def tov_sol(p_0,r_step,B_val,EOS_name):
         r_max = r_min + r_step
         P_0 = initial_values[0]
 
-        # Appending values to the M_max, R_final, P_final variables
-        P_out = solution.y[0][-1]
+        # Appending values to the M_max, R_final, P_final and yR_int variables
+        if solution.y[0][-1]>=0:
+            P_out = solution.y[0][-1]
         if solution.y[1][-1]!=np.nan:
             M_vals.append(solution.y[1][-1])
         if solution.t[-1]!=np.nan:
-            R_final = solution.t[-1]
+            R = solution.t[-1]
+        if solution.y[2][-1]!=np.nan:
+            yR_int = solution.y[2][-1]
+
+    # Calculating energy on surface
+    e_out = EOS_formula(P_out)
+    
+    # Adjusting the value of yR
+    yR_ext = yR_int - 1.126e-5 * e_out*R**3/max(M_vals)
+    
+    # Calculating tidal parameters
+    C = max(M_vals)/R # compactness
+    beta = 1.474*C # compactness in M_sun/km units
+    k2_term1 = (8/5)*beta**5*(1-2*beta )**2*(2-yR_ext+2*beta*(yR_ext-1))
+    k2_term2 = 2*beta*(6-3*yR_ext+3*beta*(5*yR_ext-8))
+    k2_term3 = 4*beta**3*(13 -11*yR_ext+ beta*(3*yR_ext-2)+2*beta**2*(1+yR_ext))
+    k2_term4 = 3*(1-2*beta)**2*(2-yR_ext+2*beta*(yR_ext-1))*np.log(1-2*beta)
+    k2 = k2_term1/(k2_term2+k2_term3+k2_term4) # love number
+    Lambda = 2/3*k2*beta**(-5) # tidal deformability       
  
 
     
@@ -181,12 +210,21 @@ def tov_sol(p_0,r_step,B_val,EOS_name):
     #     R_vals = np.delete (R_vals, np.s_[idx::],0)
     
     # Store the solution's data in the .csv file 
-    filename = f'{EOS_name}_sol.csv'
+    filename = f'{EOS_name}_tdl_sol.csv'
     with open(filename,"a+") as file: 
-        file.write(f"{P_out}, {Pc}, {E_c}, {dE_dP},{max(M_vals)}, {R_final}\n")
+        file.write(f"{P_out}, {Pc}, {E_c}, {dE_dP},{max(M_vals)}, {R}, {yR_int}, {yR_ext}, {k2}, {Lambda}\n")
 
 # Defining the worker function for the parallel solving 
 def tov_sol_worker(task_id,EOS_name,B_value,progress_queue):
+
+    # Getting the numerical EOS function
+    def EOS_function(P):
+        return EOS_MITbag(P,B_value)
+    
+    # Getting the numerical EOS function
+    def dEOS_function(P):
+        return EOS_MITbag_slope(P)
+    
 
     # Pressure ranges
     P_in_center_1: np.ndarray = np.arange(1,5,0.1) # lower pressure range
@@ -194,14 +232,14 @@ def tov_sol_worker(task_id,EOS_name,B_value,progress_queue):
     P_in_center_total: np.ndarray = np.concatenate((P_in_center_1,P_in_center_2),axis=None)
 
     # Radius step in the scan of the NS
-    R_step = 0.001 # km
+    R_step = 0.01 # km
 
     # Total number of initial values
     total_values = len(P_in_center_total)
 
-    filename = f'{EOS_name}_sol.csv'
+    filename = f'{EOS_name}_tdl_sol.csv'
     with open(filename,"w") as file:
-        file.write(f"P_out, P_c, E_c, dE_dP, M, R, B={B_value:.1f}\n")
+        file.write(f"P_out, P_c, E_c, dE_dP, M, R, yR_int, yR_ext, k2, L, B={B_value:.1f}\n")
 
     for i in range(0,total_values):
         P_0 = P_in_center_total[i]
@@ -210,7 +248,7 @@ def tov_sol_worker(task_id,EOS_name,B_value,progress_queue):
         progress_queue.put((task_id,EOS_name,i + 1, total_values,P_0))
         
         # Calling the tov_sol() function
-        tov_sol(P_0,R_step,B_value,EOS_name)
+        tov_sol(P_0,R_step,B_value,EOS_name, EOS_function, dEOS_function)
 
 def print_progress(progress_queue, num_tasks):
     progress = {i: (0, 1, 2, 3) for i in range(num_tasks)}  # Dictionary to track (step, total_steps) for each task
