@@ -176,7 +176,7 @@ def tov_sol(p_0,r_step,B_val,EOS_name, EOS_formula, dEOS_formula):
         P_0 = initial_values[0]
 
         # Appending values to the M_max, R_final, P_final and yR_int variables
-        if solution.y[0][-1]>=0:
+        if solution.y[0][-1]!=np.nan:
             P_out = solution.y[0][-1]
         if solution.y[1][-1]!=np.nan:
             M_vals.append(solution.y[1][-1])
@@ -184,12 +184,14 @@ def tov_sol(p_0,r_step,B_val,EOS_name, EOS_formula, dEOS_formula):
             R = solution.t[-1]
         if solution.y[2][-1]!=np.nan:
             yR_int = solution.y[2][-1]
-
+    
     # Calculating energy on surface
     e_out = EOS_formula(P_out)
     
     # Adjusting the value of yR
     yR_ext = yR_int - 1.126e-5 * e_out*R**3/max(M_vals)
+
+    
     
     # Calculating tidal parameters
     C = max(M_vals)/R # compactness
@@ -208,6 +210,7 @@ def tov_sol(p_0,r_step,B_val,EOS_name, EOS_formula, dEOS_formula):
     #     P_vals = np.delete (P_vals ,np.s_[idx::],0)
     #     M_vals = np.delete (M_vals , np.s_[ idx::],0)
     #     R_vals = np.delete (R_vals, np.s_[idx::],0)
+
     
     # Store the solution's data in the .csv file 
     filename = f'{EOS_name}_tdl_sol.csv'
