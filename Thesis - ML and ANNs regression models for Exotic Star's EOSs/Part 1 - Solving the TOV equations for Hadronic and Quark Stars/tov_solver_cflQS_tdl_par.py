@@ -259,7 +259,7 @@ def tov_sol_worker(task_id,EOS_name,Beff_value,Delta_value,ms_value,progress_que
     dEOS_function = smp.lambdify(pp,EOS_function_sym(pp).diff(),"numpy") 
 
     # Pressure ranges
-    P_in_center_1: np.ndarray = np.arange(1,5,0.1) # lower pressure range
+    P_in_center_1: np.ndarray = np.arange(1.1,5,0.1) # lower pressure range
     P_in_center_2: np.ndarray = np.arange(5,1501,1) # higher pressure range
     P_in_center_total: np.ndarray = np.concatenate((P_in_center_1,P_in_center_2),axis=None)
 
