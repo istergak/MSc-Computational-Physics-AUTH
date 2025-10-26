@@ -254,7 +254,7 @@ def task_giver(models_selected,B_selected_group,progress_queue):
 
 if __name__ == "__main__":
     # Printing the solution process info
-    print("\n>SOLVING THE TOV EQUATIONS SYSTEM FOR A (CFL MATTER) QUARK STAR \n")
+    print("\n>SOLVING THE TOV EQUATIONS SYSTEM FOR A (MIT-bag MODELED) QUARK STAR \n")
     print('===============================================================================')
     print('>>Determination of the range for the B_eff and Δ parameters:')
     print('-------------------------------------------------------------------------------')
