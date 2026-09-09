@@ -12,4 +12,4 @@ This link leads to a Google Drive folder containing the simulation videos for 30
 3) **ATLAS SIMULATION (10z).mp4**: Simulation video of the muon trajectories detection with **10Hz** pass frequency
 4) **ATLAS SIMULATION (10Hz music).mp4**: Same as 3) with background music
 
-The **10Hz** video is to be presented at ΔΕΘ 2024 CERN's booth as part of the 70th CERN Founding Anniversary
+The **10Hz** video was presented at TIF 2024 CERN's booth as part of the 70th CERN Founding Anniversary
